@@ -1,61 +1,65 @@
-# Design System Documentation
+# Design Rules
 
-Blog Design System based on theoretical foundations and practical implementation.
+デザインシステムドキュメント。理論的基盤と実装ガイドライン。
 
-## 📋 Documentation Structure
+## 構成
 
-### Core Design Theories
-- **[Visual Layout](./visual-layout.md)** - ゲシュタルトの法則、黄金比、三分割法、視覚階層
-- **[Color Theory](./color-theory.md)** - 色相環、配色システム、色彩心理
-- **[UI/UX Laws](./ui-ux-laws.md)** - ヤコブの法則、ヒックの法則、認知効果
-- **[Dieter Rams Principles](./dieter-rams.md)** - 良いデザイン10ヶ条
+```
+principles/     原則・哲学
+theory/         理論
+systems/        実装システム
+```
 
-### Implementation Systems
-- **[Spacing System](./spacing-system.md)** - 4pt/8ptグリッド、階層的余白設計
-- **[Border Radius](./border-radius.md)** - 黄金比相対角丸、階層的調和システム
-- **[Responsive Design](./responsive-design.md)** - 流動的グリッド、柔軟な画像、メディアクエリ
+## ドキュメント一覧
 
-## 🎯 Quick Implementation Guide
+### Principles（原則）
 
-### Essential Rules
+| ファイル | 内容 |
+|----------|------|
+| [design-principles.md](./principles/design-principles.md) | ディーター・ラムス10原則、UI/UX Laws |
+
+### Theory（理論）
+
+| ファイル | 内容 |
+|----------|------|
+| [visual-design.md](./theory/visual-design.md) | ゲシュタルト、黄金比、色彩理論、WCAG |
+| [optical-adjustment.md](./theory/optical-adjustment.md) | 錯視補正、重心補正、オーバーシュート |
+
+### Systems（実装）
+
+| ファイル | 内容 |
+|----------|------|
+| [spacing-system.md](./systems/spacing-system.md) | 4pt/8ptグリッド、非対称パディング、Optical Spacing |
+| [border-radius.md](./systems/border-radius.md) | Squircle、黄金比角丸、錯視補正システム |
+| [responsive-mobile.md](./systems/responsive-mobile.md) | レスポンシブ3原則、Fitt's Law、タッチターゲット |
+
+## クイックリファレンス
+
+### Spacing（4pt/8pt Grid）
 ```css
-/* 4pt/8pt Grid System */
 --spacing-1: 0.25rem;    /* 4px */
 --spacing-2: 0.5rem;     /* 8px */
 --spacing-4: 1rem;       /* 16px */
 --spacing-8: 2rem;       /* 32px */
+```
 
-/* Golden Ratio Border Radius (推奨) */
+### Border Radius（黄金比）
+```css
 --radius-golden-0: 1rem;      /* 16px - Level 0 */
 --radius-golden-1: 0.625rem;  /* 10px - Level 1 */
 --radius-golden-2: 0.375rem;  /* 6px - Level 2 */
 --radius-golden-3: 0.25rem;   /* 4px - Level 3 */
+```
 
-/* Golden Ratio + Visual Correction Rule */
-childRadius = parentRadius × 0.618 × 0.75 (錯視補正)
+### 錯視補正
+```
+childRadius = parentRadius × 0.618 × 0.75
 theoreticalValue ≠ visuallyCorrectValue
 ```
 
-### Component Patterns
-- **Cards**: `rounded-golden-0` (16px) → content `rounded-corrected` (8px)
-- **Images**: Golden ratio + visual correction for natural appearance
-- **Buttons**: `rounded-corrected` (4px) for optimal visual balance
-- **Spacing**: Internal padding ≤ External margin
-- **Hierarchy**: Each level = parent × 0.618 × 0.75 (錯視補正適用)
-- **Visual Testing**: 数値的正確性より視覚的調和を優先
-
-## 📖 Usage in Development
-
-When implementing components:
-1. **Read relevant theory files** for understanding
-2. **Apply core rules** from quick guide
-3. **Follow existing patterns** in codebase
-4. **Test responsive behavior** on multiple devices
-
-## 🔄 Maintenance
-
-This documentation should be updated when:
-- New design patterns are established
-- Existing rules are refined
-- Component library is extended
-- User feedback suggests improvements
+### Touch Targets
+```
+主要操作: 48dp/pt (約9mm)
+二次操作: 44dp/pt (約7-9mm)
+間隔: 最小8px
+```
