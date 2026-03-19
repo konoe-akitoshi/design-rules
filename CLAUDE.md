@@ -122,6 +122,16 @@ R_inner = R_outer - Padding（最小2px）
 
 ---
 
+## スキル（スラッシュコマンド）
+
+| コマンド | 用途 |
+|---------|------|
+| `/design-review [ファイル]` | HTML/JSXをDS準拠チェック。禁止パターン違反・トークン未使用を検出 |
+| `/design-tokens [カテゴリ]` | トークン値のクイック参照（spacing, radius, padding, touch, wcag 等） |
+| `/design-apply [UIの説明]` | DS準拠でUIコードを生成。セルフチェック付き |
+
+---
+
 ## トークン参照
 
 具体的な値は `tokens.json` を正とする。SSOT（Single Source of Truth）として全トークンが定義されている。
