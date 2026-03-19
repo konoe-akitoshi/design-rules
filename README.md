@@ -1,16 +1,35 @@
 # Design Rules
 
 デザインシステムドキュメント。理論的基盤と実装ガイドライン。
+人間とAIの両方が参照できる設計。
 
 ## 構成
 
 ```
-principles/     原則・哲学
-theory/         理論
-systems/        実装システム
+CLAUDE.md           AIエントリーポイント（クイックリファレンス + タスクベースガイド）
+tokens.json         デザイントークンのSSOT（機械可読）
+prohibited.md       禁止パターン一覧
+principles/         原則・哲学
+theory/             理論
+systems/            実装システム
 ```
 
+## AI向け：使い方
+
+1. `CLAUDE.md` を読む — 基本的なUI生成はこれだけで完結
+2. 具体的な値は `tokens.json` を参照（SSOT）
+3. `prohibited.md` で禁止パターンを確認
+4. 詳細が必要な場合は `CLAUDE.md` のタスクベースガイドに従って個別ドキュメントを読む
+
 ## ドキュメント一覧
+
+### AI向け
+
+| ファイル | 内容 |
+|----------|------|
+| [CLAUDE.md](./CLAUDE.md) | AIエントリーポイント。クイックリファレンス + タスクベース読み込みガイド |
+| [tokens.json](./tokens.json) | デザイントークン定義（スペーシング・角丸・タッチターゲット・WCAG等） |
+| [prohibited.md](./prohibited.md) | 禁止パターン一覧（AI生成パターン排除含む） |
 
 ### Principles（原則）
 
