@@ -9,7 +9,8 @@
 CLAUDE.md           AIエントリーポイント（クイックリファレンス + タスクベースガイド）
 tokens.json         デザイントークンのSSOT（機械可読）
 prohibited.md       禁止パターン一覧
-principles/         原則・哲学
+philosophy/         思想・判断軸
+principles/         原則
 theory/             理論
 systems/            実装システム
 ```
@@ -30,6 +31,14 @@ systems/            実装システム
 | [CLAUDE.md](./CLAUDE.md) | AIエントリーポイント。クイックリファレンス + タスクベース読み込みガイド |
 | [tokens.json](./tokens.json) | デザイントークン定義（スペーシング・角丸・タッチターゲット・WCAG等） |
 | [prohibited.md](./prohibited.md) | 禁止パターン一覧（AI生成パターン排除含む） |
+
+### Philosophy（思想）
+
+| ファイル | 内容 |
+|----------|------|
+| [README.md](./philosophy/README.md) | 思想・判断軸の入口 |
+| [core-philosophy.md](./philosophy/core-philosophy.md) | デザインシステムの哲学的な核 |
+| [design-philosophy-map.md](./philosophy/design-philosophy-map.md) | Systems Thinkingを最上位にしたデザイン思想マップ |
 
 ### Principles（原則）
 

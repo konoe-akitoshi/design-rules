@@ -6,8 +6,12 @@ UI生成時は、このファイルのクイックリファレンスを参照し
 ## 設計哲学
 
 - **コンテンツファースト**: 装飾ではなく情報を伝えるデザイン
+- **システム思考**: 複雑なシステムを人間が理解・操作・制御できる形に翻訳する
+- **情報空間設計**: 複雑なシステムを理解可能な構造に変換する
 - **可能な限りデザインを抑制する**: ディーター・ラムスの第10原則
 - **数値的正確性 ≠ 視覚的正確性**: 人間の知覚に合わせた錯視補正を行う
+
+思想全体の地図は [philosophy/README.md](./philosophy/README.md) を参照。哲学的な核は [philosophy/core-philosophy.md](./philosophy/core-philosophy.md) を参照。
 
 ---
 
@@ -119,6 +123,7 @@ R_inner = R_outer - Padding（最小2px）
 | 配色を決める | `theory/visual-design.md`（色彩理論・WCAG） |
 | アイコンを配置する | `theory/optical-adjustment.md`（重心補正・オーバーシュート） |
 | デザイン原則を確認する | `principles/design-principles.md` |
+| 思想マップを確認する | `philosophy/README.md` + `philosophy/core-philosophy.md` + `philosophy/design-philosophy-map.md` |
 
 ---
 
