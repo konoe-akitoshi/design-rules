@@ -18,6 +18,9 @@ allowed-tools: Read, Grep, Glob
 2. `${CLAUDE_SKILL_DIR}/../../../tokens.json` — デザイントークン定義
 3. `${CLAUDE_SKILL_DIR}/../../../CLAUDE.md` — クイックリファレンス
 
+このスキルは**機械的**な検出（禁止パターン・トークン・非対称padding・WCAG）に集中する。
+情報構造・操作・抑制・状態など**原則レベル**の検査は `/web-design-guidelines`、矛盾解決は `guidelines/README.md` の「優先順位」を使うこと。
+
 ## レビュー対象
 
 $ARGUMENTS

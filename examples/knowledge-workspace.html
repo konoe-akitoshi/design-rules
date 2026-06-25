@@ -1,0 +1,1671 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Design Knowledge Workspace</title>
+  <style>
+    :root {
+      --bg: #eef2f5;
+      --surface: #ffffff;
+      --surface-muted: #f6f8fa;
+      --surface-active: #edf3ff;
+      --ink: #111820;
+      --muted: #5d6975;
+      --quiet: #7d8995;
+      --line: #d8e0e7;
+      --line-strong: #a8b5c1;
+      --blue: #2457d6;
+      --green: #187256;
+      --amber: #9a6500;
+      --red: #b62c25;
+      --radius-panel: 8px;
+      --radius-control: 6px;
+      --radius-small: 4px;
+      --s1: 4px;
+      --s2: 8px;
+      --s3: 12px;
+      --s4: 16px;
+      --s5: 20px;
+      --s6: 24px;
+      --s8: 32px;
+      --s12: 48px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 14px;
+      line-height: 1.58;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      color: inherit;
+    }
+
+    .workspace {
+      height: 100vh;
+      display: grid;
+      grid-template-columns: 264px minmax(480px, 1fr) 288px;
+      grid-template-rows: 56px minmax(0, 1fr);
+      background: var(--surface);
+    }
+
+    .topbar {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 264px minmax(0, 1fr) 288px;
+      min-width: 0;
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .product {
+      display: flex;
+      align-items: center;
+      gap: var(--s3);
+      padding: 0 var(--s4);
+      border-right: 1px solid var(--line);
+      min-width: 0;
+    }
+
+    .product-mark {
+      width: 28px;
+      height: 28px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--ink);
+      border-radius: var(--radius-control);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .product strong {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .global-tools {
+      min-width: 0;
+      padding: 0 var(--s4);
+      display: flex;
+      align-items: center;
+      gap: var(--s3);
+    }
+
+    .search-trigger {
+      width: min(520px, 100%);
+      min-height: 36px;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: center;
+      gap: var(--s3);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-control);
+      background: var(--surface-muted);
+      padding: var(--s1) var(--s3);
+      color: var(--muted);
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .search-trigger span:nth-child(2) {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    kbd {
+      border: 1px solid var(--line-strong);
+      border-bottom-width: 2px;
+      border-radius: var(--radius-small);
+      background: var(--surface);
+      padding: 1px 6px;
+      color: var(--quiet);
+      font-family: inherit;
+      font-size: 11px;
+    }
+
+    .document-tools {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: var(--s2);
+      padding: 0 var(--s4);
+      border-left: 1px solid var(--line);
+    }
+
+    .icon-button {
+      width: 36px;
+      height: 36px;
+      border: 1px solid transparent;
+      border-radius: var(--radius-control);
+      background: transparent;
+      cursor: pointer;
+      font-size: 17px;
+    }
+
+    .icon-button:hover {
+      border-color: var(--line);
+      background: var(--surface-muted);
+    }
+
+    .sidebar {
+      min-height: 0;
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      border-right: 1px solid var(--line);
+      background: var(--surface-muted);
+    }
+
+    .sidebar-head {
+      padding: var(--s4);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section-label {
+      margin: 0 0 var(--s2);
+      color: var(--quiet);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .view-switcher {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius-control);
+      overflow: hidden;
+    }
+
+    .view-switcher button {
+      min-height: 34px;
+      border: 0;
+      border-right: 1px solid var(--line-strong);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .view-switcher button:last-child {
+      border-right: 0;
+    }
+
+    .view-switcher button[aria-pressed="true"] {
+      background: var(--ink);
+      color: #ffffff;
+    }
+
+    .tree {
+      min-height: 0;
+      overflow: auto;
+      padding: var(--s3);
+    }
+
+    .tree-group {
+      margin-bottom: var(--s3);
+    }
+
+    .tree-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .group-toggle {
+      width: 100%;
+      min-height: 36px;
+      display: grid;
+      grid-template-columns: 16px minmax(0, 1fr) auto;
+      gap: var(--s2);
+      align-items: center;
+      border: 0;
+      background: transparent;
+      padding: var(--s1) var(--s2);
+      color: var(--muted);
+      cursor: pointer;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 760;
+      text-transform: uppercase;
+    }
+
+    .group-toggle span:last-child {
+      color: var(--quiet);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .tree-items {
+      display: grid;
+      gap: 2px;
+    }
+
+    .tree-group[data-collapsed="true"] .tree-items {
+      display: none;
+    }
+
+    .tree-group[data-collapsed="true"] .chevron {
+      transform: rotate(-90deg);
+    }
+
+    .chevron {
+      transition: transform 120ms ease;
+    }
+
+    .tree-item {
+      width: 100%;
+      min-height: 38px;
+      display: grid;
+      grid-template-columns: 20px minmax(0, 1fr);
+      gap: var(--s2);
+      align-items: center;
+      border: 1px solid transparent;
+      border-radius: var(--radius-control);
+      background: transparent;
+      padding: var(--s1) var(--s2);
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .tree-item:hover {
+      background: var(--surface);
+      border-color: var(--line);
+    }
+
+    .tree-item[aria-pressed="true"] {
+      background: var(--surface-active);
+      border-color: #9bb2f2;
+      color: #173a9c;
+    }
+
+    .doc-icon {
+      width: 16px;
+      height: 20px;
+      border: 1px solid currentColor;
+      border-radius: 2px;
+      opacity: 0.72;
+    }
+
+    .sidebar-foot {
+      padding: var(--s3) var(--s4);
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: var(--s3);
+    }
+
+    .document {
+      min-width: 0;
+      min-height: 0;
+      overflow: auto;
+      background: var(--surface);
+    }
+
+    .document-inner {
+      max-width: 840px;
+      margin: 0 auto;
+      padding: var(--s12) var(--s12) 96px;
+    }
+
+    .breadcrumb {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--s2);
+      margin-bottom: var(--s5);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .breadcrumb span:not(:last-child)::after {
+      content: "/";
+      margin-left: var(--s2);
+      color: var(--line-strong);
+    }
+
+    .doc-header {
+      padding-bottom: var(--s8);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .doc-label {
+      margin: 0 0 var(--s3);
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    h1 {
+      margin: 0 0 var(--s4);
+      font-size: 42px;
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .doc-summary {
+      max-width: 740px;
+      margin: 0;
+      color: #35414c;
+      font-size: 18px;
+      line-height: 1.78;
+    }
+
+    .doc-meta {
+      margin-top: var(--s5);
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--s3) var(--s5);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .doc-section {
+      scroll-margin-top: var(--s6);
+      padding-top: var(--s8);
+    }
+
+    h2 {
+      margin: 0 0 var(--s4);
+      font-size: 23px;
+      line-height: 1.25;
+    }
+
+    .doc-section > p {
+      margin: 0 0 var(--s4);
+      font-size: 15px;
+      line-height: 1.8;
+    }
+
+    .doc-section > p:last-child {
+      margin-bottom: 0;
+    }
+
+    .figure {
+      margin: var(--s6) 0 0;
+    }
+
+    .figure img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 7;
+      object-fit: cover;
+      object-position: center;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-panel);
+    }
+
+    .figure figcaption {
+      margin-top: var(--s2);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .principles {
+      display: grid;
+      border-top: 1px solid var(--line);
+    }
+
+    .principle {
+      display: grid;
+      grid-template-columns: 32px minmax(0, 1fr);
+      gap: var(--s4);
+      padding: var(--s4) 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .principle-index {
+      color: var(--quiet);
+      font-size: 12px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .principle strong {
+      display: block;
+      margin-bottom: var(--s1);
+    }
+
+    .principle p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .concept-table {
+      width: 100%;
+      border-collapse: collapse;
+      border-top: 1px solid var(--line);
+    }
+
+    .concept-table th,
+    .concept-table td {
+      padding: var(--s4) 0;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      text-align: left;
+    }
+
+    .concept-table th {
+      width: 180px;
+      padding-right: var(--s6);
+      font-size: 13px;
+    }
+
+    .concept-table td {
+      color: var(--muted);
+    }
+
+    .note {
+      margin-top: var(--s5);
+      display: grid;
+      grid-template-columns: 4px minmax(0, 1fr);
+      gap: var(--s4);
+    }
+
+    .note::before {
+      content: "";
+      background: var(--blue);
+      border-radius: 2px;
+    }
+
+    .note p {
+      margin: 0;
+      padding: var(--s2) 0;
+      color: #34404b;
+      font-weight: 620;
+    }
+
+    .context {
+      min-height: 0;
+      overflow: auto;
+      border-left: 1px solid var(--line);
+      background: var(--surface-muted);
+      padding: var(--s5);
+    }
+
+    .context-section {
+      margin-bottom: var(--s8);
+    }
+
+    .context-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .context h2 {
+      margin: 0 0 var(--s3);
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .toc,
+    .related,
+    .history {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .toc {
+      display: grid;
+      gap: 2px;
+    }
+
+    .toc a {
+      min-height: 34px;
+      display: flex;
+      align-items: center;
+      border-left: 2px solid transparent;
+      padding: var(--s1) var(--s3);
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 13px;
+    }
+
+    .toc a:hover,
+    .toc a[aria-current="true"] {
+      border-left-color: var(--blue);
+      color: var(--ink);
+      background: var(--surface);
+    }
+
+    .related {
+      display: grid;
+      gap: var(--s2);
+    }
+
+    .related button {
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-control);
+      background: var(--surface);
+      padding: var(--s2) var(--s3);
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .related button:hover {
+      border-color: var(--blue);
+    }
+
+    .related strong,
+    .related span {
+      display: block;
+    }
+
+    .related strong {
+      line-height: 1.3;
+      font-size: 13px;
+    }
+
+    .related span {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .history {
+      display: grid;
+      border-left: 1px solid var(--line-strong);
+      margin-left: 5px;
+    }
+
+    .history li {
+      position: relative;
+      padding: 0 0 var(--s4) var(--s4);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .history li::before {
+      content: "";
+      position: absolute;
+      left: -5px;
+      top: 4px;
+      width: 8px;
+      height: 8px;
+      border: 2px solid var(--surface-muted);
+      border-radius: 50%;
+      background: var(--line-strong);
+    }
+
+    .history strong {
+      display: block;
+      color: var(--ink);
+      font-size: 12px;
+    }
+
+    .status-line {
+      display: flex;
+      align-items: center;
+      gap: var(--s2);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    .dialog-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: none;
+      place-items: start center;
+      padding-top: 12vh;
+      background: rgba(17, 24, 32, 0.28);
+    }
+
+    .dialog-backdrop[data-open="true"] {
+      display: grid;
+    }
+
+    .command {
+      width: min(640px, calc(100vw - 32px));
+      max-height: 68vh;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      overflow: hidden;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius-panel);
+      background: var(--surface);
+      box-shadow: 0 16px 48px rgba(17, 24, 32, 0.18);
+    }
+
+    .command-input {
+      width: 100%;
+      min-height: 56px;
+      border: 0;
+      border-bottom: 1px solid var(--line);
+      outline: 0;
+      padding: var(--s3) var(--s5);
+      color: var(--ink);
+      font-size: 16px;
+    }
+
+    .command-results {
+      min-height: 0;
+      overflow: auto;
+      padding: var(--s2);
+    }
+
+    .command-result {
+      width: 100%;
+      min-height: 56px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: var(--s4);
+      align-items: center;
+      border: 1px solid transparent;
+      border-radius: var(--radius-control);
+      background: transparent;
+      padding: var(--s2) var(--s3);
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .command-result:hover {
+      border-color: var(--line);
+      background: var(--surface-muted);
+    }
+
+    .command-result strong,
+    .command-result span {
+      display: block;
+    }
+
+    .command-result span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .command-result > span {
+      white-space: nowrap;
+    }
+
+    @media (max-width: 1160px) {
+      .workspace {
+        grid-template-columns: 248px minmax(0, 1fr);
+      }
+
+      .topbar {
+        grid-template-columns: 248px minmax(0, 1fr);
+      }
+
+      .document-tools,
+      .context {
+        display: none;
+      }
+    }
+
+    @media (max-width: 760px) {
+      body {
+        overflow: auto;
+      }
+
+      .workspace {
+        height: auto;
+        min-height: 100vh;
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        grid-template-columns: 1fr;
+        min-height: auto;
+      }
+
+      .product {
+        min-height: 52px;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .global-tools {
+        min-height: 52px;
+      }
+
+      .sidebar {
+        min-height: auto;
+        overflow: visible;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .tree {
+        max-height: 320px;
+      }
+
+      .document {
+        overflow: visible;
+      }
+
+      .document-inner {
+        padding: var(--s8) var(--s4) 64px;
+      }
+
+      h1 {
+        font-size: 34px;
+      }
+
+      .doc-summary {
+        font-size: 16px;
+      }
+
+      .concept-table,
+      .concept-table tbody,
+      .concept-table tr,
+      .concept-table th,
+      .concept-table td {
+        display: block;
+        width: 100%;
+      }
+
+      .concept-table th {
+        padding-bottom: var(--s1);
+        border-bottom: 0;
+      }
+
+      .concept-table td {
+        padding-top: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="workspace">
+    <header class="topbar">
+      <div class="product">
+        <span class="product-mark">DK</span>
+        <strong>Design Knowledge</strong>
+      </div>
+      <div class="global-tools">
+        <button class="search-trigger" id="search-trigger" type="button">
+          <span aria-hidden="true">⌕</span>
+          <span>Search documents and concepts</span>
+          <kbd>Ctrl K</kbd>
+        </button>
+      </div>
+      <div class="document-tools">
+        <button class="icon-button" type="button" title="Copy link" aria-label="Copy link">↗</button>
+        <button class="icon-button" type="button" title="More actions" aria-label="More actions">⋯</button>
+      </div>
+    </header>
+
+    <aside class="sidebar" aria-label="Knowledge navigation">
+      <div class="sidebar-head">
+        <p class="section-label">Library</p>
+        <div class="view-switcher">
+          <button type="button" aria-pressed="true">Structure</button>
+          <button type="button" aria-pressed="false">Recent</button>
+        </div>
+      </div>
+
+      <nav class="tree" id="tree"></nav>
+
+      <div class="sidebar-foot">
+        <span>29 documents</span>
+        <span>Synced</span>
+      </div>
+    </aside>
+
+    <article class="document" id="document">
+      <div class="document-inner">
+        <div class="breadcrumb" id="breadcrumb"></div>
+
+        <header class="doc-header">
+          <p class="doc-label" id="doc-label"></p>
+          <h1 id="doc-title"></h1>
+          <p class="doc-summary" id="doc-summary"></p>
+          <div class="doc-meta">
+            <span id="doc-owner"></span>
+            <span id="doc-updated"></span>
+            <span id="doc-reading"></span>
+          </div>
+        </header>
+
+        <section class="doc-section" id="overview">
+          <h2>Overview</h2>
+          <p id="overview-text"></p>
+          <figure class="figure" id="overview-figure">
+            <img src="./assets/design-atlas-cover.png" alt="工業デザイン、情報構造、タイポグラフィを示す設計資料">
+            <figcaption>Structure, interaction, and visual expression treated as one design problem.</figcaption>
+          </figure>
+        </section>
+
+        <section class="doc-section" id="principles">
+          <h2>Core principles</h2>
+          <div class="principles" id="principles-list"></div>
+        </section>
+
+        <section class="doc-section" id="concepts">
+          <h2>Key concepts</h2>
+          <table class="concept-table">
+            <tbody id="concepts-list"></tbody>
+          </table>
+        </section>
+
+        <section class="doc-section" id="position">
+          <h2>Position in the system</h2>
+          <p id="position-text"></p>
+          <div class="note">
+            <p id="position-note"></p>
+          </div>
+        </section>
+      </div>
+    </article>
+
+    <aside class="context" aria-label="Document context">
+      <section class="context-section">
+        <h2>On this page</h2>
+        <nav class="toc">
+          <a href="#overview" aria-current="true">Overview</a>
+          <a href="#principles">Core principles</a>
+          <a href="#concepts">Key concepts</a>
+          <a href="#position">Position in the system</a>
+        </nav>
+      </section>
+
+      <section class="context-section">
+        <h2>Related</h2>
+        <div class="related" id="related"></div>
+      </section>
+
+      <section class="context-section">
+        <h2>Stewardship</h2>
+        <div class="status-line"><span class="status-dot"></span><span>Maintained</span></div>
+      </section>
+
+      <section class="context-section">
+        <h2>History</h2>
+        <ol class="history">
+          <li><strong>Expanded concepts</strong>Today</li>
+          <li><strong>Linked related theories</strong>Today</li>
+          <li><strong>Created</strong>June 18, 2026</li>
+        </ol>
+      </section>
+    </aside>
+  </div>
+
+  <div class="dialog-backdrop" id="dialog" data-open="false">
+    <div class="command" role="dialog" aria-modal="true" aria-label="Search knowledge">
+      <input class="command-input" id="command-input" type="search" placeholder="Search by title, concept, or summary">
+      <div class="command-results" id="command-results"></div>
+    </div>
+  </div>
+
+  <script>
+    const groups = [
+      {
+        id: "core",
+        title: "Core",
+        docs: [
+          ["core-philosophy", "Core Philosophy"],
+          ["design-map", "Design Philosophy Map"]
+        ]
+      },
+      {
+        id: "systems",
+        title: "Systems Thinking",
+        docs: [
+          ["systems-thinking", "Systems Thinking"],
+          ["cybernetics", "Cybernetics"],
+          ["fuller", "Buckminster Fuller"],
+          ["human-centered", "Human-Centered Systems Thinking"],
+          ["pragmatism", "Pragmatism"],
+          ["stewardship", "Stewardship"]
+        ]
+      },
+      {
+        id: "information",
+        title: "Information Architecture",
+        docs: [
+          ["wurman", "Richard Saul Wurman"],
+          ["legibility", "Legibility"],
+          ["vignelli", "Massimo Vignelli"],
+          ["tufte", "Edward Tufte"],
+          ["alexander", "Christopher Alexander"]
+        ]
+      },
+      {
+        id: "interaction",
+        title: "Interaction Design",
+        docs: [
+          ["norman", "Don Norman"],
+          ["raskin", "Jef Raskin"],
+          ["calm", "Calm Technology"],
+          ["ecological", "Ecological Psychology"],
+          ["apple-hig", "Apple HIG"]
+        ]
+      },
+      {
+        id: "visual",
+        title: "Visual Design",
+        docs: [
+          ["physicalization", "Information Physicalization"],
+          ["bauhaus", "Bauhaus"],
+          ["rams", "Dieter Rams"],
+          ["swiss", "International Typographic Style"],
+          ["linear", "Linear"]
+        ]
+      }
+    ];
+
+    const docs = {
+      "core-philosophy": {
+        group: "Core",
+        label: "Foundation",
+        title: "Core Philosophy",
+        summary: "複雑なシステムを、人間が理解・操作・制御・保守できる形に翻訳するための基本命題。",
+        overview: "デザインは見た目を整える行為ではない。情報、行為、状態、時間を人間が扱える構造へ変えることである。画面はその結果として現れ、表現は経験と構造に従う。",
+        principles: [
+          ["System before screen", "個別の画面より、情報・操作・人間・運用を含むシステム全体を見る。"],
+          ["Legibility before novelty", "新しさより、現在地・関係・次の行動が読めることを優先する。"],
+          ["Experience before expression", "ユーザーの理解と行為を決めた後に、視覚表現を整える。"],
+          ["Stewardship before polish", "完成直後の美しさより、変化と保守に耐える構造を重視する。"]
+        ],
+        concepts: [
+          ["Human-Centered Systems Thinking", "人間の認知、判断、失敗、介入をシステムの一部として扱う。"],
+          ["Legibility", "複雑な対象が人間にとって読める状態であること。"],
+          ["Pragmatism", "思想の価値を、実際の結果と改善可能性から見る。"],
+          ["Stewardship", "設計を長く保守し、変化に耐えさせる責任として扱う。"]
+        ],
+        position: "すべての思想、原則、理論、実装システムの上位に位置する。具体的な色や形を決めるのではなく、何を良い設計とみなすかを定義する。",
+        note: "Visual expression is the final output of experience, structure, and interaction.",
+        related: ["systems-thinking", "legibility", "norman", "rams"],
+        figure: true
+      },
+      "design-map": {
+        group: "Core",
+        label: "Map",
+        title: "Design Philosophy Map",
+        summary: "Systems ThinkingからVisual Designまで、参照思想の役割と関係を示す上位地図。",
+        overview: "思想名を横並びにするのではなく、どのレイヤーで何を問題にするかを分ける。Systems Thinkingは全体と変化、Information Architectureは分類と関係、Interaction Designは認知と行為、Visual Designは構造の表現を扱う。",
+        principles: [
+          ["Systems Thinking", "全体、制約、依存関係、フィードバックを見る。"],
+          ["Information Architecture", "情報を分類し、階層と関係を作る。"],
+          ["Interaction Design", "理解、判断、操作、結果をつなぐ。"],
+          ["Visual Design", "構造と行為を文字、余白、形、色で支える。"]
+        ],
+        concepts: [
+          ["System", "人間、情報、操作、運用を含む全体。"],
+          ["Structure", "情報を理解可能にする分類と関係。"],
+          ["Interaction", "時間の中で起きる行為と応答。"],
+          ["Expression", "構造を知覚可能にする視覚表現。"]
+        ],
+        position: "Core Philosophyと各思想ページの間に位置し、全体を探索するための索引になる。",
+        note: "System → Information → Interaction → Visual",
+        related: ["core-philosophy", "systems-thinking", "wurman", "norman"],
+        figure: false
+      },
+      "systems-thinking": {
+        group: "Systems Thinking",
+        label: "Systems",
+        title: "Systems Thinking",
+        summary: "対象を孤立した部品ではなく、関係、循環、遅延、制約を持つ全体として捉える。",
+        overview: "複雑な問題では、個別要素を最適化しても全体の振る舞いは良くならない。UIも画面単体ではなく、ユーザー、データ、権限、運用、保守を含むシステムの一部として扱う。",
+        principles: [
+          ["Relationships over parts", "要素単体より、相互作用と依存関係を見る。"],
+          ["Structure creates behavior", "問題を単一原因ではなく構造から理解する。"],
+          ["Feedback changes systems", "出力が次の入力へ戻る循環を扱う。"],
+          ["Local optimization is insufficient", "部分最適が全体最適になるとは限らない。"]
+        ],
+        concepts: [
+          ["Feedback", "出力が入力へ戻り、次の振る舞いに影響する構造。"],
+          ["Boundary", "どこまでを同じシステムとして見るかという境界。"],
+          ["Leverage Point", "小さな介入で大きな変化が起きる箇所。"],
+          ["Emergence", "個別要素から予測しにくい全体の振る舞い。"]
+        ],
+        position: "このデザインシステムの最上位概念。下位レイヤーの判断を、全体の目的と振る舞いへ接続する。",
+        note: "A screen is never the whole system.",
+        related: ["cybernetics", "human-centered", "stewardship", "design-map"],
+        figure: false
+      },
+      "cybernetics": {
+        group: "Systems Thinking",
+        label: "Systems",
+        title: "Cybernetics",
+        summary: "観測、判断、制御、フィードバックを循環として扱う思想。",
+        overview: "UIは情報を置く静的な面ではなく、ユーザーが状態を観測し、判断し、介入し、結果を確認する制御ループの一部になる。",
+        principles: [
+          ["Observe", "現在の状態と目標との差を知る。"],
+          ["Decide", "状況と制約に基づいて次の介入を選ぶ。"],
+          ["Control", "状態を望ましい方向へ変える。"],
+          ["Feedback", "結果を次の判断へ戻す。"]
+        ],
+        concepts: [
+          ["Feedback Loop", "結果が次の入力へ戻る循環。"],
+          ["Control", "状態を変える介入。"],
+          ["Error Correction", "目標との差を検出し修正する仕組み。"],
+          ["Communication", "人間とシステムの情報伝達。"]
+        ],
+        position: "動的システムの基礎。状態、操作、結果を一つの流れとして読めるようにする視点を与える。",
+        note: "Observation without intervention is incomplete; intervention without feedback is unsafe.",
+        related: ["systems-thinking", "norman", "calm", "human-centered"],
+        figure: false
+      },
+      "fuller": {
+        group: "Systems Thinking",
+        label: "Systems",
+        title: "Buckminster Fuller",
+        summary: "個別のモノではなく、資源、構造、効率、全体システムを見る視点。",
+        overview: "造形そのものより、制約下で最大の効果を生む構造と、見えない相互依存を重視する。画面の範囲を超えて、運用コストや資源配分まで見る。",
+        principles: [
+          ["Comprehensive view", "部分的な対処ではなく、広い範囲の関係を見る。"],
+          ["Constraint as structure", "制約を創造の条件として扱う。"],
+          ["Visible dependencies", "見えない依存関係を理解可能にする。"],
+          ["Maximum effect", "限られた資源で最大の効果を考える。"]
+        ],
+        concepts: [
+          ["Comprehensive Design", "広い視野で問題を予測し全体として解く姿勢。"],
+          ["Spaceship Earth", "地球を相互依存する閉じたシステムとして見る。"],
+          ["Dymaxion", "動的構造、効率、最大効果への関心。"]
+        ],
+        position: "Systems Thinkingの補助線。UIの外側にある資源、組織、環境を設計対象へ含める。",
+        note: "The visible interface is only one surface of the system.",
+        related: ["systems-thinking", "bauhaus", "stewardship"],
+        figure: false
+      },
+      "human-centered": {
+        group: "Systems Thinking",
+        label: "Systems",
+        title: "Human-Centered Systems Thinking",
+        summary: "人間の認知、判断、失敗、介入をシステムの一部として扱う。",
+        overview: "ユーザーは外部の観察者ではない。状況を読み、判断し、時に間違い、システムの振る舞いを変える参加者である。",
+        principles: [
+          ["Human in the system", "人間の判断と介入を全体構造に含める。"],
+          ["Design uncertainty", "例外と不確実性を隠さず扱う。"],
+          ["Automation boundaries", "自動化と人間判断の境界を明確にする。"],
+          ["Support recovery", "誤解や失敗から回復できるようにする。"]
+        ],
+        concepts: [
+          ["Human-in-the-loop", "自動化の中に人間の判断や確認を組み込む。"],
+          ["Cognitive Work", "理解、比較、判断、記憶、推論の負荷。"],
+          ["Situated Action", "行為はその場の状況に応じて起こる。"]
+        ],
+        position: "工学的なSystems Thinkingと、人間中心のInteraction Designを接続する。",
+        note: "System = infrastructure + information + interface + human action",
+        related: ["systems-thinking", "norman", "raskin", "cybernetics"],
+        figure: false
+      },
+      "pragmatism": {
+        group: "Systems Thinking",
+        label: "Systems",
+        title: "Pragmatism",
+        summary: "思想の価値を、実際の結果と改善可能性から判断する。",
+        overview: "デザインを完成品ではなく、作業を改善する検証可能な仮説として扱う。抽象的な正しさより、使えること、試せること、修正できることを重視する。",
+        principles: [
+          ["Connect thought to action", "思想を実際の行為へ接続する。"],
+          ["Verify through experience", "正しさを利用経験から検証する。"],
+          ["Prefer iteration", "固定的な完成より試行と改善を続ける。"],
+          ["Measure consequences", "実際の理解や作業へ与えた結果を見る。"]
+        ],
+        concepts: [
+          ["Consequence", "設計が実際にどのような結果を生むか。"],
+          ["Inquiry", "仮説を立て、試し、修正する過程。"],
+          ["Usefulness", "目的に対して機能すること。"]
+        ],
+        position: "参照思想を権威ではなく、設計判断を改善する道具として扱うための態度。",
+        note: "A principle that cannot improve practice is incomplete.",
+        related: ["systems-thinking", "stewardship", "raskin"],
+        figure: false
+      },
+      "stewardship": {
+        group: "Systems Thinking",
+        label: "Systems",
+        title: "Stewardship",
+        summary: "設計を、長く扱い、保守し、変化に耐えさせる責任として捉える。",
+        overview: "ローンチ時の完成度ではなく、情報増加、例外、仕様変更、権限変更、保守者交代に耐えるかを見る。",
+        principles: [
+          ["Maintainability", "長く修正し続けられる構造にする。"],
+          ["Expect change", "変化と例外を初期条件として扱う。"],
+          ["Preserve history", "変更理由と責任範囲を追えるようにする。"],
+          ["Enable handover", "別の人が理解し引き継げる状態にする。"]
+        ],
+        concepts: [
+          ["Maintenance", "継続的に修正し保つ行為。"],
+          ["Longevity", "流行だけでなく構造として長く使えること。"],
+          ["Accountability", "誰が、いつ、なぜ変更したかを追えること。"],
+          ["Graceful Degradation", "理想状態でなくても意味を保つこと。"]
+        ],
+        position: "Ramsの長命性とSystems Thinkingの時間軸を接続する。",
+        note: "A polished interface that cannot be maintained is unfinished.",
+        related: ["rams", "pragmatism", "alexander", "systems-thinking"],
+        figure: false
+      },
+      "wurman": {
+        group: "Information Architecture",
+        label: "Information",
+        title: "Richard Saul Wurman",
+        summary: "情報は、理解可能な構造に整理されて初めて意味を持つ。",
+        overview: "情報量そのものではなく、人がどの軸で分類し、どこから探索し、どう関係を理解するかを重視する。",
+        principles: [
+          ["Organize for understanding", "表示ではなく理解を目的に構造化する。"],
+          ["Choose meaningful axes", "分類軸が理解の仕方を決める。"],
+          ["Reveal location", "情報の所在と関係を明らかにする。"],
+          ["Support exploration", "検索だけでなく発見の経路を作る。"]
+        ],
+        concepts: [
+          ["Information Architecture", "分類、関係、探索、発見、理解の構造。"],
+          ["LATCH", "Location、Alphabet、Time、Category、Hierarchy。"],
+          ["Understanding", "情報の意味を把握できること。"]
+        ],
+        position: "Systems Thinkingの関係を、人間が探索できる情報構造へ変換する中心人物。",
+        note: "How information is organized determines how it can be understood.",
+        related: ["legibility", "vignelli", "tufte", "alexander"],
+        figure: false
+      },
+      "legibility": {
+        group: "Information Architecture",
+        label: "Information",
+        title: "Legibility",
+        summary: "複雑な対象が、人間にとって読める状態であること。",
+        overview: "文字の読みやすさだけではない。現在地、全体像、関係、経路、境界が理解可能であることを含む。",
+        principles: [
+          ["Show current position", "ユーザーが今どこにいるかを明確にする。"],
+          ["Connect whole and detail", "全体像と個別情報の関係を示す。"],
+          ["Use meaningful boundaries", "領域と階層を境界や余白で読ませる。"],
+          ["Make paths visible", "次に進める経路を予測可能にする。"]
+        ],
+        concepts: [
+          ["Landmark", "位置や状態を判断するための目印。"],
+          ["Path", "ユーザーがたどる経路。"],
+          ["District", "意味的にまとまった領域。"],
+          ["Edge", "領域を区切る境界。"]
+        ],
+        position: "Information Architectureの中核。視覚的に整っていても読めないUIを良いとはみなさない。",
+        note: "A structure becomes operable only after it becomes legible.",
+        related: ["wurman", "vignelli", "swiss", "norman"],
+        figure: false
+      },
+      "vignelli": {
+        group: "Information Architecture",
+        label: "Information",
+        title: "Massimo Vignelli",
+        summary: "デザインとは、意味に基づく秩序を与えること。",
+        overview: "装飾性よりも、構造、グリッド、タイポグラフィ、一貫性を重視する。制約と規律によって信頼できる体系を作る。",
+        principles: [
+          ["Design creates order", "情報へ意味に基づく秩序を与える。"],
+          ["Consistency builds trust", "同じ意味には同じ表現を使う。"],
+          ["Constraints strengthen form", "制約によって表現を明確にする。"],
+          ["Typography carries structure", "文字とグリッドで階層を作る。"]
+        ],
+        concepts: [
+          ["Discipline", "ルールに基づく設計上の規律。"],
+          ["Grid", "情報を配置し関係づける構造。"],
+          ["Semantic Order", "意味と重要度に基づく秩序。"]
+        ],
+        position: "Information ArchitectureとVisual Designの接続点。情報の秩序を視覚的な秩序へ変換する。",
+        note: "Order is not decoration; it is the visible form of meaning.",
+        related: ["swiss", "wurman", "rams", "legibility"],
+        figure: false
+      },
+      "tufte": {
+        group: "Information Architecture",
+        label: "Information",
+        title: "Edward Tufte",
+        summary: "装飾を減らし、情報密度、比較可能性、誠実さを高める。",
+        overview: "情報を美しく飾るのではなく、比較、変化、例外、構造を正確に見せる。ミニマルであることと判断材料を削ることを区別する。",
+        principles: [
+          ["Show the data", "情報そのものを前に出す。"],
+          ["Remove chartjunk", "理解を妨げる装飾を減らす。"],
+          ["Enable comparison", "差分と変化を同じ形式で比較できるようにする。"],
+          ["Respect density", "正しく構造化された情報量を恐れない。"]
+        ],
+        concepts: [
+          ["Data-Ink Ratio", "情報を伝える要素と装飾の比率。"],
+          ["Chartjunk", "データ理解を妨げる装飾。"],
+          ["Small Multiples", "同形式の小さな図を並べて比較する。"],
+          ["Data Density", "限られた空間に意味ある情報を入れる。"]
+        ],
+        position: "静かだが密度のあるUIの基準。Ramsの抑制と組み合わせ、判断材料を残す。",
+        note: "Less decoration does not mean less information.",
+        related: ["wurman", "legibility", "swiss", "rams"],
+        figure: false
+      },
+      "alexander": {
+        group: "Information Architecture",
+        label: "Information",
+        title: "Christopher Alexander",
+        summary: "良い設計には、文脈を持つ再利用可能なパターンがある。",
+        overview: "パターンを単なるテンプレートではなく、繰り返し現れる問題、文脈、解決の関係として扱う。",
+        principles: [
+          ["Patterns carry context", "パターンを形ではなく問題と文脈の関係として扱う。"],
+          ["Build a language", "複数のパターンを関係づけて体系を作る。"],
+          ["Support natural behavior", "人間の行動に合う反復構造を見つける。"],
+          ["Create the whole", "部品の集積ではなく全体の質を作る。"]
+        ],
+        concepts: [
+          ["Pattern", "繰り返し現れる問題と解決の型。"],
+          ["Pattern Language", "複数のパターンが関係する体系。"],
+          ["Quality Without a Name", "自然で生きた設計の質。"]
+        ],
+        position: "設計ルールを部品集ではなく、意味と文脈を持つ再利用可能な体系にする。",
+        note: "Reusable form is valuable only when it preserves context.",
+        related: ["systems-thinking", "stewardship", "wurman", "norman"],
+        figure: false
+      },
+      "norman": {
+        group: "Interaction Design",
+        label: "Interaction",
+        title: "Don Norman",
+        summary: "構造が、人間にどう認知され、操作され、理解されるかを問う。",
+        overview: "設計者の意図ではなく、ユーザーが画面から得られる手がかりを見る。操作可能性、対応関係、結果、回復可能性を明確にする。",
+        principles: [
+          ["Make action visible", "何が操作可能かを見えるようにする。"],
+          ["Return clear feedback", "操作結果を即時かつ明確に返す。"],
+          ["Design for error", "失敗をユーザーの責任だけにしない。"],
+          ["Align mental models", "ユーザーの理解モデルと構造を一致させる。"]
+        ],
+        concepts: [
+          ["Affordance", "対象が可能にする行為。"],
+          ["Signifier", "操作可能性や意味を伝える手がかり。"],
+          ["Feedback", "操作に対するシステムの反応。"],
+          ["Mapping", "操作と結果の対応関係。"],
+          ["Conceptual Model", "ユーザーが作るシステム理解。"]
+        ],
+        position: "Information ArchitectureとInteraction Designの接続点。正しい構造を、人間が自然に理解できる構造へ変える。",
+        note: "Organized structure is not automatically understandable structure.",
+        related: ["wurman", "legibility", "raskin", "calm"],
+        figure: false
+      },
+      "raskin": {
+        group: "Interaction Design",
+        label: "Interaction",
+        title: "Jef Raskin",
+        summary: "Interfaceではなく、時間の中で反復されるInteractionを設計する。",
+        overview: "見た目の新しさより、注意、習熟、操作効率、モード、反復作業を重視する。UIを継続的に使われる作業環境として考える。",
+        principles: [
+          ["Design the workflow", "画面ではなく作業の流れを設計する。"],
+          ["Reduce operation cost", "頻繁な操作を短く予測可能にする。"],
+          ["Avoid hidden modes", "状態によって意味が変わる混乱を避ける。"],
+          ["Respect expertise", "習熟者の速度を妨げない。"]
+        ],
+        concepts: [
+          ["Humane Interface", "人間の認知と習熟に合う作業環境。"],
+          ["Modelessness", "モードによる意味変化を避ける。"],
+          ["Habit Formation", "反復操作が習慣化されること。"],
+          ["Cognitive Load", "操作のために消費する認知資源。"]
+        ],
+        position: "Interaction Designの中核。高頻度操作と反復作業の速度を考える基盤。",
+        note: "A beautiful interface that interrupts skilled work is not humane.",
+        related: ["norman", "linear", "calm", "pragmatism"],
+        figure: false
+      },
+      "calm": {
+        group: "Interaction Design",
+        label: "Interaction",
+        title: "Calm Technology",
+        summary: "普段は静かに、必要な時だけ前景化するテクノロジー。",
+        overview: "ユーザーの注意を有限資源として扱う。通常状態は周辺に留め、重要な変化だけを明確に伝える。",
+        principles: [
+          ["Stay quiet by default", "通常状態は過剰に主張しない。"],
+          ["Escalate meaningful change", "重要な差分だけを強める。"],
+          ["Use the periphery", "中心情報と周辺情報を使い分ける。"],
+          ["Respect attention", "通知と動きのコストを考える。"]
+        ],
+        concepts: [
+          ["Periphery", "注意の周辺にある情報。"],
+          ["Attention", "ユーザーの限られた認知資源。"],
+          ["Ambient Information", "明示操作なしに背景として伝える情報。"]
+        ],
+        position: "Ramsの抑制、NormanのFeedback、Linearの静かな操作感を接続する。",
+        note: "Quiet does not mean hidden; it means proportionate.",
+        related: ["rams", "norman", "raskin", "linear"],
+        figure: false
+      },
+      "ecological": {
+        group: "Interaction Design",
+        label: "Interaction",
+        title: "Ecological Psychology",
+        summary: "人は世界を、環境との関係と行為可能性として知覚する。",
+        overview: "要素単体の記号ではなく、距離、配置、まとまり、方向、可能な行為から意味を理解する。UI全体を探索可能な環境として見る。",
+        principles: [
+          ["Perceive relationships", "対象単体ではなく周辺との関係を読む。"],
+          ["Connect perception and action", "知覚を可能な行為へつなげる。"],
+          ["Use spatial meaning", "位置とまとまりへ意味を持たせる。"],
+          ["Design the environment", "画面全体を行為が起きる場として考える。"]
+        ],
+        concepts: [
+          ["Affordance", "環境が主体に提供する行為可能性。"],
+          ["Direct Perception", "環境から意味ある情報を直接知覚する。"],
+          ["Environment", "知覚と行為が起きる場。"]
+        ],
+        position: "情報を説明ではなく環境として読ませるための参照点。空間情報とInteractionを接続する。",
+        note: "Meaning is often perceived through relationships before labels.",
+        related: ["norman", "physicalization", "legibility"],
+        figure: false
+      },
+      "apple-hig": {
+        group: "Interaction Design",
+        label: "Interaction",
+        title: "Apple Human Interface Guidelines",
+        summary: "明瞭さ、直接性、一貫性、自然なフィードバックを重視する指針。",
+        overview: "プラットフォームの慣習を利用し、ユーザーが操作を予測し、状態を理解し、結果を自然に受け取れるようにする。",
+        principles: [
+          ["Clarity", "文字、アイコン、階層、状態を明確にする。"],
+          ["Consistency", "慣習と既知のパターンを利用する。"],
+          ["Directness", "対象へ直接働きかけられる感覚を作る。"],
+          ["Feedback", "操作へ即時で分かりやすい反応を返す。"]
+        ],
+        concepts: [
+          ["Clarity", "表示と操作の明確さ。"],
+          ["Deference", "UIが内容や作業対象を引き立てること。"],
+          ["Depth", "階層や前後関係を理解させること。"],
+          ["Feedback", "操作に対する即時の反応。"]
+        ],
+        position: "Interaction DesignとVisual Designの接続点。Apple風の見た目ではなく、自然さと内容への従属を参照する。",
+        note: "Platform familiarity is a form of reduced cognitive load.",
+        related: ["norman", "rams", "calm", "linear"],
+        figure: false
+      },
+      "physicalization": {
+        group: "Visual Design",
+        label: "Spatial Information",
+        title: "Information Physicalization",
+        summary: "情報を位置、距離、形、配置として理解可能にする。",
+        overview: "抽象的な情報を文字や数値だけでなく、位置、距離、方向、密度、構造として扱う。空間化は装飾ではなく、関係理解の手段である。",
+        principles: [
+          ["Use spatial encoding", "位置と距離へ意味を持たせる。"],
+          ["Make relations tangible", "関係を操作可能な対象として表す。"],
+          ["Support exploration", "情報を探索できる環境にする。"],
+          ["Physicalize only when useful", "リストより明確になる時だけ空間化する。"]
+        ],
+        concepts: [
+          ["Spatial Encoding", "情報を位置や距離で表す。"],
+          ["Tangibility", "情報を操作できる対象として表す。"],
+          ["Topology", "要素の接続関係や構造。"],
+          ["Embodied Understanding", "身体や空間認識を通じた理解。"]
+        ],
+        position: "Systems ThinkingとInformation Architectureを、空間的・視覚的な理解へ接続する。",
+        note: "Spatial form is useful only when it reveals real relationships.",
+        related: ["ecological", "tufte", "legibility"],
+        figure: false
+      },
+      "bauhaus": {
+        group: "Visual Design",
+        label: "Visual",
+        title: "Bauhaus",
+        summary: "芸術、工学、素材、制作を一つの設計問題として扱う。",
+        overview: "美しさと実用性、見た目と実装を分離しない。形を用途、素材、構造、制作方法から導く。",
+        principles: [
+          ["Unify art and technology", "芸術と工学を同じ設計問題として扱う。"],
+          ["Derive form from use", "形を機能と素材から導く。"],
+          ["Prefer structure to ornament", "装飾より構造を重視する。"],
+          ["Learn through making", "制作と設計を分離しない。"]
+        ],
+        concepts: [
+          ["Form and Function", "形と機能の関係。"],
+          ["Workshop", "実際に作ることで設計を理解する場。"],
+          ["Unity of Art and Technology", "芸術と技術の統合。"]
+        ],
+        position: "Systems ThinkingとVisual Designの間。工学的構造と視覚表現を分離しない。",
+        note: "Visual form should reveal construction, not conceal it.",
+        related: ["fuller", "rams", "swiss"],
+        figure: false
+      },
+      "rams": {
+        group: "Visual Design",
+        label: "Visual",
+        title: "Dieter Rams",
+        summary: "控えめで、誠実で、理解しやすく、長く使えるデザイン。",
+        overview: "UI自身が主役にならず、内容と作業対象を前に出す。不要な装飾を削るが、理解に必要な手がかりまでは削らない。",
+        principles: [
+          ["Unobtrusive", "デザインが内容より前に出ない。"],
+          ["Honest", "機能や価値を実際以上に見せない。"],
+          ["Understandable", "対象を理解しやすくする。"],
+          ["Long-lasting", "流行だけでなく構造として長く使える。"]
+        ],
+        concepts: [
+          ["Unobtrusive", "デザインが主役になりすぎない。"],
+          ["Honest", "誇張や虚偽を避ける。"],
+          ["Long-lasting", "長く使えること。"],
+          ["As Little as Possible", "不要なものを削り本質を残す。"]
+        ],
+        position: "Visual Designの基準。Tufteの密度、Calm Technologyの静けさ、Stewardshipの長命性と接続する。",
+        note: "Less design is not less information.",
+        related: ["bauhaus", "tufte", "calm", "stewardship"],
+        figure: false
+      },
+      "swiss": {
+        group: "Visual Design",
+        label: "Visual",
+        title: "International Typographic Style",
+        summary: "グリッド、タイポグラフィ、非対称性で情報の秩序を作る。",
+        overview: "装飾より明快な情報伝達を優先し、整列、文字の差、余白、非対称なバランスによって読み順と階層を作る。",
+        principles: [
+          ["Use the grid", "要素を整列し関係づける。"],
+          ["Build typographic hierarchy", "文字の差で重要度を示す。"],
+          ["Prefer clarity", "装飾より情報伝達を優先する。"],
+          ["Balance asymmetrically", "情報の重みでバランスを作る。"]
+        ],
+        concepts: [
+          ["Grid System", "要素を整列し関係づける構造。"],
+          ["Typographic Hierarchy", "文字の差で重要度を示す。"],
+          ["Objectivity", "個人的表現より明快な伝達を重視する。"],
+          ["Asymmetry", "情報の重みでバランスを作る。"]
+        ],
+        position: "Visual Designの骨格。Vignelliの秩序、Tufteの密度、Legibilityを視覚化する。",
+        note: "The grid is a system of relationships, not a cage.",
+        related: ["vignelli", "tufte", "legibility", "rams"],
+        figure: false
+      },
+      "linear": {
+        group: "Visual Design",
+        label: "Visual / Interaction",
+        title: "Linear",
+        summary: "高速で、静かで、反復作業に耐える現代的なSaaS体験。",
+        overview: "見た目と操作速度を矛盾させず、検索、ショートカット、状態把握、自然な動きを一つの作業体験として統合する。",
+        principles: [
+          ["Prioritize speed", "レスポンスと操作経路を短くする。"],
+          ["Keep the interface quiet", "作業対象を前に出す。"],
+          ["Make state scannable", "一覧から状態と差分をすぐ読めるようにする。"],
+          ["Support skilled repetition", "熟練者の反復作業を妨げない。"]
+        ],
+        concepts: [
+          ["Speed", "レスポンス、遷移、検索、ショートカットの速さ。"],
+          ["Quiet Interface", "作業対象を前に出す静かな表現。"],
+          ["Keyboard-first", "キーボードによる高速な操作。"],
+          ["Modern SaaS Craft", "動き、余白、文字、状態表示の統合。"]
+        ],
+        position: "Visual DesignとInteraction Designの接続点。Rams、Raskin、Calm Technologyを現代SaaS体験として結ぶ。",
+        note: "Polish is valuable when it compounds speed and clarity.",
+        related: ["raskin", "rams", "calm", "swiss"],
+        figure: false
+      }
+    };
+
+    const tree = document.getElementById("tree");
+    const documentPane = document.getElementById("document");
+    const dialog = document.getElementById("dialog");
+    const searchTrigger = document.getElementById("search-trigger");
+    const commandInput = document.getElementById("command-input");
+    const commandResults = document.getElementById("command-results");
+    let activeDoc = "core-philosophy";
+
+    function renderTree() {
+      tree.innerHTML = "";
+      groups.forEach((group) => {
+        const section = document.createElement("section");
+        section.className = "tree-group";
+        section.dataset.collapsed = "false";
+
+        const toggle = document.createElement("button");
+        toggle.className = "group-toggle";
+        toggle.type = "button";
+        toggle.innerHTML = `<span class="chevron">⌄</span><span>${group.title}</span><span>${group.docs.length}</span>`;
+        toggle.addEventListener("click", () => {
+          section.dataset.collapsed = String(section.dataset.collapsed !== "true");
+        });
+
+        const items = document.createElement("div");
+        items.className = "tree-items";
+
+        group.docs.forEach(([id, title]) => {
+          const button = document.createElement("button");
+          button.className = "tree-item";
+          button.type = "button";
+          button.dataset.id = id;
+          button.setAttribute("aria-pressed", String(id === activeDoc));
+          button.innerHTML = `<span class="doc-icon" aria-hidden="true"></span><span>${title}</span>`;
+          button.addEventListener("click", () => selectDocument(id));
+          items.appendChild(button);
+        });
+
+        section.append(toggle, items);
+        tree.appendChild(section);
+      });
+    }
+
+    function renderDocument(id) {
+      const doc = docs[id];
+      document.getElementById("breadcrumb").innerHTML = `<span>Philosophy</span><span>${doc.group}</span><span>${doc.title}</span>`;
+      document.getElementById("doc-label").textContent = doc.label;
+      document.getElementById("doc-title").textContent = doc.title;
+      document.getElementById("doc-summary").textContent = doc.summary;
+      document.getElementById("doc-owner").textContent = "Owner: Design System";
+      document.getElementById("doc-updated").textContent = "Updated: June 18, 2026";
+      document.getElementById("doc-reading").textContent = `${Math.max(3, doc.principles.length + 1)} min read`;
+      document.getElementById("overview-text").textContent = doc.overview;
+      document.getElementById("position-text").textContent = doc.position;
+      document.getElementById("position-note").textContent = doc.note;
+      document.getElementById("overview-figure").hidden = !doc.figure;
+
+      document.getElementById("principles-list").innerHTML = doc.principles
+        .map(([title, description], index) => `
+          <div class="principle">
+            <span class="principle-index">${String(index + 1).padStart(2, "0")}</span>
+            <div><strong>${title}</strong><p>${description}</p></div>
+          </div>
+        `)
+        .join("");
+
+      document.getElementById("concepts-list").innerHTML = doc.concepts
+        .map(([title, description]) => `<tr><th>${title}</th><td>${description}</td></tr>`)
+        .join("");
+
+      document.getElementById("related").innerHTML = doc.related
+        .filter((relatedId) => docs[relatedId])
+        .map((relatedId) => {
+          const relatedDoc = docs[relatedId];
+          return `<button type="button" data-related="${relatedId}"><strong>${relatedDoc.title}</strong><span>${relatedDoc.label}</span></button>`;
+        })
+        .join("");
+
+      document.querySelectorAll("[data-related]").forEach((button) => {
+        button.addEventListener("click", () => selectDocument(button.dataset.related));
+      });
+
+      documentPane.scrollTo({ top: 0, behavior: "instant" });
+    }
+
+    function selectDocument(id) {
+      activeDoc = id;
+      renderTree();
+      renderDocument(id);
+      closeCommand();
+    }
+
+    function allDocuments() {
+      return Object.entries(docs).map(([id, doc]) => ({ id, ...doc }));
+    }
+
+    function renderCommandResults(query = "") {
+      const normalized = query.trim().toLowerCase();
+      const results = allDocuments().filter((doc) => {
+        const haystack = [
+          doc.title,
+          doc.group,
+          doc.summary,
+          doc.overview,
+          ...doc.principles.flat(),
+          ...doc.concepts.flat()
+        ].join(" ").toLowerCase();
+        return !normalized || haystack.includes(normalized);
+      });
+
+      commandResults.innerHTML = results.length
+        ? results.map((doc) => `
+            <button class="command-result" type="button" data-command-id="${doc.id}">
+              <span><strong>${doc.title}</strong><span>${doc.summary}</span></span>
+              <span>${doc.group}</span>
+            </button>
+          `).join("")
+        : '<div class="sidebar-foot">No matching documents.</div>';
+
+      document.querySelectorAll("[data-command-id]").forEach((button) => {
+        button.addEventListener("click", () => selectDocument(button.dataset.commandId));
+      });
+    }
+
+    function openCommand() {
+      dialog.dataset.open = "true";
+      commandInput.value = "";
+      renderCommandResults();
+      window.setTimeout(() => commandInput.focus(), 0);
+    }
+
+    function closeCommand() {
+      dialog.dataset.open = "false";
+    }
+
+    searchTrigger.addEventListener("click", openCommand);
+    commandInput.addEventListener("input", () => renderCommandResults(commandInput.value));
+
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) closeCommand();
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        openCommand();
+      }
+      if (event.key === "Escape") closeCommand();
+    });
+
+    document.querySelectorAll(".view-switcher button").forEach((button) => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".view-switcher button").forEach((item) => {
+          item.setAttribute("aria-pressed", String(item === button));
+        });
+      });
+    });
+
+    renderTree();
+    renderDocument(activeDoc);
+  </script>
+</body>
+</html>

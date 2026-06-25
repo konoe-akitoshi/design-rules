@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Service Monitor</title>
+<!--
+  ガイドラインを適用して作った実物UI（ドキュメントサイトではない）。
+  決定順: 目的=劣化したサービスを見つけて手当てする / 構造=サービス一覧 / 操作=観測→判断→制御→FB / 造形=guidelines/color-system.md
+  Cybernetics(03) · 状態と耐性(08) · 抑制(07) · 余白(04) · a11y(10)
+-->
+<style>
+  /* color = guidelines/color-system.md */
+  :root{
+    --canvas:#F3F5F8; --surface:#FFFFFF; --sunk:#EEF1F4;
+    --line:#DDE3E9; --line-strong:#C4CCD5;
+    --quiet:#8A93A0; --muted:#586170; --ink-soft:#2A313C; --ink:#14181F;
+    --accent:#2348C6; --accent-ink:#1B3AA8; --accent-sunk:#EAEEFB; --on-accent:#fff;
+    --ok:#197A4B; --ok-bg:#E7F4EC; --warn:#9A6300; --warn-bg:#FBF1DE; --crit:#B5302A; --crit-bg:#FBEAE8;
+    --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:20px;--s6:24px;--s8:32px;
+    --r1:10px;--r2:6px;--r3:4px;
+    --mono:"JetBrains Mono","SF Mono",ui-monospace,Menlo,Consolas,monospace;
+    --sans:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--sans);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  button{font:inherit;color:inherit;cursor:pointer}
+  .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:1px;border-radius:var(--r3)}
+
+  .app{height:100vh;display:grid;grid-template-rows:auto minmax(0,1fr);background:var(--surface)}
+
+  /* toolbar — 道具のツールバー（ヒーローではない） */
+  .bar{display:flex;align-items:center;gap:var(--s5);padding:var(--s3) var(--s6);border-bottom:1px solid var(--line);min-height:52px}
+  .bar .prod{font-family:var(--mono);font-weight:600;font-size:13px;letter-spacing:.02em}
+  .bar .env{font-family:var(--mono);font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:var(--r3);padding:2px var(--s2)}
+  .sum{display:flex;align-items:center;gap:var(--s4);font-size:12px;color:var(--muted)}
+  .sum b{color:var(--ink);font-family:var(--mono)}
+  .sum .pill{display:inline-flex;align-items:center;gap:6px}
+  .bar .right{margin-left:auto;display:flex;align-items:center;gap:var(--s3)}
+  .bar .ts{font-family:var(--mono);font-size:11px;color:var(--quiet)}
+  .search{display:flex;align-items:center;gap:var(--s2);background:var(--sunk);border:1px solid transparent;border-radius:var(--r2);padding:0 var(--s3);min-height:34px;width:240px}
+  .search:focus-within{background:var(--surface);border-color:var(--accent)}
+  .search input{border:0;background:transparent;outline:none;width:100%;color:var(--ink)}
+  .search svg{flex:0 0 auto;color:var(--quiet)}
+
+  .body{display:grid;grid-template-columns:minmax(0,1fr) 372px;min-height:0}
+
+  /* list — 密度を恐れない(Tufte)。箱でなくヘアラインで分ける */
+  .list{min-height:0;overflow:auto}
+  table{width:100%;border-collapse:collapse}
+  thead th{position:sticky;top:0;background:var(--surface);text-align:left;font-weight:500;font-size:11px;color:var(--quiet);
+    font-family:var(--mono);letter-spacing:.04em;text-transform:uppercase;padding:var(--s3) var(--s4);border-bottom:1px solid var(--line);white-space:nowrap}
+  thead th.r,tbody td.r{text-align:right}
+  tbody tr{border-bottom:1px solid var(--line);cursor:pointer}
+  tbody tr:hover{background:#FAFBFD}
+  tbody tr[aria-selected="true"]{background:var(--accent-sunk)}
+  tbody tr[aria-selected="true"] td:first-child{box-shadow:inset 2px 0 0 var(--accent)}
+  tbody td{padding:var(--s3) var(--s4);vertical-align:middle;border-bottom:1px solid var(--line)}
+  .svc{font-weight:600;color:var(--ink)}
+  .svc .dep{font-family:var(--mono);font-size:11px;color:var(--quiet);font-weight:400;margin-top:1px}
+
+  /* status = アイコン+ラベル+色（色だけに頼らない, a11y/05） */
+  .st{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;white-space:nowrap}
+  .st svg{flex:0 0 auto}
+  .st.ok{color:var(--ok)} .st.warn{color:var(--warn)} .st.crit{color:var(--crit)}
+  .st.dep{color:var(--accent)} .st.err,.st.perm{color:var(--muted)}
+
+  /* metric: 現在値 / SLO / Δ を併記（観測+判断, 03 cybernetics / Tufte） */
+  .m{display:inline-flex;align-items:baseline;gap:6px;justify-content:flex-end;white-space:nowrap}
+  .m .cur{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--ink);font-weight:600}
+  .m .slo{font-family:var(--mono);font-size:11px;color:var(--quiet)}
+  .m .d{font-family:var(--mono);font-size:11px;display:inline-flex;align-items:center;gap:2px}
+  .m .d.bad{color:var(--crit)} .m .d.warn{color:var(--warn)} .m .d.good{color:var(--ok)} .m .d.flat{color:var(--quiet)}
+  td.dim{color:var(--quiet);font-family:var(--mono);font-size:12px}
+
+  /* detail — 観測→判断→制御→フィードバックを同一文脈で閉じる(03) */
+  .detail{border-left:1px solid var(--line);display:flex;flex-direction:column;min-height:0;background:var(--surface)}
+  .d-empty{margin:auto;max-width:24ch;text-align:center;color:var(--quiet);padding:var(--s8)}
+  .d-head{padding:var(--s5) var(--s6) var(--s4);border-bottom:1px solid var(--line)}
+  .d-head .name{font-size:16px;font-weight:650;letter-spacing:-.01em;margin:0 0 var(--s2)}
+  .d-head .meta{font-family:var(--mono);font-size:11px;color:var(--quiet)}
+  .d-scroll{overflow:auto;padding:var(--s5) var(--s6);min-height:0}
+  .seclab{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--quiet);margin:0 0 var(--s3)}
+  .sec{margin-bottom:var(--s6)}
+  /* observe */
+  .obs{display:grid;gap:var(--s2)}
+  .obs .row{display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:var(--s3);padding:var(--s2) 0;border-bottom:1px solid var(--line)}
+  .obs .k{color:var(--muted)}
+  /* judge */
+  .judge{padding:var(--s3) var(--s4);border-radius:var(--r2);font-size:13px;line-height:1.55}
+  .judge.ok{background:var(--ok-bg);color:#125c39} .judge.warn{background:var(--warn-bg);color:#7a4f00} .judge.crit{background:var(--crit-bg);color:#8e221d}
+  .judge.dep,.judge.err{background:var(--sunk);color:var(--muted)}
+  /* control */
+  .acts{display:flex;flex-wrap:wrap;gap:var(--s2)}
+  .btn{min-height:36px;padding:var(--s2) var(--s4);border:1px solid var(--line-strong);border-radius:var(--r2);background:var(--surface);color:var(--ink);font-weight:500}
+  .btn:hover{background:var(--sunk)}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+  .btn.primary:hover{background:var(--accent-ink)}
+  .btn.danger{color:var(--crit);border-color:var(--crit)}
+  .btn.danger:hover{background:var(--crit-bg)}
+  .btn:disabled{color:var(--quiet);background:var(--sunk);border-color:var(--line);cursor:not-allowed}
+  .cost{margin-top:var(--s2);font-size:12px;color:var(--muted);display:flex;gap:6px;align-items:flex-start}
+  .cost svg{flex:0 0 auto;margin-top:2px;color:var(--warn)}
+  /* feedback log — 誰が/いつ/何を(Stewardship accountability) */
+  .log{display:grid;gap:0}
+  .log .e{display:grid;grid-template-columns:auto 1fr;gap:var(--s3);padding:var(--s2) 0;border-bottom:1px solid var(--line);font-size:12px}
+  .log .t{font-family:var(--mono);font-size:11px;color:var(--quiet);white-space:nowrap}
+  .log .who{color:var(--quiet)}
+
+  /* toast — 取り消し優先(03/Raskin)。確認ダイアログでなくundo */
+  .toast{position:fixed;left:50%;bottom:var(--s6);transform:translateX(-50%);background:var(--ink);color:#fff;
+    border-radius:var(--r2);padding:var(--s3) var(--s4);display:flex;align-items:center;gap:var(--s4);
+    font-size:13px;box-shadow:0 1px 2px rgba(20,24,31,.18);opacity:0;pointer-events:none;transition:opacity .14s,transform .14s}
+  .toast.show{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+  .toast button{color:#9DB2FF;font-weight:600;background:none;border:0;padding:var(--s1) var(--s2)}
+
+  @media (max-width:860px){
+    .body{grid-template-columns:1fr}
+    .detail{position:fixed;inset:0;z-index:5;display:none}
+    .detail.open{display:flex}
+    .search{width:160px}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  .spin{animation:sp 1s linear infinite}@keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="bar">
+    <span class="prod">svcmon</span>
+    <span class="env">prod / ap-northeast-1</span>
+    <div class="sum" id="sum"></div>
+    <div class="right">
+      <label class="search">
+        <svg width="14" height="14" viewbox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <input id="q" type="search" placeholder="サービスを絞り込む" autocomplete="off" aria-label="サービスを絞り込む">
+      </label>
+      <span class="ts" id="ts">updated 14:21:08</span>
+    </div>
+  </header>
+
+  <div class="body">
+    <section class="list" aria-label="サービス一覧">
+      <table>
+        <thead><tr>
+          <th>サービス</th><th>状態</th>
+          <th class="r">p95 レイテンシ</th><th class="r">エラー率</th><th class="r">スループット</th>
+        </tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <p id="empty" class="d-empty" hidden>一致するサービスがありません。絞り込みを変えてください。</p>
+    </section>
+
+    <aside class="detail" id="detail" aria-label="サービス詳細">
+      <div class="d-empty" id="detailEmpty">左の一覧からサービスを選ぶと、状態・原因・操作・履歴がここに出ます。</div>
+    </aside>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <span id="toastMsg"></span><button id="undo">取り消す</button>
+</div>
+
+<script>
+/* ── icons ── */
+const I = {
+  ok:'<svg width="14" height="14" viewbox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.4" stroke="currentColor" stroke-width="1.5"/><path d="M5.2 8.2l1.9 1.9 3.7-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  warn:'<svg width="14" height="14" viewbox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2.3l6 10.4H2L8 2.3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 6.4v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="11" r=".9" fill="currentColor"/></svg>',
+  crit:'<svg width="14" height="14" viewbox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.4" fill="currentColor" opacity=".14"/><circle cx="8" cy="8" r="6.4" stroke="currentColor" stroke-width="1.5"/><path d="M8 4.6v4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="8" cy="11" r=".95" fill="currentColor"/></svg>',
+  dep:'<svg class="spin" width="14" height="14" viewbox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5" opacity=".3"/><path d="M14 8a6 6 0 0 0-6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
+  err:'<svg width="14" height="14" viewbox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.4" stroke="currentColor" stroke-width="1.5"/><path d="M5.4 8h5.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
+  perm:'<svg width="14" height="14" viewbox="0 0 16 16" fill="none" aria-hidden="true"><rect x="3.5" y="7" width="9" height="6.2" rx="1.4" stroke="currentColor" stroke-width="1.5"/><path d="M5.6 7V5.4a2.4 2.4 0 0 1 4.8 0V7" stroke="currentColor" stroke-width="1.5"/></svg>',
+  cost:'<svg width="14" height="14" viewbox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2.3l6 10.4H2L8 2.3z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M8 6.3v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="11" r=".85" fill="currentColor"/></svg>',
+};
+const ST = {
+  ok:{cls:'ok',ic:'ok',label:'正常'}, warn:{cls:'warn',ic:'warn',label:'劣化'},
+  crit:{cls:'crit',ic:'crit',label:'重大'}, dep:{cls:'dep',ic:'dep',label:'デプロイ中'},
+  err:{cls:'err',ic:'err',label:'計測不可'}, perm:{cls:'perm',ic:'perm',label:'権限なし'},
+};
+
+/* ── data（観測値・SLO・履歴） ── */
+const SVC = [
+  {id:'api-gateway', status:'ok', dep:'2時間前', lat:{c:142,slo:200,u:'ms'}, err:{c:0.2,slo:1.0,u:'%'}, rps:'18.2k',
+   judge:'すべての指標がSLO内。直近の変化なし。',
+   log:[['14:02','reiko','デプロイ v412 完了'],['09:40','auto','スケール 6→8 (CPU)']]},
+  {id:'auth', status:'ok', dep:'1日前', lat:{c:88,slo:150,u:'ms'}, err:{c:0.1,slo:0.5,u:'%'}, rps:'9.7k',
+   judge:'安定。エラー率は基準の1/5。',
+   log:[['昨日 18:11','kenta','設定変更: token TTL 60→30m']]},
+  {id:'billing', status:'warn', dep:'22分前', lat:{c:268,slo:250,u:'ms'}, err:{c:0.8,slo:0.5,u:'%'}, rps:'1.3k',
+   judge:'エラー率 0.8% が SLO 0.5% を超過。22分前のデプロイ v88 以降に上昇。p95 もSLO境界。',
+   log:[['14:18','auto','エラー率 SLO超過を検知'],['13:59','mai','デプロイ v88 完了']]},
+  {id:'search', status:'crit', dep:'14分前', lat:{c:940,slo:300,u:'ms'}, err:{c:4.2,slo:1.0,u:'%'}, rps:'5.1k',
+   judge:'p95 レイテンシ 940ms が SLO 300ms の 3.1倍。14分前のデプロイ v203 直後から悪化。ロールバック候補。',
+   log:[['14:07','auto','p95 SLO 3倍超過を検知'],['14:05','sora','デプロイ v203 完了']]},
+  {id:'notifications', status:'dep', dep:'進行中', lat:null, err:null, rps:'—',
+   judge:'デプロイ v51 を適用中。指標は完了後に再計測される。',
+   log:[['14:20','sora','デプロイ v51 開始']]},
+  {id:'media', status:'err', dep:'5時間前', lat:null, err:null, rps:'—',
+   judge:'メトリクス収集エージェントが応答せず、指標を取得できない。サービス稼働とは別問題の可能性。',
+   log:[['14:11','auto','metrics agent タイムアウト']]},
+  {id:'recommendations', status:'ok', dep:'3日前', lat:{c:210,slo:400,u:'ms'}, err:{c:0.3,slo:1.0,u:'%'}, rps:'2.0k',
+   judge:'SLO内。レイテンシに余裕あり。', log:[['3日前','kenta','デプロイ v77 完了']]},
+  {id:'webhooks', status:'ok', dep:'6時間前', lat:{c:120,slo:300,u:'ms'}, err:{c:0.4,slo:1.0,u:'%'}, rps:'640', noctrl:true,
+   judge:'SLO内。あなたにはこのサービスの制御権限がない（閲覧のみ）。',
+   log:[['08:30','infra','デプロイ v19 完了']]},
+];
+
+/* ── metric cell: 現在値 / SLO / Δ ── */
+function metric(m){
+  if(!m) return '<td class="r dim">—</td>';
+  const ratio = m.c/m.slo;
+  const over = m.c>m.slo;
+  const pct = Math.round((ratio-1)*100);
+  let cls='flat', arrow='→', sign='';
+  if(pct>=1){cls = ratio>=1.5?'bad':(over?'warn':'good'); arrow='▲'; sign='+';}
+  else if(pct<=-1){cls='good'; arrow='▼';}
+  const d = `<span class="d ${over?(ratio>=1.5?'bad':'warn'):'good'}">${arrow} ${sign}${pct}%</span>`;
+  return `<td class="r"><span class="m"><span class="cur">${m.c}${m.u}</span><span class="slo">/ ${m.slo}${m.u}</span>${d}</span></td>`;
+}
+
+/* ── render list ── */
+const rowsEl = document.getElementById('rows');
+let selected = null, filter = '';
+function draw(){
+  const f = filter.trim().toLowerCase();
+  const items = SVC.filter(s=>!f || s.id.includes(f));
+  rowsEl.innerHTML = items.map(s=>{
+    const st = ST[s.status];
+    return `<tr data-id="${s.id}" tabindex="0" role="button" aria-selected="${selected===s.id}">
+      <td><div class="svc">${s.id}</div><div class="dep">deploy ${s.dep}</div></td>
+      <td><span class="st ${st.cls}">${I[st.ic]}${st.label}</span></td>
+      ${metric(s.lat)}${metric(s.err)}
+      <td class="r dim">${s.rps}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('empty').hidden = items.length>0;
+}
+
+/* ── summary ── */
+function summary(){
+  const n = SVC.length;
+  const w = SVC.filter(s=>s.status==='warn').length;
+  const c = SVC.filter(s=>s.status==='crit').length;
+  document.getElementById('sum').innerHTML =
+    `<span class="pill"><b>${n}</b> サービス</span>`+
+    (c?`<span class="pill st crit">${I.crit}<b>${c}</b> 重大</span>`:'')+
+    (w?`<span class="pill st warn">${I.warn}<b>${w}</b> 劣化</span>`:'')+
+    (!c&&!w?`<span class="pill st ok">${I.ok} すべて正常</span>`:'');
+}
+
+/* ── detail: 観測→判断→制御→フィードバック ── */
+const detailEl = document.getElementById('detail');
+function obsRow(k, m){
+  if(!m) return `<div class="row"><span class="k">${k}</span><span class="dim num">—</span></div>`;
+  const over=m.c>m.slo, ratio=m.c/m.slo, pct=Math.round((ratio-1)*100);
+  const dcls = over?(ratio>=1.5?'bad':'warn'):'good';
+  const arrow = pct>=1?'▲':(pct<=-1?'▼':'→');
+  return `<div class="row"><span class="k">${k}</span>
+    <span class="m"><span class="cur">${m.c}${m.u}</span><span class="slo">SLO ${m.slo}${m.u}</span>
+    <span class="d ${dcls}">${arrow} ${pct>0?'+':''}${pct}%</span></span></div>`;
+}
+function renderDetail(s){
+  const st = ST[s.status];
+  const ctrlDisabled = s.noctrl;
+  const canAct = s.status==='warn'||s.status==='crit';
+  detailEl.innerHTML = `
+    <div class="d-head">
+      <h2 class="name">${s.id}</h2>
+      <div class="meta"><span class="st ${st.cls}" style="font-size:12px">${I[st.ic]}${st.label}</span> · deploy ${s.dep}</div>
+    </div>
+    <div class="d-scroll">
+      <div class="sec">
+        <p class="seclab">観測 — 現在値 / SLO / 差分</p>
+        <div class="obs">
+          ${obsRow('p95 レイテンシ', s.lat)}
+          ${obsRow('エラー率', s.err)}
+          <div class="row"><span class="k">スループット</span><span class="cur num">${s.rps}</span></div>
+        </div>
+      </div>
+      <div class="sec">
+        <p class="seclab">判断 — なぜこの状態か</p>
+        <div class="judge ${st.cls}">${s.judge}</div>
+      </div>
+      <div class="sec">
+        <p class="seclab">制御</p>
+        <div class="acts">
+          <button class="btn ${canAct?'primary':''}" data-act="restart" ${ctrlDisabled?'disabled':''}>再起動</button>
+          <button class="btn danger" data-act="rollback" ${ctrlDisabled||s.status==='ok'?'disabled':''}>ロールバック</button>
+          <button class="btn" data-act="runbook">Runbook</button>
+        </div>
+        ${ctrlDisabled
+          ? `<div class="cost">${I.perm}<span>このサービスの制御権限がありません。infra チームに依頼してください。</span></div>`
+          : canAct ? `<div class="cost">${I.cost}<span>再起動は処理中の約120リクエストを切断します。実行後30秒は取り消せます。</span></div>` : ''}
+      </div>
+      <div class="sec">
+        <p class="seclab">フィードバック — 変更履歴（誰が・いつ・何を）</p>
+        <div class="log">
+          ${s.log.map(([t,who,what])=>`<div class="e"><span class="t">${t}</span><span><span class="who">${who}</span> — ${what}</span></div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+  detailEl.classList.add('open');
+  detailEl.querySelectorAll('[data-act]').forEach(b=>b.addEventListener('click',()=>act(s, b.dataset.act)));
+}
+
+/* ── control → feedback：確認ダイアログでなく undo（03/Raskin） ── */
+const toast=document.getElementById('toast'), toastMsg=document.getElementById('toastMsg');
+let undoTimer=null, pending=null;
+function act(s, kind){
+  if(kind==='runbook'){ flash(`${s.id} の Runbook を開きます`, false); return; }
+  const verb = kind==='restart'?'再起動':'ロールバック';
+  // 楽観的フィードバック（即時, 03 IX-02）
+  pending = {s, kind, prevStatus:s.status, prevLog:[...s.log]};
+  const now='たった今';
+  s.log.unshift([now,'you', `${verb}を実行`]);
+  if(kind==='rollback'){ s.status='dep'; }
+  draw(); summary(); renderDetail(s);
+  showToast(`${s.id} を${verb}しました`);
+}
+function showToast(msg){
+  toastMsg.textContent=msg; toast.classList.add('show');
+  clearTimeout(undoTimer);
+  undoTimer=setTimeout(()=>{ toast.classList.remove('show'); pending=null; }, 6000);
+}
+function flash(msg){ toastMsg.textContent=msg; document.getElementById('undo').style.display='none'; toast.classList.add('show'); clearTimeout(undoTimer); undoTimer=setTimeout(()=>{toast.classList.remove('show');document.getElementById('undo').style.display='';},2600); }
+document.getElementById('undo').addEventListener('click',()=>{
+  if(pending){ pending.s.status=pending.prevStatus; pending.s.log=pending.prevLog; draw(); summary(); if(selected===pending.s.id) renderDetail(pending.s); pending=null; }
+  toast.classList.remove('show');
+});
+
+/* ── interactions ── */
+function select(id){
+  selected=id; draw();
+  const s=SVC.find(x=>x.id===id); if(s) renderDetail(s);
+}
+rowsEl.addEventListener('click', e=>{const tr=e.target.closest('tr'); if(tr) select(tr.dataset.id);});
+rowsEl.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){const tr=e.target.closest('tr'); if(tr){e.preventDefault(); select(tr.dataset.id);}}});
+document.getElementById('q').addEventListener('input', e=>{ filter=e.target.value; draw(); });
+
+draw(); summary();
+</script>
+</body>
+</html>

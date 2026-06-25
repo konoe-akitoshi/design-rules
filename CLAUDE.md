@@ -11,7 +11,7 @@ UI生成時は、このファイルのクイックリファレンスを参照し
 - **可能な限りデザインを抑制する**: ディーター・ラムスの第10原則
 - **数値的正確性 ≠ 視覚的正確性**: 人間の知覚に合わせた錯視補正を行う
 
-思想全体の地図は [philosophy/README.md](./philosophy/README.md) を参照。哲学的な核は [philosophy/core-philosophy.md](./philosophy/core-philosophy.md) を参照。
+デザインの正は [guidelines/](./guidelines/README.md)（自己完結したデザインガイドライン）。AIへの対応は [prohibited.md](./prohibited.md) 等の別レイヤー。原典（集めた思想）は `memo/` にアーカイブ。
 
 ---
 
@@ -115,28 +115,54 @@ R_inner = R_outer - Padding（最小2px）
 
 | タスク | 参照ファイル |
 |-------|------------|
-| レイアウトを組む | `systems/spacing-system.md` + `theory/visual-design.md` |
-| ボタンを作る | `systems/border-radius.md`（角丸）+ `theory/optical-adjustment.md`（テキスト補正） |
-| カードUIを作る | `systems/spacing-system.md`（非対称padding）+ `systems/border-radius.md`（入れ子角丸） |
-| フォームを作る | `systems/spacing-system.md` + `systems/responsive-mobile.md`（タッチターゲット） |
-| モバイル対応する | `systems/responsive-mobile.md` |
-| 配色を決める | `theory/visual-design.md`（色彩理論・WCAG） |
-| アイコンを配置する | `theory/optical-adjustment.md`（重心補正・オーバーシュート） |
-| デザイン原則を確認する | `principles/design-principles.md` |
-| 思想マップを確認する | `philosophy/README.md` + `philosophy/core-philosophy.md` + `philosophy/design-philosophy-map.md` |
+| レイアウトを組む | `guidelines/04-layout-space.md` + `guidelines/values/spacing-system.md` |
+| ボタンを作る | `guidelines/values/border-radius.md`（角丸）+ `guidelines/04-layout-space.md`（錯視補正） |
+| カードUIを作る | `guidelines/values/spacing-system.md`（非対称padding）+ `guidelines/values/border-radius.md`（入れ子角丸） |
+| フォームを作る | `guidelines/values/spacing-system.md` + `guidelines/values/responsive-mobile.md`（タッチターゲット） |
+| モバイル対応する | `guidelines/values/responsive-mobile.md` |
+| 配色を決める | `guidelines/05-color.md` + `guidelines/values/color-system.md`（実値） |
+| アイコンを配置する | `guidelines/04-layout-space.md`（重心補正・オーバーシュート） |
+| 設計姿勢・原則・題材から構造 | `guidelines/01-foundations.md` |
+| ジャンル判別（A/B）・全体像・決定順 | `guidelines/README.md` |
+| ルールが矛盾したとき | `guidelines/README.md` の「優先順位」 |
+
+原典（集めた思想の散文）は `memo/` にアーカイブ。通常は `guidelines/` だけで足りる。
 
 ---
 
 ## スキル（スラッシュコマンド）
 
-| コマンド | 用途 |
-|---------|------|
-| `/design-review [ファイル]` | HTML/JSXをDS準拠チェック。禁止パターン違反・トークン未使用を検出 |
-| `/design-tokens [カテゴリ]` | トークン値のクイック参照（spacing, radius, padding, touch, wcag 等） |
-| `/design-apply [UIの説明]` | DS準拠でUIコードを生成。セルフチェック付き |
+各スキルは [guidelines/](./guidelines/README.md) の該当章を判断基準として読む。ワークフローの段ごとに発火する。
+
+| 段 | コマンド | 用途 |
+|----|---------|------|
+| 着手前 | `/design-requirements-grill [説明]` | 要件をガイドライン決定順で問い詰めて明確化。曖昧なまま実装に入らせない |
+| 要件定義 | `/ux-strategist [説明]` | 観測→判断→制御→FB・認知労働・介入点を設計戦略に落とす |
+| 生成 | `/design-apply [UIの説明]` | ガイドライン/トークン準拠でUIコードを生成。セルフチェック付き |
+| 設計 | `/composition-patterns [説明]` | 繰り返す構造を再利用可能なパターン（signifier・5状態内包）へ |
+| ポリッシュ | `/baseline-ui [ファイル]` | スペーシング・タイポ・錯視補正をガイドラインに沿って仕上げ |
+| a11y | `/fixing-accessibility [ファイル]` | コントラスト・色のみ依存・ターゲット・focus・ラベルを修正 |
+| アニメ後 | `/fixing-motion-performance [ファイル]` | 装飾アニメ除去・意味ある動きへ・reduced-motion付与 |
+| QAゲート | `/web-design-guidelines [ファイル]` | 原則レベル検査（情報構造・操作・抑制・状態・a11y）を根拠付きで |
+| 検証 | `/design-review [ファイル]` | 機械的チェック（禁止パターン・トークン・非対称padding・WCAG） |
+| 参照 | `/design-tokens [カテゴリ]` | トークン値のクイック参照 |
+
+`/frontend-design`（美的方向）と React パフォーマンスは既存スキルを利用する。
 
 ---
 
 ## トークン参照
 
 具体的な値は `tokens.json` を正とする。SSOT（Single Source of Truth）として全トークンが定義されている。
+
+---
+
+## アーキテクチャ — デザイン と AI対応 を分ける
+
+- **`guidelines/`** … **自己完結したデザインガイドライン**。思想→使うための理論→使える規則の3層 ＋ `values/color-system.md` / `values/spacing-system.md` / `values/border-radius.md` / `values/responsive-mobile.md` を内包。値の正は `tokens.json`。**デザインはこれで完結する**。
+- **`prohibited.md`（＋今後の同種ファイル）** … **AIへの対応**（AI生成が外しがちな点の禁止形）。デザインとは別レイヤーとして育てる。
+- **`.claude/skills/`** … 上記を使ってページ/UIを実際に作る・直す・検証する道具。
+
+UI を作る/直す/検証するときは、`guidelines/README.md` の**決定順**（目的→構造→操作→レイアウト→造形→抑制→検証）と **A/B判別**（ブランド系は A だけ、道具は A+B）に従い、見た目から始めない。`guidelines/01-foundations.md` の「**題材から構造を導く・テンプレ骨格禁止**」を必ず通す。値は `tokens.json` / `guidelines/values/color-system.md`。`prohibited.md` を併せてセルフチェック。
+
+原典（集めた思想・原則・理論の散文）は `memo/` にアーカイブ（通常は不要）。
