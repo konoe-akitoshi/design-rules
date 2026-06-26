@@ -1,0 +1,7 @@
+# 実物サイトの取得コピー（正解＝第三者の著作物）はコミットしない。
+# 比較用にローカルで保持するだけ。再取得は README の手順（curl + <base href>）で。
+*.html
+*-raw.html
+
+# 自作の分析（blueprints/*.md）と本 .gitignore は追跡する
+!.gitignore

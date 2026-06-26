@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Unmoth — From invisible to unforgettable</title>
+<meta name="description" content="Unmoth is a brand design studio. We turn ideas into complete brand systems in just 14 days — from invisible to unforgettable.">
+<!-- benchmark #7: unmoth（ブランディング・スプリント・スタジオ）のクローン.
+     題材=「invisible → unforgettable」への変態 / 14日スプリント。
+     構造はランディング骨格でなく、番号付きインデックス(001–006)で読ませる編集的な作品集＋14日工程票から導く。
+     RESTRAINT が identity だが 1画面でなく複数章のフルページ:
+       hero(焦点グリフ) → manifesto → work(001) → services(002) → marquee → process(003) → timeline(004) → pricing(005) → faq(006) → footer.
+     bespoke dark palette: 冷たいニアブラック地 + near-white ink + whisper champagne 1色(焦点にだけ灯す)。
+     書体: Faculty Glyphic(display) + Geist(body) — どちらも real / Google Fonts。外部依存は Google Fonts のみ。 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Faculty+Glyphic&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* bespoke dark palette — cold near-black ground, near-white ink, ONE whisper champagne */
+    --ground:#08090A;          /* 冷たいニアブラック地 (real) */
+    --panel:#0D0E0F;           /* セクション交互地 */
+    --card:#121314;            /* 面・カード (real) */
+    --card-2:#16171A;          /* hover 面 */
+    --line:#262727;            /* ヘアライン罫 (real) */
+    --line-soft:rgba(244,243,240,.08);
+    --ink:#F4F3F0;             /* 見出し near-white ≈18:1 */
+    --soft:#C7C6C1;            /* 本文 ≈11:1 */
+    --muted:#8E8E8B;           /* 二次テキスト ≈5.6:1 */
+    --quiet:#7C7C79;           /* 三次・極小ラベル ≈4.5:1 */
+    --accent:#C9A86C;          /* whisper champagne（焦点にだけ灯す）≈7.5:1 */
+    --accent-soft:rgba(201,168,108,.42);
+    --edge:rgba(244,243,240,.34);   /* CTA 境界（UI 3:1 を満たす） */
+    --display:"Faculty Glyphic",Georgia,"Times New Roman",serif;
+    --sans:"Geist",system-ui,-apple-system,"Segoe UI",sans-serif;
+    --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:20px;--s6:24px;--s8:32px;--s10:40px;--s12:48px;--s16:64px;--s20:80px;--s24:96px;--s28:112px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--ground);color:var(--soft);
+    font-family:var(--sans);font-size:16px;line-height:1.6;font-weight:400;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    display:flex;flex-direction:column;min-height:100vh;
+  }
+  a{color:inherit;text-decoration:none}
+  ::selection{background:rgba(201,168,108,.22);color:#F4EFE5}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px}
+  .wrap{max-width:1120px;margin:0 auto;width:100%;
+    padding-left:max(var(--s10),env(safe-area-inset-left));
+    padding-right:max(var(--s10),env(safe-area-inset-right))}
+  .skip{position:absolute;left:-9999px;top:8px;z-index:10;background:var(--card);
+    color:var(--ink);padding:12px 20px;border:1px solid var(--line);border-radius:8px}
+  .skip:focus{left:16px}
+
+  /* eyebrow / section index label */
+  .eyebrow{display:flex;align-items:center;gap:var(--s3);margin:0 0 var(--s8);
+    font-size:12px;font-weight:500;letter-spacing:.24em;text-transform:uppercase;color:var(--quiet)}
+  .eyebrow .num{color:var(--accent);font-variant-numeric:tabular-nums}
+  .eyebrow .ln{flex:1;height:1px;background:var(--line)}
+
+  /* ── nav ─────────────────────────────────────── */
+  header{position:sticky;top:0;z-index:9;background:rgba(8,9,10,.82);
+    backdrop-filter:saturate(140%) blur(10px);border-bottom:1px solid var(--line)}
+  nav{padding:var(--s4) 0}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;gap:var(--s5)}
+  .mark{display:inline-flex;align-items:center;gap:10px;min-height:44px;
+    font-size:15px;font-weight:500;letter-spacing:.32em;text-transform:uppercase;color:var(--ink)}
+  .mark svg{display:block;flex:none}
+  .nav-links{display:flex;align-items:center;gap:var(--s2)}
+  .nav-links a{display:inline-flex;align-items:center;min-height:44px;padding:0 var(--s3);
+    font-size:12px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--quiet)}
+  .nav-links a:hover{color:var(--ink)}
+  .btn{display:inline-flex;align-items:center;gap:8px;cursor:pointer;border:0;
+    font-family:var(--sans);font-size:13px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
+    transition:border-color .25s ease,color .25s ease,background .25s ease}
+  .btn svg{transition:transform .25s ease}
+  .btn-line{min-height:44px;padding:11px 22px;border:1px solid var(--edge);border-radius:999px;
+    background:transparent;color:var(--ink)}
+  .btn-line:hover{border-color:var(--accent);color:#F6F1E7}
+  .btn-line:hover svg{transform:translateX(3px)}
+  .btn-solid{min-height:48px;padding:14px 28px;border-radius:999px;
+    background:var(--ink);color:#0A0B0C;font-weight:600}
+  .btn-solid:hover{background:#FFFDF8}
+  .btn-solid:hover svg{transform:translateX(3px)}
+
+  /* ── hero ────────────────────────────────────── */
+  main{flex:1 0 auto}
+  .hero{min-height:calc(100vh - 73px);display:flex;flex-direction:column;
+    align-items:center;justify-content:center;text-align:center;
+    padding:var(--s20) 0 var(--s24)}
+  .glyph{display:block;width:clamp(132px,18vw,188px);height:auto;margin-bottom:var(--s10)}
+  h1{margin:0;font-family:var(--display);font-weight:400;
+    font-size:clamp(44px,8vw,104px);line-height:1.02;letter-spacing:-.012em;color:var(--ink)}
+  h1 .glow{color:var(--accent)}
+  .hero .sub{margin:var(--s8) 0 0;font-size:clamp(15px,1.6vw,18px);color:var(--muted);
+    letter-spacing:.01em}
+  .hero .cta-row{display:flex;align-items:center;gap:var(--s4);margin-top:var(--s10);flex-wrap:wrap;justify-content:center}
+  .status{display:inline-flex;align-items:center;gap:8px;margin-top:var(--s8);
+    font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--quiet)}
+  .status .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);
+    box-shadow:0 0 0 4px rgba(201,168,108,.14)}
+
+  /* ── manifesto ───────────────────────────────── */
+  .manifesto{padding:var(--s24) 0;text-align:center;border-top:1px solid var(--line)}
+  .rule-star{display:flex;align-items:center;justify-content:center;gap:var(--s5);margin-bottom:var(--s12)}
+  .rule-star .rule{width:44px;height:1px;background:var(--line)}
+  .rule-star .star{width:5px;height:5px;border-radius:50%;background:var(--accent)}
+  .manifesto p{margin:0 auto;max-width:20ch;
+    font-family:var(--display);font-weight:400;
+    font-size:clamp(28px,4.4vw,52px);line-height:1.18;letter-spacing:-.005em;color:var(--ink)}
+  .manifesto p .dim{color:var(--muted)}
+
+  /* ── section shell ───────────────────────────── */
+  section.block{padding:var(--s24) 0;border-top:1px solid var(--line)}
+  .sec-head{max-width:32ch}
+  .sec-lede{margin:0;font-family:var(--display);font-weight:400;
+    font-size:clamp(24px,3.2vw,40px);line-height:1.22;letter-spacing:-.005em;color:var(--ink)}
+
+  /* ── work / use cases (001) ──────────────────── */
+  .work-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s5);margin-top:var(--s12)}
+  .case{position:relative;display:block;border:1px solid var(--line);border-radius:14px;
+    background:var(--card);overflow:hidden;transition:border-color .25s ease,background .25s ease}
+  .case:hover{border-color:var(--edge);background:var(--card-2)}
+  .case .canvas{aspect-ratio:16/10;display:grid;place-items:center;position:relative;
+    border-bottom:1px solid var(--line)}
+  .case .canvas svg{width:62%;height:62%;opacity:.9}
+  .c1{background:radial-gradient(120% 120% at 30% 20%,#17181B,#0C0D0E)}
+  .c2{background:radial-gradient(120% 120% at 70% 30%,#1A1816,#0C0D0E)}
+  .c3{background:radial-gradient(120% 120% at 40% 70%,#141618,#0C0D0E)}
+  .c4{background:radial-gradient(120% 120% at 60% 60%,#181718,#0C0D0E)}
+  .case .row{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s4);
+    padding:18px 24px 20px}
+  .case .name{font-size:18px;font-weight:500;letter-spacing:.01em;color:var(--ink)}
+  .case .cat{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--quiet)}
+  .more{display:inline-flex;align-items:center;gap:8px;min-height:44px;margin-top:var(--s10);
+    font-size:13px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--soft)}
+  .more svg{transition:transform .25s ease}
+  .more:hover{color:var(--ink)}
+  .more:hover svg{transform:translateX(3px)}
+
+  /* ── services (002) ──────────────────────────── */
+  .svc-list{list-style:none;margin:var(--s12) 0 0;padding:0;
+    border-top:1px solid var(--line)}
+  .svc-list li{display:flex;align-items:baseline;gap:var(--s5);
+    padding:18px 4px;border-bottom:1px solid var(--line);
+    transition:color .2s ease}
+  .svc-list li:hover{color:var(--ink)}
+  .svc-list .si{flex:none;width:3ch;font-size:12px;letter-spacing:.1em;color:var(--quiet);
+    font-variant-numeric:tabular-nums}
+  .svc-list .sn{font-size:clamp(18px,2.2vw,24px);font-weight:400;color:var(--soft)}
+  .svc-list li:hover .sn{color:var(--ink)}
+
+  /* ── marquee ─────────────────────────────────── */
+  .marquee{border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    padding:var(--s10) 0;overflow:hidden;
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
+            mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+  .marquee-track{display:flex;width:max-content;gap:var(--s12);align-items:center;
+    animation:slide 32s linear infinite}
+  .marquee-track span{font-family:var(--display);font-size:clamp(22px,3vw,34px);
+    color:var(--muted);letter-spacing:.01em;white-space:nowrap;display:inline-flex;align-items:center;gap:var(--s12)}
+  .marquee-track span::after{content:"";width:5px;height:5px;border-radius:50%;background:var(--accent-soft)}
+  @keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* ── process (003) ───────────────────────────── */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s5);margin-top:var(--s12)}
+  .step{border:1px solid var(--line);border-radius:14px;background:var(--card);
+    padding:24px 28px 28px;display:flex;flex-direction:column;gap:var(--s4)}
+  .step .si{font-family:var(--display);font-size:28px;color:var(--accent);line-height:1}
+  .step h3{margin:0;font-size:20px;font-weight:500;letter-spacing:.01em;color:var(--ink)}
+  .step p{margin:0;font-size:15px;line-height:1.6;color:var(--muted)}
+
+  /* ── timeline (004) ──────────────────────────── */
+  .rail{position:relative;margin-top:var(--s16);padding-top:var(--s10)}
+  .rail::before{content:"";position:absolute;top:calc(var(--s10) + 4px);left:0;right:0;height:1px;background:var(--line)}
+  .rail-row{display:grid;grid-template-columns:repeat(5,1fr);gap:var(--s4)}
+  .stop{position:relative;padding-top:var(--s8);text-align:left}
+  .stop::before{content:"";position:absolute;top:-4px;left:0;width:9px;height:9px;border-radius:50%;
+    background:var(--ground);border:1px solid var(--edge)}
+  .stop.lit::before{background:var(--accent);border-color:var(--accent);
+    box-shadow:0 0 0 4px rgba(201,168,108,.14)}
+  .stop .day{font-family:var(--display);font-size:clamp(24px,3vw,36px);color:var(--ink);line-height:1}
+  .stop .lbl{margin-top:8px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--quiet)}
+
+  /* ── pricing (005) ───────────────────────────── */
+  .price{max-width:560px;margin:var(--s12) auto 0;border:1px solid var(--line);
+    border-radius:16px;background:var(--card);overflow:hidden}
+  .price-top{padding:32px 36px 28px;border-bottom:1px solid var(--line);text-align:center}
+  .price-top h3{margin:0;font-family:var(--display);font-size:clamp(30px,4vw,44px);font-weight:400;color:var(--ink)}
+  .price-top p{margin:10px 0 0;font-size:15px;color:var(--muted)}
+  .spec{list-style:none;margin:0;padding:8px 36px}
+  .spec li{display:flex;align-items:center;justify-content:space-between;gap:var(--s4);
+    padding:16px 0;border-bottom:1px solid var(--line-soft)}
+  .spec li:last-child{border-bottom:0}
+  .spec .k{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--quiet)}
+  .spec .v{font-size:16px;color:var(--ink)}
+  .price-foot{padding:8px 36px 32px;text-align:center}
+  .price-foot .btn{width:100%;justify-content:center}
+
+  /* ── faq (006) ───────────────────────────────── */
+  .faq{margin-top:var(--s12);border-top:1px solid var(--line)}
+  .faq details{border-bottom:1px solid var(--line)}
+  .faq summary{display:flex;align-items:center;justify-content:space-between;gap:var(--s5);
+    min-height:48px;padding:20px 4px;cursor:pointer;list-style:none;
+    font-size:clamp(16px,1.9vw,20px);font-weight:400;color:var(--ink)}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary .ic{flex:none;width:18px;height:18px;position:relative;transition:transform .25s ease}
+  .faq summary .ic::before,.faq summary .ic::after{content:"";position:absolute;background:var(--quiet);
+    top:50%;left:50%;transform:translate(-50%,-50%)}
+  .faq summary .ic::before{width:14px;height:1.5px}
+  .faq summary .ic::after{width:1.5px;height:14px;transition:opacity .25s ease}
+  .faq details[open] summary .ic{transform:rotate(180deg)}
+  .faq details[open] summary .ic::after{opacity:0}
+  .faq summary:hover .ic::before,.faq summary:hover .ic::after{background:var(--accent)}
+  .faq .ans{padding:0 4px 24px;max-width:62ch;color:var(--muted);font-size:15px;line-height:1.65}
+
+  /* ── footer ──────────────────────────────────── */
+  footer{flex:none;border-top:1px solid var(--line);background:var(--panel);
+    padding-bottom:max(var(--s10),calc(env(safe-area-inset-bottom) + var(--s5)))}
+  .foot-cta{padding:var(--s24) 0 var(--s16);text-align:center;border-bottom:1px solid var(--line)}
+  .foot-cta h2{margin:0 0 var(--s8);font-family:var(--display);font-weight:400;
+    font-size:clamp(32px,5vw,64px);line-height:1.05;letter-spacing:-.01em;color:var(--ink)}
+  .foot-cta .btn{margin-top:var(--s5)}
+  .foot-main{display:flex;align-items:flex-start;justify-content:space-between;
+    gap:var(--s12);flex-wrap:wrap;padding:var(--s12) 0 var(--s10)}
+  .foot-col h4{margin:0 0 var(--s4);font-size:11px;font-weight:500;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--quiet)}
+  .foot-col a,.foot-col span{display:flex;align-items:center;min-height:40px;
+    font-size:14px;color:var(--muted)}
+  .foot-col a:hover{color:var(--ink)}
+  .foot-brand{max-width:30ch}
+  .foot-brand .mark{margin-bottom:var(--s4)}
+  .foot-brand p{margin:0;font-size:14px;color:var(--muted);line-height:1.6}
+  .foot-bottom{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--s4);
+    padding-top:var(--s6);border-top:1px solid var(--line);font-size:12px;color:var(--quiet);letter-spacing:.02em}
+
+  @media (max-width:880px){
+    .work-grid{grid-template-columns:1fr}
+    .steps{grid-template-columns:1fr}
+  }
+  @media (max-width:720px){
+    .wrap{padding-left:max(var(--s5),env(safe-area-inset-left));
+      padding-right:max(var(--s5),env(safe-area-inset-right))}
+    .nav-links{display:none}
+    .hero{min-height:calc(100vh - 65px);padding:var(--s16) 0 var(--s20)}
+    section.block,.manifesto{padding:var(--s20) 0}
+    .rail-row{grid-template-columns:repeat(2,1fr);gap:var(--s8) var(--s4)}
+    .rail::before{display:none}
+    .stop::before{display:none}
+    .stop{padding-top:0;border-top:1px solid var(--line);padding-top:var(--s4)}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .marquee-track{animation:none}
+    .btn svg,.more svg,.faq summary .ic,.case{transition:none}
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header>
+  <nav><div class="wrap nav-in">
+    <a class="mark" href="#top" aria-label="Unmoth — home">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <circle cx="10" cy="10" r="7.4" stroke="rgba(244,243,240,.30)" stroke-width="1"/>
+        <circle cx="10" cy="10" r="1.9" fill="#C9A86C"/>
+      </svg>
+      Unmoth
+    </a>
+    <div class="nav-links">
+      <a href="#work">Work</a>
+      <a href="#services">Services</a>
+      <a href="#process">Process</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <a class="btn btn-line" href="#pricing">
+      Get sprint
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9m0 0l-3.4-3.4M12 8l-3.4 3.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+  </div></nav>
+</header>
+
+<main id="main">
+  <!-- ── 0 · HERO ─────────────────────────────── -->
+  <section class="hero wrap" id="top" aria-labelledby="headline">
+    <!-- SIGNATURE: a single constellation / orbit. one node is lit — the unforgettable mark. -->
+    <svg class="glyph" viewBox="0 0 220 220" fill="none" aria-hidden="true">
+      <defs><filter id="halo" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="6"/></filter></defs>
+      <circle cx="108" cy="74" r="13" fill="#C9A86C" opacity=".22" filter="url(#halo)"/>
+      <circle cx="110" cy="110" r="84" stroke="rgba(244,243,240,.11)" stroke-width=".75"/>
+      <ellipse cx="110" cy="110" rx="84" ry="30" stroke="rgba(244,243,240,.085)" stroke-width=".75" transform="rotate(-20 110 110)"/>
+      <path d="M66 92 L108 74 L150 78 L140 140 L78 138" stroke="rgba(244,243,240,.28)" stroke-width=".75" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="66" cy="92" r="1.8" fill="rgba(244,243,240,.5)"/>
+      <circle cx="150" cy="78" r="1.8" fill="rgba(244,243,240,.5)"/>
+      <circle cx="140" cy="140" r="1.8" fill="rgba(244,243,240,.5)"/>
+      <circle cx="78" cy="138" r="1.8" fill="rgba(244,243,240,.5)"/>
+      <circle cx="32" cy="127" r="1.6" fill="rgba(244,243,240,.4)"/>
+      <circle cx="108" cy="74" r="6.4" stroke="#C9A86C" stroke-width=".9" opacity=".55"/>
+      <circle cx="108" cy="74" r="3.4" fill="#C9A86C"/>
+    </svg>
+    <h1 id="headline">From invisible<br>to <span class="glow">unforgettable.</span></h1>
+    <p class="sub">Your brand in just 14 days.</p>
+    <div class="cta-row">
+      <a class="btn btn-solid" href="#pricing">
+        Get sprint
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9m0 0l-3.4-3.4M12 8l-3.4 3.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="btn btn-line" href="#work">View work</a>
+    </div>
+    <p class="status"><span class="dot" aria-hidden="true"></span>Available for new projects</p>
+  </section>
+
+  <!-- ── 1 · MANIFESTO ───────────────────────── -->
+  <section class="manifesto wrap" aria-label="Manifesto">
+    <div class="rule-star" aria-hidden="true"><span class="rule"></span><span class="star"></span><span class="rule"></span></div>
+    <p>Let the world see what you've been working on <span class="dim">in the dark.</span></p>
+  </section>
+
+  <!-- ── 2 · WORK / USE CASES (001) ──────────── -->
+  <section class="block wrap" id="work" aria-labelledby="work-h">
+    <p class="eyebrow"><span class="num">001</span><span>Use cases</span><span class="ln" aria-hidden="true"></span></p>
+    <div class="sec-head"><h2 class="sec-lede" id="work-h">Selected work — brands built to be remembered.</h2></div>
+    <div class="work-grid">
+      <a class="case" href="#work" aria-label="Spacia — Spatial software branding">
+        <span class="canvas c1"><svg viewBox="0 0 120 120" fill="none" aria-hidden="true"><rect x="34" y="34" width="52" height="52" rx="8" stroke="#C9A86C" stroke-width="1.2"/><rect x="48" y="48" width="24" height="24" rx="4" fill="#C9A86C" opacity=".5"/></svg></span>
+        <span class="row"><span class="name">Spacia</span><span class="cat">Spatial software</span></span>
+      </a>
+      <a class="case" href="#work" aria-label="Essential — Consumer goods branding">
+        <span class="canvas c2"><svg viewBox="0 0 120 120" fill="none" aria-hidden="true"><circle cx="60" cy="60" r="30" stroke="#F4F3F0" stroke-width="1.2" opacity=".7"/><line x1="60" y1="30" x2="60" y2="90" stroke="#C9A86C" stroke-width="1.2"/></svg></span>
+        <span class="row"><span class="name">Essential</span><span class="cat">Consumer goods</span></span>
+      </a>
+      <a class="case" href="#work" aria-label="Dockr — Developer tooling branding">
+        <span class="canvas c3"><svg viewBox="0 0 120 120" fill="none" aria-hidden="true"><path d="M40 75 L60 45 L80 75 Z" stroke="#F4F3F0" stroke-width="1.2" opacity=".7"/><circle cx="60" cy="68" r="3.4" fill="#C9A86C"/></svg></span>
+        <span class="row"><span class="name">Dockr</span><span class="cat">Developer tooling</span></span>
+      </a>
+      <a class="case" href="#work" aria-label="New Form Factor — Hardware branding">
+        <span class="canvas c4"><svg viewBox="0 0 120 120" fill="none" aria-hidden="true"><rect x="38" y="46" width="44" height="28" rx="14" stroke="#F4F3F0" stroke-width="1.2" opacity=".7"/><circle cx="60" cy="60" r="2.6" fill="#C9A86C"/></svg></span>
+        <span class="row"><span class="name">New Form Factor</span><span class="cat">Hardware</span></span>
+      </a>
+    </div>
+    <a class="more" href="#work">View more work
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9m0 0l-3.4-3.4M12 8l-3.4 3.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+  </section>
+
+  <!-- ── 3 · SERVICES (002) ──────────────────── -->
+  <section class="block wrap" id="services" aria-labelledby="svc-h">
+    <p class="eyebrow"><span class="num">002</span><span>Services</span><span class="ln" aria-hidden="true"></span></p>
+    <div class="sec-head"><h2 class="sec-lede" id="svc-h">We turn ideas into brand systems with everything you need to launch, scale, and stand out.</h2></div>
+    <ul class="svc-list">
+      <li><span class="si">01</span><span class="sn">Research and moodboard</span></li>
+      <li><span class="si">02</span><span class="sn">Logo variations</span></li>
+      <li><span class="si">03</span><span class="sn">Typographic identity</span></li>
+      <li><span class="si">04</span><span class="sn">Color system</span></li>
+      <li><span class="si">05</span><span class="sn">Visual assets</span></li>
+      <li><span class="si">06</span><span class="sn">Brand guidelines</span></li>
+      <li><span class="si">07</span><span class="sn">Iconography</span></li>
+      <li><span class="si">08</span><span class="sn">Application examples</span></li>
+      <li><span class="si">09</span><span class="sn">Imagery &amp; photo style</span></li>
+    </ul>
+  </section>
+
+  <!-- ── 4 · MARQUEE ─────────────────────────── -->
+  <section class="marquee" aria-label="Brands we've shaped">
+    <div class="marquee-track" aria-hidden="true">
+      <span>Spacia</span><span>Essential</span><span>Dockr</span><span>New Form Factor</span><span>Hale</span><span>Verve</span>
+      <span>Spacia</span><span>Essential</span><span>Dockr</span><span>New Form Factor</span><span>Hale</span><span>Verve</span>
+    </div>
+  </section>
+
+  <!-- ── 5 · PROCESS (003) ───────────────────── -->
+  <section class="block wrap" id="process" aria-labelledby="proc-h">
+    <p class="eyebrow"><span class="num">003</span><span>Process</span><span class="ln" aria-hidden="true"></span></p>
+    <div class="sec-head"><h2 class="sec-lede" id="proc-h">A complete process. Just faster.</h2></div>
+    <div class="steps">
+      <div class="step">
+        <span class="si">01</span>
+        <h3>Kick Off</h3>
+        <p>We get aligned fast to start the project with full momentum. One clear direction, no wasted time.</p>
+      </div>
+      <div class="step">
+        <span class="si">02</span>
+        <h3>Refine</h3>
+        <p>This is where clarity takes shape. We refine the essentials into a brand that feels obvious — and undeniable.</p>
+      </div>
+      <div class="step">
+        <span class="si">03</span>
+        <h3>Deliver</h3>
+        <p>Everything's in your hands: a sharp brand, clear tools, and the confidence to launch fast.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 6 · TIMELINE (004) ──────────────────── -->
+  <section class="block wrap" id="timeline" aria-labelledby="tl-h">
+    <p class="eyebrow"><span class="num">004</span><span>Timeline</span><span class="ln" aria-hidden="true"></span></p>
+    <div class="sec-head"><h2 class="sec-lede" id="tl-h">You don't have 3 months to design your brand — and we only need 2 weeks. A perfect match.</h2></div>
+    <div class="rail">
+      <div class="rail-row">
+        <div class="stop lit"><div class="day">01</div><div class="lbl">Kick off</div></div>
+        <div class="stop"><div class="day">03</div><div class="lbl">Direction</div></div>
+        <div class="stop"><div class="day">07</div><div class="lbl">Refine</div></div>
+        <div class="stop"><div class="day">12</div><div class="lbl">Review</div></div>
+        <div class="stop lit"><div class="day">14</div><div class="lbl">Deliver</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 7 · PRICING (005) ───────────────────── -->
+  <section class="block wrap" id="pricing" aria-labelledby="pr-h">
+    <p class="eyebrow"><span class="num">005</span><span>Pricing</span><span class="ln" aria-hidden="true"></span></p>
+    <div class="sec-head" style="margin:0 auto;text-align:center"><h2 class="sec-lede" id="pr-h" style="margin:0 auto">One offer. Everything a brand needs.</h2></div>
+    <div class="price">
+      <div class="price-top">
+        <h3>Brand Design</h3>
+        <p>The main offer — a full brand system in 14 days.</p>
+      </div>
+      <ul class="spec">
+        <li><span class="k">Timeline</span><span class="v">14 Days</span></li>
+        <li><span class="k">Output</span><span class="v">Full Brand System</span></li>
+        <li><span class="k">Support</span><span class="v">Figma + PDF</span></li>
+      </ul>
+      <div class="price-foot">
+        <a class="btn btn-solid" href="#contact">
+          Let's talk
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9m0 0l-3.4-3.4M12 8l-3.4 3.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 8 · FAQ (006) ───────────────────────── -->
+  <section class="block wrap" id="faq" aria-labelledby="faq-h">
+    <p class="eyebrow"><span class="num">006</span><span>FAQ</span><span class="ln" aria-hidden="true"></span></p>
+    <div class="sec-head"><h2 class="sec-lede" id="faq-h">Questions, answered.</h2></div>
+    <div class="faq">
+      <details>
+        <summary>Can I request changes during the process?<span class="ic" aria-hidden="true"></span></summary>
+        <p class="ans">Yes — you're free to ask for anything. But the sprint stays capped at 14 days. Any revisions or direction changes may impact what can be delivered within that timeframe.</p>
+      </details>
+      <details>
+        <summary>What if I need something beyond the core identity?<span class="ic" aria-hidden="true"></span></summary>
+        <p class="ans">This offer includes a complete brand system, but if you need more — like motion, a website, or packaging — we're open to extending the work after delivery. This is where every brand starts.</p>
+      </details>
+      <details>
+        <summary>Do I own everything that's created?<span class="ic" aria-hidden="true"></span></summary>
+        <p class="ans">Absolutely. You get a complete, organized brand package: logo files (primary + alternates), typography pairings, color palettes, social templates, brand guidelines, and more — all export-ready and yours.</p>
+      </details>
+      <details>
+        <summary>Is this right for early-stage startups?<span class="ic" aria-hidden="true"></span></summary>
+        <p class="ans">Absolutely. This offer was made for founders who move fast and need their brand to do the same — no delays, no meetings that could've been emails.</p>
+      </details>
+      <details>
+        <summary>How do we get started?<span class="ic" aria-hidden="true"></span></summary>
+        <p class="ans">You can either book the sprint directly or schedule a call first. Once payment is confirmed, you'll receive a short form to clarify your brand's direction and values — then we begin.</p>
+      </details>
+    </div>
+  </section>
+</main>
+
+<footer id="contact">
+  <div class="wrap foot-cta">
+    <h2>Ready to become<br>unforgettable?</h2>
+    <a class="btn btn-solid" href="mailto:contact@unmoth.com">
+      Get sprint
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9m0 0l-3.4-3.4M12 8l-3.4 3.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+  </div>
+  <div class="wrap foot-main">
+    <div class="foot-brand">
+      <span class="mark">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.4" stroke="rgba(244,243,240,.30)" stroke-width="1"/><circle cx="10" cy="10" r="1.9" fill="#C9A86C"/></svg>
+        Unmoth
+      </span>
+      <p>A brand design studio turning ideas into brand systems — from invisible to unforgettable.</p>
+    </div>
+    <nav class="foot-col" aria-label="Sitemap">
+      <h4>Navigation</h4>
+      <a href="#work">Work</a>
+      <a href="#services">Services</a>
+      <a href="#process">Process</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <div class="foot-col">
+      <h4>Connect</h4>
+      <a href="mailto:contact@unmoth.com">Email</a>
+      <a href="https://www.linkedin.com/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://twitter.com/" target="_blank" rel="noopener">Twitter</a>
+    </div>
+  </div>
+  <div class="wrap foot-bottom">
+    <span>© 2026 Unmoth — Brand design studio</span>
+    <span>contact@unmoth.com</span>
+  </div>
+</footer>
+</body>
+</html>

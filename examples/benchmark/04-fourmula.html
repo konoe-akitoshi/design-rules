@@ -1,0 +1,609 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>fourmula — Your catalog, instantly re-shot. On-brand visuals, made by AI.</title>
+<meta name="description" content="Generate professional product shots, lifestyle images and video instantly with AI. Re-shoot your whole catalog into on-brand visual assets in seconds.">
+<!-- benchmark #4: fourmula.ai のクローン。題材=AIプロダクト写真スタジオ → 構造は「コンタクトシート/ルックブック」から導く。
+     固有様式: カタログ=多数のSKU、各カットを再撮影=1つの円(ルック)。それを主張の周りに ORBIT させ、before/after で "instantly re-shot" を実演する=署名。
+     bespoke パレット: 温い near-black 地 / cream インク / brand orange #F94A00 単アクセント。影でなくヘアライン+動き。
+     全長: nav / hero(orbit+marquee) / re-shoot(before-after) / capabilities(3 features) / how-it-works / trusted-by / 4 steps / FAQ / closing / footer。 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ground:#0E0D0B; --surface:#16140F; --sunk:#1D1A13; --raise:#211D15;
+    --line:rgba(245,241,233,.10); --line-2:rgba(245,241,233,.18); --line-3:rgba(245,241,233,.32);
+    --ink:#F5F1E9; --muted:#B8AFA1; --quiet:#8C8377;
+    --accent:#F94A00; --accent-ink:#DD3F00; --accent-sunk:rgba(249,74,0,.12); --on-accent:#160B04;
+    --display:"Bricolage Grotesque","Inter",system-ui,sans-serif;
+    --sans:"Inter",system-ui,-apple-system,sans-serif;
+    --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:20px;--s6:24px;--s8:32px;--s10:40px;--s12:48px;--s16:64px;--s20:80px;--s24:96px;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;
+       -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  img{display:block;max-width:100%}
+  h1,h2,h3,h4{margin:0}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 var(--s10)}
+  .label{font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--quiet)}
+  .label .i{color:var(--accent)}
+
+  /* ---------- nav (masthead) ---------- */
+  header{position:sticky;top:0;z-index:40;background:rgba(14,13,11,.82);backdrop-filter:saturate(120%) blur(10px);
+         border-bottom:1px solid var(--line)}
+  .nav-in{display:flex;align-items:center;gap:var(--s8);height:68px}
+  .mark{display:inline-flex;align-items:center;gap:var(--s2);font-family:var(--display);font-weight:800;font-size:21px;letter-spacing:-.02em;color:var(--ink)}
+  .mark .ring{position:relative;width:18px;height:18px;flex:none}
+  .mark .ring i{position:absolute;inset:0;border:1.6px solid var(--ink);border-radius:50%}
+  .mark .ring b{position:absolute;top:-1px;right:0;width:6px;height:6px;border-radius:50%;background:var(--accent)}
+  .nav-links{display:flex;gap:var(--s6);margin-left:var(--s4)}
+  .nav-links a{display:inline-flex;align-items:center;height:44px;color:var(--muted);font-size:15px;font-weight:500}
+  .nav-links a:hover{color:var(--ink)}
+  .nav-right{margin-left:auto;display:flex;align-items:center;gap:var(--s4)}
+  .signin{display:inline-flex;align-items:center;height:44px;color:var(--muted);font-size:15px;font-weight:500}
+  .signin:hover{color:var(--ink)}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);font-family:var(--sans);font-weight:600;
+       cursor:pointer;border:0;border-radius:8px;font-size:15px;line-height:1;
+       transition:background .15s ease,transform .15s ease,border-color .15s ease,color .15s ease}
+  .btn-cta{padding:14px 22px;min-height:48px;background:var(--accent);color:var(--on-accent)}
+  .btn-cta:hover{background:var(--accent-ink)}
+  .btn-cta svg{margin-top:-1px}
+  .btn-ghost{padding:13px 20px;min-height:48px;background:transparent;color:var(--ink);border:1px solid var(--line-2)}
+  .btn-ghost:hover{border-color:var(--line-3);background:rgba(245,241,233,.04)}
+  .btn-lg{font-size:17px;padding:17px 28px}
+
+  /* ---------- hero / orbit ---------- */
+  .hero{position:relative;padding:var(--s16) 0 var(--s10);overflow:hidden}
+  .stage{position:relative;width:100%;max-width:1040px;margin:0 auto;aspect-ratio:1/.78}
+  .orb{position:absolute;aspect-ratio:1;border-radius:50%;overflow:hidden;
+       box-shadow:inset 0 0 0 1px var(--line-2);background:var(--sunk);transition:transform .3s ease}
+  .orb img{width:100%;height:100%;object-fit:cover}
+  .orb:hover{transform:translateY(-4px)}
+  .orb.accent{box-shadow:inset 0 0 0 2px var(--accent)}
+  .o1{left:2%;top:5%;width:13%}
+  .o2{left:80%;top:1%;width:11%}
+  .o3{left:-2%;top:40%;width:15%}
+  .o4{left:86%;top:41%;width:13%}
+  .o5{left:10%;top:75%;width:12.5%}
+  .o6{left:70%;top:78%;width:11%}
+  .otag{position:absolute;bottom:var(--s5);left:50%;transform:translateX(-50%);white-space:nowrap;
+        display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+        color:var(--ink);background:rgba(14,13,11,.74);border:1px solid var(--line-2);padding:5px 11px;border-radius:999px}
+  .otag i{width:5px;height:5px;border-radius:50%;background:var(--accent);display:block;flex:none}
+
+  .promise{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(92%,38rem);text-align:center;z-index:2}
+  h1{font-family:var(--display);font-weight:800;font-size:clamp(2.6rem,8vw,6rem);line-height:.92;letter-spacing:-.035em;color:var(--ink)}
+  h1 .accent{color:var(--accent);display:block}
+  .lede{font-size:clamp(1.0625rem,1.5vw,1.25rem);color:var(--muted);margin:var(--s6) auto 0;max-width:32rem;line-height:1.5}
+  .cta-row{display:flex;justify-content:center;flex-wrap:wrap;gap:var(--s3);margin-top:var(--s8)}
+  .drop{display:inline-flex;align-items:center;gap:var(--s2);margin-top:var(--s5);padding:11px 18px;border-radius:999px;
+        border:1px dashed var(--line-3);color:var(--muted);font-size:14px;font-weight:500;background:rgba(245,241,233,.02)}
+  .drop svg{color:var(--accent)}
+  .trust{display:inline-flex;align-items:center;gap:var(--s2);margin-top:var(--s5);color:var(--quiet);font-size:13.5px}
+  .trust svg{color:var(--muted)}
+
+  /* hero marquee — look types */
+  .ticker{margin-top:var(--s12);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:var(--s4) 0;
+          -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
+          mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+  .ticker-track{display:flex;gap:var(--s10);width:max-content;animation:marq 28s linear infinite}
+  .ticker-track .chip{display:inline-flex;align-items:center;gap:var(--s2);font-family:var(--display);font-weight:600;
+        font-size:clamp(1.1rem,2vw,1.6rem);letter-spacing:-.01em;color:var(--muted)}
+  .ticker-track .chip i{width:7px;height:7px;border-radius:50%;background:var(--accent);display:block;flex:none}
+  @keyframes marq{to{transform:translateX(-50%)}}
+
+  /* ---------- shared section heads ---------- */
+  section{position:relative}
+  .sec-head{max-width:42rem}
+  .sec-head .label{display:block;margin-bottom:var(--s4)}
+  h2{font-family:var(--display);font-weight:700;font-size:clamp(2rem,4.6vw,3.4rem);line-height:1.02;letter-spacing:-.025em;color:var(--ink)}
+  .sec-head p{color:var(--muted);font-size:1.0625rem;margin:var(--s5) 0 0;max-width:34rem}
+
+  /* ---------- re-shoot / before-after (signature) ---------- */
+  .reshoot{padding:var(--s24) 0 var(--s20);border-top:1px solid var(--line)}
+  .compare{margin-top:var(--s16);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:var(--s8)}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .panel .ph{position:relative;aspect-ratio:4/5;background:var(--sunk)}
+  .panel .ph img{width:100%;height:100%;object-fit:cover}
+  .panel.before .ph img{filter:grayscale(.55) brightness(.8) contrast(.95)}
+  .ptag{position:absolute;top:var(--s4);left:var(--s4);display:inline-flex;align-items:center;gap:7px;
+        font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+        background:rgba(14,13,11,.8);border:1px solid var(--line-2);color:var(--ink);padding:6px 12px;border-radius:999px}
+  .ptag.ok i{color:var(--accent);display:inline-flex}
+  .ptag.ok svg{display:block}
+  .panel .cap{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s4);padding:18px 22px}
+  .panel .cap b{font-weight:600;font-size:15px}
+  .panel .cap span{color:var(--quiet);font-size:13px}
+  .xform{display:flex;flex-direction:column;align-items:center;gap:var(--s3);color:var(--muted)}
+  .xform .glyph{width:56px;height:56px;border-radius:50%;border:1px solid var(--line-2);display:grid;place-items:center;color:var(--accent);background:var(--surface)}
+  .xform small{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--quiet)}
+  .specs{margin-top:var(--s16);border-top:1px solid var(--line);display:flex;flex-wrap:wrap}
+  .spec{flex:1 1 220px;display:flex;gap:var(--s4);padding:var(--s8) var(--s8) var(--s8) 0}
+  .spec + .spec{border-left:1px solid var(--line);padding-left:var(--s8)}
+  .spec svg{flex:none;color:var(--accent);margin-top:2px}
+  .spec b{display:block;font-weight:600;font-size:16px;margin-bottom:4px}
+  .spec p{margin:0;color:var(--muted);font-size:14.5px;line-height:1.5}
+
+  /* ---------- capabilities / feature rows ---------- */
+  .caps{padding:var(--s24) 0;border-top:1px solid var(--line)}
+  .caps-head{text-align:center;max-width:38rem;margin:0 auto}
+  .caps-head .label{display:block;margin-bottom:var(--s4)}
+  .caps-head h2 .accent{color:var(--accent)}
+  .feature{display:grid;grid-template-columns:1fr 1fr;gap:var(--s16);align-items:center;margin-top:var(--s20)}
+  .feature.rev .f-media{order:2}
+  .f-media{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:var(--sunk);aspect-ratio:4/3}
+  .f-media img{width:100%;height:100%;object-fit:cover}
+  .f-media .badge{position:absolute;top:var(--s4);left:var(--s4);display:inline-flex;align-items:center;gap:6px;
+        font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);
+        background:rgba(14,13,11,.78);border:1px solid var(--line-2);padding:6px 12px;border-radius:999px}
+  .f-media .play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:50%;
+        background:var(--accent);color:var(--on-accent);border:0;display:grid;place-items:center;cursor:pointer}
+  .f-media .play svg{margin-left:3px}
+  .f-text .knum{font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:var(--s4)}
+  .f-text h3{font-family:var(--display);font-weight:700;font-size:clamp(1.6rem,3.2vw,2.4rem);line-height:1.05;letter-spacing:-.02em;color:var(--ink)}
+  .f-text p{color:var(--muted);font-size:1.0625rem;margin:var(--s5) 0 0;max-width:34rem;line-height:1.55}
+  .f-list{list-style:none;margin:var(--s6) 0 0;padding:0;display:flex;flex-wrap:wrap;gap:var(--s3)}
+  .f-list li{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;color:var(--ink);
+        background:var(--surface);border:1px solid var(--line);padding:7px 14px;border-radius:999px}
+  .f-list svg{color:var(--accent);flex:none}
+
+  /* ---------- how it works (statement band) ---------- */
+  .how{padding:var(--s24) 0;border-top:1px solid var(--line);text-align:center}
+  .how .label{display:block;margin-bottom:var(--s5)}
+  .how h2{max-width:18ch;margin:0 auto}
+  .how h2 .accent{color:var(--accent)}
+  .how-rows{display:flex;justify-content:center;flex-wrap:wrap;gap:var(--s3);margin:var(--s10) auto 0;max-width:46rem}
+  .how-rows .pill{display:inline-flex;align-items:center;gap:var(--s2);font-weight:600;font-size:15px;color:var(--ink);
+        background:var(--surface);border:1px solid var(--line);padding:11px 18px;border-radius:999px}
+  .how-rows svg{color:var(--accent);flex:none}
+  .how .cta-row{margin-top:var(--s10)}
+
+  /* ---------- trusted by (logo marquee) ---------- */
+  .proof{border-top:1px solid var(--line);padding:var(--s16) 0}
+  .proof .label{text-align:center;display:block;margin-bottom:var(--s8)}
+  .proof .ticker{margin:0;border:0}
+  .proof .ticker-track{gap:var(--s16);animation-duration:38s}
+  .proof .logo{font-family:var(--display);font-weight:700;font-size:22px;letter-spacing:-.01em;color:var(--muted);white-space:nowrap}
+  .proof .logo.sp{font-family:var(--sans);font-weight:600;letter-spacing:.22em;text-transform:uppercase;font-size:15px}
+
+  /* ---------- steps ---------- */
+  .steps{padding:var(--s24) 0 var(--s20);border-top:1px solid var(--line)}
+  .steps-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:var(--s8)}
+  .steps-head p{color:var(--muted);font-size:1.0625rem;margin:var(--s4) 0 0;max-width:30rem}
+  .step-grid{margin-top:var(--s16);display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s4)}
+  .step{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:var(--s6) var(--s6) var(--s8);display:flex;flex-direction:column;gap:var(--s4)}
+  .step-top{display:flex;align-items:center;justify-content:space-between}
+  .step-no{font-family:var(--display);font-weight:800;font-size:34px;letter-spacing:-.03em;color:var(--ink);line-height:1}
+  .step-code{font-family:var(--sans);font-weight:600;font-size:12px;letter-spacing:.1em;color:var(--accent);
+        border:1px solid var(--accent);border-radius:6px;padding:4px 9px}
+  .step .stag{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--quiet)}
+  .step h3{font-family:var(--display);font-weight:700;font-size:19px;letter-spacing:-.01em;color:var(--ink);line-height:1.15}
+  .step p{color:var(--muted);font-size:14.5px;margin:0;line-height:1.5}
+  .step .feat{margin-top:auto;display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--ink);
+        border-top:1px solid var(--line);padding-top:var(--s4)}
+  .step .feat svg{color:var(--accent);flex:none}
+
+  /* ---------- FAQ ---------- */
+  .faq{padding:var(--s24) 0;border-top:1px solid var(--line)}
+  .faq-grid{margin-top:var(--s12);max-width:46rem}
+  details{border-top:1px solid var(--line)}
+  details:last-child{border-bottom:1px solid var(--line)}
+  summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:var(--s5);
+          padding:var(--s6) 0;min-height:56px;font-family:var(--display);font-weight:600;font-size:clamp(1.05rem,2vw,1.3rem);
+          letter-spacing:-.01em;color:var(--ink)}
+  summary::-webkit-details-marker{display:none}
+  summary .pm{flex:none;width:26px;height:26px;border-radius:50%;border:1px solid var(--line-2);display:grid;place-items:center;color:var(--accent);transition:transform .2s ease}
+  details[open] summary .pm{transform:rotate(45deg)}
+  .faq-body{color:var(--muted);font-size:1rem;line-height:1.6;padding:0 0 var(--s6);max-width:54ch}
+
+  /* ---------- closing CTA ---------- */
+  .closing{border-top:1px solid var(--line);padding:var(--s24) 0;text-align:center}
+  .closing h2{margin:0 auto;max-width:18ch}
+  .closing p{color:var(--muted);font-size:1.0625rem;margin:var(--s5) auto 0;max-width:36ch}
+  .closing .cta-row{margin-top:var(--s10)}
+
+  /* ---------- footer ---------- */
+  footer{border-top:1px solid var(--line);padding:var(--s16) 0 calc(var(--s16) + env(safe-area-inset-bottom))}
+  .foot-top{display:flex;flex-wrap:wrap;gap:var(--s16) var(--s12);justify-content:space-between}
+  .foot-brand{max-width:22rem}
+  .foot-brand .mark{font-size:24px;margin-bottom:var(--s4)}
+  .foot-brand p{color:var(--muted);font-size:15px;margin:0;line-height:1.55}
+  .foot-cols{display:flex;gap:var(--s16);flex-wrap:wrap}
+  .foot-cols h4{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--quiet);margin:0 0 var(--s5)}
+  .foot-cols ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--s3)}
+  .foot-cols a{display:inline-flex;align-items:center;min-height:32px;color:var(--muted);font-size:15px}
+  .foot-cols a:hover{color:var(--ink)}
+  .foot-bottom{display:flex;flex-wrap:wrap;justify-content:space-between;gap:var(--s4);
+               margin-top:var(--s16);padding-top:var(--s6);border-top:1px solid var(--line);color:var(--quiet);font-size:13.5px}
+
+  /* ---------- sticky mobile CTA ---------- */
+  .mcta{display:none}
+
+  /* ---------- responsive ---------- */
+  @media(max-width:920px){
+    .compare{grid-template-columns:1fr;gap:var(--s5)}
+    .xform{flex-direction:row;gap:var(--s4)}
+    .xform .glyph{transform:rotate(90deg)}
+    .feature{grid-template-columns:1fr;gap:var(--s8)}
+    .feature.rev .f-media{order:0}
+    .step-grid{grid-template-columns:repeat(2,1fr)}
+  }
+  @media(max-width:760px){
+    .wrap{padding:0 var(--s5)}
+    .nav-links{display:none}
+    .signin{display:none}
+    .hero{padding:var(--s12) 0 var(--s10)}
+    .stage{position:static;aspect-ratio:auto;display:flex;flex-wrap:wrap;justify-content:center;gap:var(--s3);max-width:none}
+    .promise{position:static;transform:none;left:auto;top:auto;width:100%;order:-1;margin-bottom:var(--s10)}
+    .orb{position:static;width:calc(33.333% - 9px)}
+    .o1,.o2,.o3,.o4,.o5,.o6{left:auto;top:auto}
+    .otag{display:none}
+    .cta-row{flex-direction:column}
+    .cta-row .btn{width:100%}
+    .reshoot,.caps,.how,.steps,.faq,.closing{padding-top:var(--s16);padding-bottom:var(--s12)}
+    .specs .spec{flex:1 1 100%}
+    .spec + .spec{border-left:0;border-top:1px solid var(--line);padding-left:0;padding-top:var(--s5)}
+    .step-grid{grid-template-columns:1fr}
+    .foot-cols{gap:var(--s10)}
+    body{padding-bottom:84px}
+    .mcta{display:block;position:fixed;left:0;right:0;bottom:0;z-index:50;
+          background:rgba(14,13,11,.94);backdrop-filter:blur(10px);border-top:1px solid var(--line);
+          padding:var(--s3) var(--s5) calc(var(--s3) + env(safe-area-inset-bottom))}
+    .mcta .btn{width:100%}
+  }
+  @media(max-width:380px){.orb{width:calc(50% - 6px)}}
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none!important;scroll-behavior:auto!important;animation:none!important}
+    .orb:hover{transform:none}
+    .ticker{overflow-x:auto}
+    .ticker-track{width:auto;flex-wrap:wrap}
+  }
+</style>
+</head>
+<body>
+<header>
+  <nav class="wrap nav-in" aria-label="Primary">
+    <a class="mark" href="#top" aria-label="fourmula home"><span class="ring" aria-hidden="true"><i></i><b></b></span>fourmula<span style="color:var(--accent)">.ai</span></a>
+    <div class="nav-links">
+      <a href="#looks">Looks</a>
+      <a href="#capabilities">Features</a>
+      <a href="#steps">How it works</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <div class="nav-right">
+      <a class="signin" href="#">Sign in</a>
+      <button class="btn btn-cta">Get started
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9m0 0L8.5 4.5M12 8l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<main id="top">
+  <!-- 1. HERO: orbit of re-shot looks around the promise -->
+  <section class="hero" id="looks" aria-label="Introduction">
+    <div class="wrap">
+      <div class="stage">
+        <figure class="orb o1"><img src="https://picsum.photos/seed/fourmula-knit/440/440" width="440" height="440" alt="Re-shot product look — knitwear on a studio backdrop" loading="eager" decoding="async"></figure>
+        <figure class="orb o2"><img src="https://picsum.photos/seed/fourmula-bag/360/360" width="360" height="360" alt="Re-shot product look — leather bag" loading="lazy" decoding="async"></figure>
+        <figure class="orb o3 accent">
+          <img src="https://picsum.photos/seed/fourmula-portrait/500/500" width="500" height="500" alt="Re-shot product look — on-model portrait" loading="eager" decoding="async">
+          <span class="otag"><i aria-hidden="true"></i>Re-shot</span>
+        </figure>
+        <figure class="orb o4"><img src="https://picsum.photos/seed/fourmula-shoe/420/420" width="420" height="420" alt="Re-shot product look — footwear" loading="lazy" decoding="async"></figure>
+        <figure class="orb o5"><img src="https://picsum.photos/seed/fourmula-beauty/400/400" width="400" height="400" alt="Re-shot product look — beauty bottle on sand" loading="lazy" decoding="async"></figure>
+        <figure class="orb o6"><img src="https://picsum.photos/seed/fourmula-denim/360/360" width="360" height="360" alt="Re-shot product look — denim flatlay" loading="lazy" decoding="async"></figure>
+
+        <div class="promise">
+          <h1>Your catalog,<span class="accent">instantly re-shot.</span></h1>
+          <p class="lede">Upload one product photo. Get studio-grade, on-brand shots, lifestyle scenes and video — re-shot by AI, ready to ship the same afternoon.</p>
+          <div class="cta-row">
+            <button class="btn btn-cta btn-lg">Re-shoot my catalog
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9m0 0L8.5 4.5M12 8l-3.5 3.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button class="btn btn-ghost btn-lg">See the looks</button>
+          </div>
+          <span class="drop">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 11V3m0 0L5 6m3-3l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 11.5V13h11v-1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            Upload or drop your assets
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- look-type ticker -->
+    <div class="ticker" aria-label="What fourmula re-shoots">
+      <div class="ticker-track">
+        <span class="chip"><i></i>PDPs</span><span class="chip"><i></i>UGC</span><span class="chip"><i></i>Lifestyle shots</span><span class="chip"><i></i>Ads</span><span class="chip"><i></i>Stories</span><span class="chip"><i></i>Street style</span>
+        <span class="chip" aria-hidden="true"><i></i>PDPs</span><span class="chip" aria-hidden="true"><i></i>UGC</span><span class="chip" aria-hidden="true"><i></i>Lifestyle shots</span><span class="chip" aria-hidden="true"><i></i>Ads</span><span class="chip" aria-hidden="true"><i></i>Stories</span><span class="chip" aria-hidden="true"><i></i>Street style</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. RE-SHOOT: before / after — signature demonstration of the hero claim -->
+  <section class="reshoot" id="reshoot" aria-labelledby="reshoot-h">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label"><span class="i" aria-hidden="true">●</span> The re-shoot</span>
+        <h2 id="reshoot-h">One flat pack-shot in.<br>A whole shoot out.</h2>
+        <p>Drop in the plain pack-shot you already have. fourmula re-lights it, places it on-model or in-scene, and locks it to your brand — no booking, no set, no second shoot.</p>
+      </div>
+
+      <div class="compare">
+        <figure class="panel before">
+          <div class="ph">
+            <span class="ptag" aria-hidden="true">Input</span>
+            <img src="https://picsum.photos/seed/fourmula-raw/600/750" width="600" height="750" alt="Plain product pack-shot uploaded by the brand, flat and unstyled">
+          </div>
+          <figcaption class="cap"><b>What you upload</b><span>flat pack-shot</span></figcaption>
+        </figure>
+
+        <div class="xform" aria-hidden="true">
+          <span class="glyph">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M20 11a8 8 0 0 0-13.7-5.2L4 8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 4v4h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 13a8 8 0 0 0 13.7 5.2L20 16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 20v-4h-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <small>AI re-shoot</small>
+        </div>
+
+        <figure class="panel after">
+          <div class="ph">
+            <span class="ptag ok"><i><svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></i>On-brand</span>
+            <img src="https://picsum.photos/seed/fourmula-styled/600/750" width="600" height="750" alt="The same product re-shot by AI: styled, lit and placed on-brand, ready to ship">
+          </div>
+          <figcaption class="cap"><b>What ships</b><span>campaign-ready</span></figcaption>
+        </figure>
+      </div>
+
+      <div class="specs">
+        <div class="spec">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.6"/></svg>
+          <div><b>Brand palette locked</b><p>Colour, type and styling rules are enforced on every frame — not a setting you re-check.</p></div>
+        </div>
+        <div class="spec">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <div><b>Studio-consistent light</b><p>The same key, fill and shadow across the catalogue, so a 400-SKU grid reads as one shoot.</p></div>
+        </div>
+        <div class="spec">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7l8-4 8 4-8 4-8-4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M4 12l8 4 8-4M4 17l8 4 8-4" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          <div><b>Any SKU, any angle</b><p>Re-shoot one hero or ten thousand listings — on-model, in-scene or packshot — from the same upload.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. CAPABILITIES: "On-brand visuals. Made by AI." + three feature rows -->
+  <section class="caps" id="capabilities" aria-labelledby="caps-h">
+    <div class="wrap">
+      <div class="caps-head">
+        <span class="label"><span class="i" aria-hidden="true">●</span> What you can do</span>
+        <h2 id="caps-h">On-brand visuals.<br><span class="accent">Made by AI.</span></h2>
+      </div>
+
+      <!-- Feature 1 -->
+      <div class="feature">
+        <figure class="f-media">
+          <span class="badge"><i aria-hidden="true">●</i> AI Fashion Photoshoot</span>
+          <img src="https://picsum.photos/seed/fourmula-fashion/900/680" width="900" height="680" alt="A grid of on-model fashion angles generated from a single upload">
+        </figure>
+        <div class="f-text">
+          <span class="knum">AI Fashion Photoshoot</span>
+          <h3>Studio-quality, without the studio.</h3>
+          <p>Upload one product and get all the angles, looks and moods you need for PDPs and campaigns — without booking a studio.</p>
+          <ul class="f-list">
+            <li><svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>14+ model presets</li>
+            <li><svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Multiple pose options</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Feature 2 (reversed) -->
+      <div class="feature rev">
+        <figure class="f-media">
+          <span class="badge"><i aria-hidden="true">●</i> AI Product Shots</span>
+          <img src="https://picsum.photos/seed/fourmula-scenes/900/680" width="900" height="680" alt="A clean packshot placed into several styled lifestyle scenes">
+        </figure>
+        <div class="f-text">
+          <span class="knum">AI Product Shots</span>
+          <h3>Your product, new scenes on demand.</h3>
+          <p>Drop a product photo and we build clean packshots and styled lifestyle scenes around it — sand, glass, stone, studio sweep.</p>
+          <ul class="f-list">
+            <li><svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Packshot &amp; lifestyle</li>
+            <li><svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Scene variations</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Feature 3 -->
+      <div class="feature">
+        <figure class="f-media">
+          <span class="badge"><i aria-hidden="true">●</i> AI Video Production</span>
+          <img src="https://picsum.photos/seed/fourmula-video/900/680" width="900" height="680" alt="A vertical product clip ready for Reels and TikTok">
+          <button class="play" aria-label="Preview an AI-generated product clip">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+        </figure>
+        <div class="f-text">
+          <span class="knum">AI Video Production</span>
+          <h3>Campaign-ready video in minutes.</h3>
+          <p>Create on-brand clips for Reels, TikTok and ads without a shoot — same product, same look, now in motion.</p>
+          <ul class="f-list">
+            <li><svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Reels, TikTok &amp; ads</li>
+            <li><svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>No shoot required</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. HOW IT WORKS: statement band -->
+  <section class="how" aria-labelledby="how-h">
+    <div class="wrap">
+      <span class="label"><span class="i" aria-hidden="true">●</span> How it works</span>
+      <h2 id="how-h">AI that creates images, makes videos, and <span class="accent">stays on-brand.</span></h2>
+      <div class="how-rows">
+        <span class="pill"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.7"/><circle cx="8.5" cy="9.5" r="1.6" fill="currentColor"/><path d="M5 16l4-4 3 3 3-3 4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Creates images</span>
+        <span class="pill"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="13" height="14" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M16 10l5-3v10l-5-3" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>Makes videos</span>
+        <span class="pill"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l2.5 5.2 5.5.8-4 3.9 1 5.6L12 21l-5-2.5 1-5.6-4-3.9 5.5-.8L12 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>Stays on-brand</span>
+      </div>
+      <div class="cta-row">
+        <button class="btn btn-cta btn-lg">Get started
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9m0 0L8.5 4.5M12 8l-3.5 3.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. TRUSTED BY: logo marquee -->
+  <section class="proof" aria-label="Brands using fourmula">
+    <div class="wrap">
+      <span class="label">Trusted by the brands redefining commerce</span>
+    </div>
+    <div class="ticker">
+      <div class="ticker-track">
+        <span class="logo">Aurélie</span><span class="logo sp">Norda</span><span class="logo">Maison&nbsp;Vela</span><span class="logo sp">Stærk</span><span class="logo">Atelier&nbsp;9</span><span class="logo sp">Övre</span><span class="logo">Lumen&nbsp;&amp;&nbsp;Co</span>
+        <span class="logo" aria-hidden="true">Aurélie</span><span class="logo sp" aria-hidden="true">Norda</span><span class="logo" aria-hidden="true">Maison&nbsp;Vela</span><span class="logo sp" aria-hidden="true">Stærk</span><span class="logo" aria-hidden="true">Atelier&nbsp;9</span><span class="logo sp" aria-hidden="true">Övre</span><span class="logo" aria-hidden="true">Lumen&nbsp;&amp;&nbsp;Co</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. STEPS: from idea to assets in four steps -->
+  <section class="steps" id="steps" aria-labelledby="steps-h">
+    <div class="wrap">
+      <div class="steps-head">
+        <div class="sec-head">
+          <span class="label"><span class="i" aria-hidden="true">●</span> The workflow</span>
+          <h2 id="steps-h">From idea to assets<br>in four steps.</h2>
+        </div>
+        <p>Sign up for free and supercharge your creative workflow — products in, campaign-ready visuals out.</p>
+      </div>
+
+      <div class="step-grid">
+        <article class="step">
+          <div class="step-top"><span class="step-no">01</span><span class="step-code">PB</span></div>
+          <span class="stag">Add products &amp; brand</span>
+          <h3>Add products and brand.</h3>
+          <p>Store your products, shots and brand look in one place.</p>
+          <span class="feat"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>14+ model presets</span>
+        </article>
+        <article class="step">
+          <div class="step-top"><span class="step-no">02</span><span class="step-code">GO</span></div>
+          <span class="stag">AI generates options</span>
+          <h3>AI generates options.</h3>
+          <p>Use AI to create new concepts, scenes and ideas.</p>
+          <span class="feat"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Multiple visual directions</span>
+        </article>
+        <article class="step">
+          <div class="step-top"><span class="step-no">03</span><span class="step-code">CB</span></div>
+          <span class="stag">Choose the best ones</span>
+          <h3>Choose the best ones.</h3>
+          <p>Pick the versions you like from the generations.</p>
+          <span class="feat"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Side-by-side comparison</span>
+        </article>
+        <article class="step">
+          <div class="step-top"><span class="step-no">04</span><span class="step-code">AX</span></div>
+          <span class="stag">Ready-made assets export</span>
+          <h3>Ready-made assets export.</h3>
+          <p>Export ready-made files to your store, ads and social.</p>
+          <span class="feat"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Optimized for PDP &amp; ads</span>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. FAQ -->
+  <section class="faq" id="faq" aria-labelledby="faq-h">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label"><span class="i" aria-hidden="true">●</span> FAQs</span>
+        <h2 id="faq-h">Not AI-gen answers.<br>Real ones here.</h2>
+      </div>
+      <div class="faq-grid">
+        <details open>
+          <summary>What can AI FOURMULA create for my brand?<span class="pm" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span></summary>
+          <p class="faq-body">Product images, fashion shots, lifestyle scenes and short videos for PDPs, social, ads and email.</p>
+        </details>
+        <details>
+          <summary>What do I need to start?<span class="pm" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span></summary>
+          <p class="faq-body">Just a store link or a product photo. We use it to generate on-brand visuals automatically.</p>
+        </details>
+        <details>
+          <summary>Will the visuals match our brand look?<span class="pm" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span></summary>
+          <p class="faq-body">Yes. We learn from your existing images and keep colours, lighting and style consistent.</p>
+        </details>
+        <details>
+          <summary>Do I own the assets you generate?<span class="pm" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span></summary>
+          <p class="faq-body">Yes. All approved outputs are yours to use across any channel.</p>
+        </details>
+        <details>
+          <summary>How fast do I get results?<span class="pm" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span></summary>
+          <p class="faq-body">Usually in seconds or a few minutes, depending on how many assets you request.</p>
+        </details>
+        <details>
+          <summary>Does this replace my creative team?<span class="pm" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span></summary>
+          <p class="faq-body">No. It speeds up production so your team can focus on ideas, not manual reshoots and cropping.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. CLOSING CTA -->
+  <section class="closing" aria-label="Get started">
+    <div class="wrap">
+      <h2>Re-shoot your entire catalog this afternoon.</h2>
+      <p>Bring your SKUs and your brand book. Leave with on-brand visuals — made by AI.</p>
+      <div class="cta-row">
+        <button class="btn btn-cta btn-lg">Get started
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9m0 0L8.5 4.5M12 8l-3.5 3.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="btn btn-ghost btn-lg">Book a studio call</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="foot-brand">
+        <span class="mark"><span class="ring" aria-hidden="true"><i></i><b></b></span>fourmula<span style="color:var(--accent)">.ai</span></span>
+        <p>AI product photography for catalogs that ship daily. Your visuals, on-brand, made by AI.</p>
+      </div>
+      <nav class="foot-cols" aria-label="Footer">
+        <div>
+          <h4>Product</h4>
+          <ul><li><a href="#reshoot">PDPs</a></li><li><a href="#capabilities">Products</a></li><li><a href="#capabilities">Videos</a></li><li><a href="#capabilities">Our features</a></li></ul>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <ul><li><a href="#">About</a></li><li><a href="#">Careers</a></li><li><a href="#">Contact</a></li></ul>
+        </div>
+        <div>
+          <h4>Legal</h4>
+          <ul><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li><li><a href="#">Cookie Policy</a></li></ul>
+        </div>
+        <div>
+          <h4>Social</h4>
+          <ul><li><a href="#">Instagram</a></li><li><a href="#">LinkedIn</a></li><li><a href="#">YouTube</a></li></ul>
+        </div>
+      </nav>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Fourmula ltd. — London, UK. All rights reserved.</span>
+      <span>Made by AI. Shipped by you.</span>
+    </div>
+  </div>
+</footer>
+
+<div class="mcta">
+  <button class="btn btn-cta">Re-shoot my catalog
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9m0 0L8.5 4.5M12 8l-3.5 3.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+</div>
+</body>
+</html>
