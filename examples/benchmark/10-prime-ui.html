@@ -5,830 +5,1063 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark">
 <title>Prime UI — Build sites fast. Fear no code.</title>
-<!-- benchmark #10: Prime UI（開発ツール）。題材=サイトを速く作る道具 → developer-premium / dark / technical。
-     題材の native な様式（コード・ワイヤーフレーム・端末・コンポーネント）から構造を導く。テンプレ骨格（eyebrow＋右図版ヒーロー→等分3カラム）は使わない。
-     bespoke dark palette: 近黒地 #0C0D10 / 電気青1アクセント #3D7BFF / code-tinted パネル / off-white text。
-     書体: 見出し=Space Grotesk（クリーンなグロテスク）/ 本文=Inter / コード・ラベル=JetBrains Mono（mono が identity の核）。
-     SIGNATURE: wireframe → code → preview のビルド・パイプラインを HTML/CSS で構築。 -->
+<meta name="description" content="Prime UI is the missing foundation for AI-generated websites. Go from sitemaps and wireframes to production-ready Next.js and Tailwind CSS code in minutes.">
+<!-- benchmark #10 Prime UI · dev tool. 題材=サイトを速く作る道具 → 構造は題材の native 様式（サイトマップ→ワイヤーフレーム→コード→プレビュー）から導く。
+     テンプレ骨格（eyebrow＋右図版ヒーロー→等分3カラム特徴→中央引用）は使わない。番号 01/02/03 は実在の工程順なので可。
+     bespoke dark palette: 冷たい近黒地 #040406 / blue-600 #2563EB 1アクセント / α白ヘアライン / off-white ink。semantic=緑 #20AC4F(success)・琥珀(coming soon)。
+     書体: 見出しも本文も Inter（display は重み・トラッキングで効かせる）/ ラベル・数値・コード=Geist Mono（mono が identity の核）。見出しスケールは real に合わせ 72–96px まで押す。 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;450;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    /* bespoke dark palette — near-black ground, electric-blue accent, code-tinted surfaces */
-    --bg:#0C0D10;        /* ground / canvas */
-    --bg-2:#0E0F13;      /* alternate section ground */
-    --panel:#14161C;     /* cards / panels */
-    --panel-2:#191C23;   /* header bars / nested raised */
-    --well:#0A0B0E;      /* code well (deeper than ground) */
-    --line:#23262F;      /* hairline */
-    --line-2:#2F333D;    /* stronger hairline / interactive border */
-    --ink:#E9EBEF;       /* off-white primary text (~16:1) */
-    --ink-soft:#C6CBD4;  /* secondary heading */
-    --muted:#9AA1AE;     /* body secondary / descriptions (~7:1) */
-    --quiet:#838A96;     /* mono labels / tertiary (~5:1, not body) */
-    --accent:#3D7BFF;    /* electric blue — the ONE accent */
-    --accent-bright:#6098FF; /* hover (brighter on dark) */
-    --accent-sunk:rgba(61,123,255,.12); /* tag / selected ground */
-    --accent-line:rgba(61,123,255,.34);
-    --on-accent:#08090C; /* near-black text on accent fill (≈5:1) */
-    --good:#5BD08A;      /* semantic: success / code strings */
-    --good-bg:rgba(91,208,138,.12);
+    /* bespoke dark palette — cool near-black ground (#040406), blue-600 accent (#2563EB) */
+    --bg:#040406;          /* ground / canvas — near-black, slight cool tint */
+    --bg-2:#090A0D;        /* alternate section ground (lifted band) */
+    --panel:#121316;       /* cards / panels */
+    --panel-2:#1A1B20;     /* toolbars / nested raised */
+    --well:#020204;        /* code well (deeper than ground) */
+    --line:rgba(255,255,255,.07);   /* hairline */
+    --line-2:rgba(255,255,255,.12);  /* stronger hairline / interactive border */
 
-    --grotesk:"Space Grotesk",system-ui,-apple-system,sans-serif;
-    --sans:"Inter",system-ui,-apple-system,sans-serif;
-    --mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+    --ink:#ECEEF2;         /* off-white primary text (~17:1 on ground) */
+    --ink-soft:#C9CDD6;    /* secondary heading (~13:1) */
+    --muted:#9AA0AD;       /* body secondary / descriptions (~7.8:1) */
+    --quiet:#868C97;       /* mono labels / tertiary (>=5:1 even on panel-2) */
+
+    --accent:#2563EB;      /* blue-600 — the ONE signal accent (fills, large, borders) */
+    --accent-bright:#5E8BF7;/* hover + small accent text on dark (~6:1) */
+    --accent-sunk:rgba(37,99,235,.15); /* tag / selected ground */
+    --accent-line:rgba(37,99,235,.45);
+    --on-accent:#FFFFFF;   /* white text on blue-600 fill (5.2:1) */
+
+    --good:#20AC4F;        /* semantic: success / passing / code strings (~6.9:1) */
+    --good-sunk:rgba(32,172,79,.15);
+    --warn:#E0B04A;        /* semantic: coming soon / heads-up */
+    --warn-sunk:rgba(224,176,74,.12);
+
+    --display:"Inter",system-ui,-apple-system,sans-serif;
+    --sans:"Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    --mono:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
 
     --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:20px;--s6:24px;--s8:32px;--s10:40px;--s12:48px;--s14:56px;--s16:64px;--s20:80px;--s24:96px;
-
-    --r0:16px;--r1:10px;--r2:6px;--r3:4px;--r4:2px;
+    --r0:16px;--r1:12px;--r2:10px;--r3:8px;--r4:6px;--r5:4px;
+    --wrap:1180px;
   }
+
   *{box-sizing:border-box}
-  html{-webkit-text-size-adjust:100%}
+  html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
   body{
     margin:0;background:var(--bg);color:var(--ink);
-    font-family:var(--sans);font-size:16px;line-height:1.6;font-weight:400;
+    font-family:var(--sans);font-size:17px;line-height:1.6;font-weight:400;
     -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    overflow-x:hidden;
   }
+  img{max-width:100%;display:block}
   a{color:inherit;text-decoration:none}
-  button{font-family:inherit}
-  ::selection{background:var(--accent-sunk);color:var(--ink)}
-  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:var(--r3)}
-  .wrap{max-width:1200px;margin:0 auto;padding:0 var(--s8)}
-  .mono{font-family:var(--mono)}
+  button{font:inherit;color:inherit;cursor:pointer}
+  h1,h2,h3,h4{margin:0;font-family:var(--display);font-weight:600;letter-spacing:-.02em}
+  p{margin:0}
 
-  /* ── nav ─────────────────────────────────────────── */
-  header.site{position:sticky;top:0;z-index:50;background:rgba(12,13,16,.78);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
-  nav{display:flex;align-items:center;gap:var(--s6);height:64px}
-  .brand{display:flex;align-items:center;gap:var(--s3);font-family:var(--grotesk);font-weight:600;font-size:18px;letter-spacing:-.01em;color:var(--ink)}
-  .brand .glyph{width:30px;height:30px;border:1px solid var(--line-2);border-radius:var(--r2);display:grid;place-items:center;background:var(--panel)}
-  .ver{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--quiet);border:1px solid var(--line);border-radius:999px;padding:2px 8px;letter-spacing:.02em}
-  .nav-links{display:flex;gap:var(--s2);margin:0 auto}
-  .nav-links a{display:inline-flex;align-items:center;height:44px;padding:0 var(--s3);color:var(--muted);font-size:14px;font-weight:450;border-radius:var(--r2)}
-  .nav-links a:hover{color:var(--ink);background:var(--panel)}
-  .nav-right{display:flex;align-items:center;gap:var(--s2)}
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);font-weight:600;font-size:14px;cursor:pointer;border:0;white-space:nowrap;border-radius:var(--r2);transition:background .15s ease,color .15s ease,border-color .15s ease}
-  .btn-ghost{height:44px;padding:0 var(--s4);color:var(--ink-soft);background:transparent}
-  .btn-ghost:hover{color:var(--ink);background:var(--panel)}
-  .btn-outline{height:44px;padding:0 var(--s4);color:var(--ink);background:var(--panel);border:1px solid var(--line-2)}
-  .btn-outline:hover{background:var(--panel-2);border-color:#3a3f4b}
-  .btn-cta{height:48px;padding:0 var(--s5);color:var(--on-accent);background:var(--accent)}
-  .btn-cta:hover{background:var(--accent-bright)}
-  .btn-cta svg path{stroke:var(--on-accent)}
+  /* muted second line of headings: neutral-gray gradient clipped to text (no second accent) */
+  .fade{
+    color:var(--muted); /* fallback where bg-clip:text is unsupported */
+    background:linear-gradient(180deg,var(--ink-soft) 0%,var(--muted) 62%,var(--quiet) 100%);
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;
+  }
 
-  /* ── hero ────────────────────────────────────────── */
-  .hero{position:relative;overflow:hidden}
-  .hero::before{content:"";position:absolute;inset:-20% 0 auto 0;height:680px;
-    background:radial-gradient(620px 380px at 28% 8%,rgba(61,123,255,.16),transparent 70%);
-    pointer-events:none}
-  .hero-in{position:relative;padding:var(--s20) 0 var(--s16);max-width:820px}
-  .kicker{display:inline-flex;align-items:center;gap:var(--s2);font-family:var(--mono);font-size:12.5px;font-weight:500;letter-spacing:.04em;color:var(--accent);margin:0 0 var(--s5)}
-  .kicker .br{color:var(--quiet)}
-  h1{font-family:var(--grotesk);font-weight:600;font-size:clamp(42px,6.4vw,78px);line-height:1.0;letter-spacing:-.025em;margin:0 0 var(--s6);color:var(--ink)}
-  h1 .caret{display:inline-block;width:.5ch;height:.82em;background:var(--accent);vertical-align:-.06em;margin-left:.08em;border-radius:1px;animation:blink 1.15s steps(1) infinite}
-  .lede{font-size:19px;line-height:1.58;color:var(--muted);max-width:42em;margin:0 0 var(--s8)}
-  .lede b{color:var(--ink-soft);font-weight:500}
-  .cta-row{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3);margin-bottom:var(--s8)}
+  /* a11y focus */
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
 
-  /* install command chip */
-  .cmd{display:inline-flex;align-items:center;gap:var(--s3);background:var(--panel);border:1px solid var(--line);border-radius:var(--r2);padding:var(--s2) var(--s2) var(--s2) var(--s4);font-family:var(--mono);font-size:13.5px}
-  .cmd .pr{color:var(--accent);user-select:none}
-  .cmd code{color:var(--ink-soft)}
-  .copy{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:32px;padding:0 var(--s3);border-radius:var(--r3);border:1px solid var(--line-2);background:var(--panel-2);color:var(--quiet);font-family:var(--mono);font-size:12px;cursor:pointer;transition:color .15s,border-color .15s}
-  .copy:hover{color:var(--ink);border-color:#3a3f4b}
-  .copy.copied{color:var(--good);border-color:rgba(91,208,138,.4)}
-  .copy svg{flex:none}
-  .copy .copy-label{letter-spacing:.02em}
+  .skip{position:absolute;left:-9999px;top:0;background:var(--accent);color:var(--on-accent);
+    padding:10px 16px;border-radius:8px;z-index:100;font-family:var(--mono);font-size:13px}
+  .skip:focus{left:12px;top:12px}
 
-  .spec{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3);font-family:var(--mono);font-size:12.5px;color:var(--quiet);margin-top:var(--s5)}
-  .spec span{display:inline-flex;align-items:center;gap:6px}
-  .spec .ok{width:5px;height:5px;border-radius:50%;background:var(--good)}
-  .spec .sep{width:1px;height:12px;background:var(--line-2)}
+  .wrap{max-width:var(--wrap);margin-inline:auto;padding-inline:clamp(20px,5vw,40px)}
+  section{padding-block:clamp(64px,9vw,120px)}
 
-  /* ── section scaffolding ─────────────────────────── */
-  section.block{padding:var(--s20) 0;border-top:1px solid var(--line)}
-  .sec-head{max-width:680px;margin:0 0 var(--s12)}
-  .sec-kicker{font-family:var(--mono);font-size:12.5px;font-weight:500;letter-spacing:.04em;color:var(--accent);margin:0 0 var(--s4)}
-  .sec-kicker .br{color:var(--quiet)}
-  h2{font-family:var(--grotesk);font-weight:600;font-size:clamp(28px,3.6vw,40px);line-height:1.12;letter-spacing:-.02em;margin:0 0 var(--s4);color:var(--ink)}
-  .sec-lede{font-size:17px;line-height:1.6;color:var(--muted);margin:0;max-width:46em}
+  /* shared bits ----------------------------------------------------------- */
+  .eyebrow{font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:.04em;
+    color:var(--quiet);display:inline-flex;align-items:center;gap:10px}
+  .eyebrow .num{color:var(--accent);font-weight:600}
+  .eyebrow::before{content:"";width:22px;height:1px;background:var(--line-2)}
 
-  /* ── SIGNATURE: wireframe → code → preview ───────── */
-  .pipe{background:var(--panel);border:1px solid var(--line);border-radius:var(--r0);overflow:hidden}
-  .pipe-bar{display:flex;align-items:center;gap:var(--s4);height:46px;padding:0 var(--s4);background:var(--panel-2);border-bottom:1px solid var(--line);overflow:hidden}
-  .tabs{flex-wrap:nowrap}
+  .btn{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:14px;
+    font-weight:500;line-height:1;border-radius:var(--r3);border:1px solid transparent;
+    padding:13px 21px;transition:background .15s,border-color .15s,color .15s;white-space:nowrap}
+  .btn span{transform:translateY(-1px)} /* cap-height optical correction */
+  .btn svg{flex:none}
+  .btn-primary{background:var(--accent);color:var(--on-accent);font-weight:600}
+  .btn-primary:hover{background:var(--accent-bright)}
+  .btn-ghost{background:transparent;border-color:var(--line-2);color:var(--ink)}
+  .btn-ghost:hover{background:var(--panel-2);border-color:var(--accent-line)}
+  .btn-soft{background:var(--panel-2);border-color:var(--line);color:var(--ink)}
+  .btn-soft:hover{border-color:var(--accent-line);color:var(--accent-bright)}
+
+  .tag{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:12.5px;
+    color:var(--ink-soft);background:var(--panel-2);border:1px solid var(--line);
+    padding:6px 13px;border-radius:var(--r4)}
+  .tag.accent{color:var(--accent-bright);background:var(--accent-sunk);border-color:var(--accent-line)}
+  .badge{font-family:var(--mono);font-size:11px;letter-spacing:.03em;padding:3px 9px;border-radius:5px;
+    text-transform:uppercase}
+  .badge.soon{color:var(--warn);background:var(--warn-sunk);border:1px solid rgba(224,176,74,.3)}
+
+  .window{background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r0);overflow:hidden}
+  .winbar{display:flex;align-items:center;gap:12px;padding:12px 18px;background:var(--panel-2);
+    border-bottom:1px solid var(--line);min-width:0}
   .dots{display:flex;gap:7px;flex:none}
-  .dots i{width:11px;height:11px;border-radius:50%;background:#2b2f38;display:block}
-  .tabs{display:flex;gap:2px;font-family:var(--mono);font-size:12px}
-  .tabs .tab{padding:5px 10px;border-radius:var(--r3);color:var(--quiet)}
-  .tabs .tab.on{color:var(--ink);background:var(--well)}
-  .pipe-bar .meta{margin-left:auto;font-family:var(--mono);font-size:11.5px;color:var(--quiet);display:inline-flex;align-items:center;gap:6px;white-space:nowrap;flex:none}
-  .pipe-bar .meta .ok{width:6px;height:6px;border-radius:50%;background:var(--good)}
+  .dots i{width:11px;height:11px;border-radius:50%;background:var(--line-2)}
+  .winbar .url{font-family:var(--mono);font-size:12.5px;color:var(--quiet);min-width:0;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-  .pipe-body{display:grid;grid-template-columns:1fr auto 1.18fr auto 1fr;align-items:stretch;gap:0}
-  .pane{padding:var(--s5) var(--s5) var(--s6)}
-  .pane-cap{display:flex;align-items:center;gap:var(--s2);font-family:var(--mono);font-size:11.5px;color:var(--quiet);margin-bottom:var(--s4);letter-spacing:.02em}
-  .pane-cap .dotc{width:6px;height:6px;border-radius:50%;background:var(--line-2)}
-  .vline{width:1px;background:var(--line)}
-  /* flow arrow between panes */
-  .arrow{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:0 var(--s2);background:var(--bg-2);border-left:1px solid var(--line);border-right:1px solid var(--line)}
-  .arrow .ring{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--accent-sunk);border:1px solid var(--accent-line)}
-  .arrow .lbl{font-family:var(--mono);font-size:10px;color:var(--quiet);letter-spacing:.04em}
-
-  /* wireframe (lo-fi) */
-  .wf{background:var(--well);border:1px solid var(--line);border-radius:var(--r1);padding:var(--s4);display:flex;flex-direction:column;gap:var(--s3)}
-  .wf .wbar{height:14px;border-radius:var(--r3);border:1px dashed var(--line-2);display:flex;align-items:center;gap:5px;padding:0 6px}
-  .wf .wbar i{width:14px;height:5px;border-radius:2px;background:#2a2e37}
-  .wf .wblock{height:11px;border-radius:3px;background:#20232b}
-  .wf .w70{width:72%}.wf .w50{width:50%}.wf .w90{width:90%}
-  .wf .wbtns{display:flex;gap:6px;margin-top:2px}
-  .wf .wbtns u{height:16px;width:62px;border-radius:var(--r3);border:1px dashed var(--line-2);display:block}
-  .wf .wgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:4px}
-  .wf .wcard{height:40px;border-radius:var(--r3);border:1px dashed var(--line-2);background:rgba(255,255,255,.012)}
-
-  /* code editor */
-  .editor{background:var(--well);border:1px solid var(--line);border-radius:var(--r1);overflow:hidden;font-family:var(--mono);font-size:12.5px;line-height:1.85}
-  .code{margin:0;padding:var(--s3) var(--s4) var(--s4);overflow-x:auto}
-  .row{display:flex;white-space:pre}
-  .row .gut{width:1.6em;flex:none;text-align:right;color:#454b57;user-select:none;margin-right:var(--s4)}
-  .tk-key{color:var(--accent)}
-  .tk-str{color:var(--good)}
-  .tk-com{color:#5b626f;font-style:italic}
-  .tk-comp{color:var(--ink)}
-  .tk-attr{color:#b8c0cd}
-  .tk-pun{color:#6b727f}
-  .tk-fn{color:var(--ink-soft)}
-
-  /* rendered preview ("live site") */
-  .render{background:#0f1014;border:1px solid var(--line);border-radius:var(--r1);overflow:hidden}
-  .render .urlbar{display:flex;align-items:center;gap:6px;height:24px;padding:0 8px;background:var(--panel-2);border-bottom:1px solid var(--line);font-family:var(--mono);font-size:10px;color:var(--quiet)}
-  .render .urlbar .lock{width:6px;height:6px;border-radius:50%;background:var(--good)}
-  .render .site{padding:var(--s4)}
-  .render .rnav{display:flex;align-items:center;gap:6px;margin-bottom:var(--s4)}
-  .render .rnav .ld{width:12px;height:12px;border-radius:3px;background:var(--accent)}
-  .render .rnav b{font-family:var(--grotesk);font-size:11px;color:var(--ink);font-weight:600}
-  .render .rnav .rl{margin-left:auto;display:flex;gap:8px}
-  .render .rnav .rl s{width:18px;height:5px;border-radius:2px;background:#2a2e37;display:block}
-  .render h4{font-family:var(--grotesk);font-weight:600;font-size:16px;line-height:1.1;letter-spacing:-.02em;margin:0 0 6px;color:var(--ink)}
-  .render p.rl-lede{font-size:10.5px;line-height:1.5;color:var(--muted);margin:0 0 var(--s3);max-width:24ch}
-  .render .rbtns{display:flex;gap:6px;margin-bottom:var(--s4)}
-  .render .rbtns .rb{height:22px;padding:0 10px;border-radius:var(--r3);font-family:var(--grotesk);font-size:10px;font-weight:600;display:inline-flex;align-items:center}
-  .render .rbtns .rb.p{background:var(--accent);color:var(--on-accent)}
-  .render .rbtns .rb.g{background:transparent;border:1px solid var(--line-2);color:var(--ink-soft)}
-  .render .rgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
-  .render .rcard{border:1px solid var(--line);border-radius:var(--r3);padding:7px;background:var(--panel);display:flex;flex-direction:column;gap:4px}
-  .render .rcard .ic{width:11px;height:11px;border-radius:3px;border:1px solid var(--accent-line);background:var(--accent-sunk)}
-  .render .rcard u{height:4px;border-radius:2px;background:#262a33;display:block}
-  .render .rcard u.s{width:60%}
-
-  /* ── proof row ───────────────────────────────────── */
-  .proof{display:flex;align-items:center;gap:var(--s8);flex-wrap:wrap;padding:var(--s10) 0}
-  .proof .lab{font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;color:var(--quiet);flex:none}
-  .proof .logos{display:flex;flex-wrap:wrap;gap:var(--s8);align-items:center}
-  .proof .logos span{font-family:var(--grotesk);font-weight:500;font-size:16px;color:var(--muted);letter-spacing:-.01em}
-
-  /* ── feature strip (spec sheet) ──────────────────── */
-  .strip{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:var(--r0);overflow:hidden;background:var(--panel)}
-  .feat{padding:var(--s8) var(--s6);border-left:1px solid var(--line)}
-  .feat:first-child{border-left:0}
-  .feat .ficon{width:38px;height:38px;border-radius:var(--r2);background:var(--accent-sunk);border:1px solid var(--accent-line);display:grid;place-items:center;margin-bottom:var(--s5)}
-  .feat h3{font-family:var(--grotesk);font-weight:600;font-size:18px;letter-spacing:-.01em;margin:0 0 var(--s3);color:var(--ink)}
-  .feat p{font-size:14.5px;line-height:1.6;color:var(--muted);margin:0 0 var(--s5)}
-  .feat .ftag{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;color:var(--quiet);border:1px solid var(--line);border-radius:999px;padding:4px 10px;letter-spacing:.02em}
-
-  /* ── footer ──────────────────────────────────────── */
-  footer.site{border-top:1px solid var(--line);padding:var(--s16) 0 var(--s10);background:var(--bg-2)}
-  .foot-top{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:var(--s8)}
-  .foot-top>*{min-width:0}
-  .foot-brand .brand{margin-bottom:var(--s4)}
-  .foot-brand p{font-size:14px;color:var(--muted);max-width:30ch;margin:0 0 var(--s5)}
-  .foot-col h5{font-family:var(--mono);font-size:11.5px;font-weight:500;letter-spacing:.05em;color:var(--quiet);text-transform:uppercase;margin:0 0 var(--s4)}
-  .foot-col a{display:block;font-size:14px;color:var(--muted);padding:6px 0}
-  .foot-col a:hover{color:var(--ink)}
-  .foot-bot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--s4);margin-top:var(--s12);padding-top:var(--s6);border-top:1px solid var(--line);font-size:13px;color:var(--quiet)}
-  .status{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--muted)}
-  .status .ok{width:7px;height:7px;border-radius:50%;background:var(--good);box-shadow:0 0 0 3px var(--good-bg)}
-  .foot-bot .legal{display:flex;gap:var(--s5)}
-  .foot-bot .legal a:hover{color:var(--ink)}
-
-  /* step number on pipeline panes + pipeline closer */
-  .pane-cap .snum{color:var(--accent);font-weight:600;margin-right:1px;letter-spacing:0}
-  .pipe-foot{display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;margin-top:var(--s5);
-    padding:var(--s4) var(--s5);background:var(--panel);border:1px solid var(--line);border-radius:var(--r1)}
-  .pipe-foot .fin{font-family:var(--mono);font-size:12.5px;color:var(--quiet)}
-  .pipe-foot .fin b{color:var(--ink);font-weight:600}
-  .pipe-foot .ship{display:inline-flex;align-items:center;gap:6px;margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--good)}
-  .pipe-foot .ship .ok{width:6px;height:6px;border-radius:50%;background:var(--good);box-shadow:0 0 0 3px var(--good-bg)}
-
-  /* ── section head: centered variant ──────────────── */
-  .sec-head.mid{margin-left:auto;margin-right:auto;text-align:center;max-width:640px}
-
-  /* ── templates showcase ──────────────────────────── */
-  .tpl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s5)}
-  .tpl{background:var(--panel);border:1px solid var(--line);border-radius:var(--r1);overflow:hidden;
-    transition:border-color .15s ease,transform .15s ease}
-  .tpl:hover{border-color:var(--line-2);transform:translateY(-2px)}
-  .tpl .thumb{height:148px;border-bottom:1px solid var(--line);overflow:hidden;background:var(--well)}
-  .tpl .tnav{display:flex;align-items:center;gap:5px;height:22px;padding:0 8px;border-bottom:1px solid var(--line);background:var(--panel-2)}
-  .tpl .tnav i{width:7px;height:7px;border-radius:50%;background:#2b2f38;display:block}
-  .tpl .tnav .turl{margin-left:6px;height:8px;width:54%;border-radius:2px;background:#1d212a}
-  .tpl .tbody{padding:var(--s4)}
-  .tpl .tbar{height:13px;border-radius:3px;background:#202430;margin-bottom:7px}
-  .tpl .tbar.a{width:64%;background:var(--accent-sunk);border:1px solid var(--accent-line);height:15px}
-  .tpl .tbar.b{width:88%}.tpl .tbar.c{width:46%}
-  .tpl .trow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:9px}
-  .tpl .trow span{height:30px;border-radius:var(--r3);border:1px solid var(--line);background:rgba(255,255,255,.015);display:block}
-  .tpl .cap{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);padding:var(--s4) var(--s5)}
-  .tpl .cap h3{font-family:var(--grotesk);font-weight:600;font-size:15.5px;letter-spacing:-.01em;margin:0;color:var(--ink)}
-  .tpl .cap .tt{font-family:var(--mono);font-size:11px;color:var(--quiet);border:1px solid var(--line);border-radius:999px;padding:3px 9px;white-space:nowrap}
-
-  /* ── metrics band (Core Web Vitals) ──────────────── */
-  .metrics{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:var(--r0);overflow:hidden;background:var(--panel)}
-  .metric{padding:var(--s10) var(--s6) var(--s8);border-left:1px solid var(--line);text-align:center}
-  .metric:first-child{border-left:0}
-  .metric .big{font-family:var(--grotesk);font-weight:600;font-size:clamp(48px,7vw,76px);line-height:1;letter-spacing:-.03em;color:var(--good)}
-  .metric .lab{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:var(--s3)}
-  .metric .pass{display:inline-flex;align-items:center;gap:6px;margin-top:var(--s4);font-family:var(--mono);font-size:11px;
-    color:var(--good);background:var(--good-bg);border:1px solid rgba(91,208,138,.3);border-radius:999px;padding:3px 10px}
-  .metric .pass svg{flex:none}
-
-  /* ── crafted-in details grid ─────────────────────── */
-  .det-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s4)}
-  .det{padding:var(--s6) var(--s8);border:1px solid var(--line);border-radius:var(--r1);background:var(--panel);
-    display:grid;grid-template-columns:auto 1fr;gap:var(--s5);align-items:start}
-  .det .dicon{width:40px;height:40px;border-radius:var(--r2);background:var(--accent-sunk);border:1px solid var(--accent-line);display:grid;place-items:center}
-  .det h3{font-family:var(--grotesk);font-weight:600;font-size:17px;letter-spacing:-.01em;margin:0 0 var(--s2);color:var(--ink)}
-  .det p{font-size:14.5px;line-height:1.58;color:var(--muted);margin:0}
-
-  /* ── pricing ─────────────────────────────────────── */
-  .price-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s5);max-width:840px;margin:0 auto}
-  .plan{background:var(--panel);border:1px solid var(--line);border-radius:var(--r0);padding:var(--s8) var(--s10)}
-  .plan.pop{border-color:var(--accent-line);box-shadow:inset 0 0 0 1px var(--accent-line)}
-  .plan .ph{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);margin-bottom:var(--s5)}
-  .plan .pname{font-family:var(--grotesk);font-weight:600;font-size:20px;letter-spacing:-.01em;color:var(--ink)}
-  .plan .badge{font-family:var(--mono);font-size:10.5px;color:var(--accent);background:var(--accent-sunk);border:1px solid var(--accent-line);border-radius:999px;padding:3px 9px;letter-spacing:.03em}
-  .plan .amt{display:flex;align-items:baseline;gap:var(--s3);margin-bottom:var(--s2)}
-  .plan .amt b{font-family:var(--grotesk);font-weight:600;font-size:46px;line-height:1;letter-spacing:-.03em;color:var(--ink)}
-  .plan .amt .per{font-family:var(--mono);font-size:12.5px;color:var(--quiet)}
-  .plan .pdesc{font-size:14.5px;line-height:1.55;color:var(--muted);margin:0 0 var(--s6)}
-  .plan ul{list-style:none;margin:0 0 var(--s6);padding:0;display:flex;flex-direction:column;gap:var(--s3)}
-  .plan li{display:flex;align-items:flex-start;gap:var(--s3);font-size:14px;line-height:1.5;color:var(--ink-soft)}
-  .plan li svg{flex:none;margin-top:2px}
-  .plan .btn{width:100%}
-  .plan .note{display:block;text-align:center;margin-top:var(--s4);font-family:var(--mono);font-size:11.5px;color:var(--quiet)}
-
-  /* ── FAQ ─────────────────────────────────────────── */
-  .faq-wrap{max-width:760px;margin:0 auto;border-top:1px solid var(--line)}
-  details.faq{border-bottom:1px solid var(--line)}
-  details.faq summary{display:flex;align-items:center;gap:var(--s4);cursor:pointer;list-style:none;
-    padding:var(--s6) var(--s2);font-family:var(--grotesk);font-weight:500;font-size:17px;letter-spacing:-.01em;color:var(--ink)}
-  details.faq summary::-webkit-details-marker{display:none}
-  details.faq summary:hover{color:var(--accent)}
-  details.faq .qn{font-family:var(--mono);font-size:12.5px;font-weight:500;color:var(--accent);flex:none;width:2.4em}
-  details.faq .chev{margin-left:auto;flex:none;transition:transform .18s ease;color:var(--quiet)}
-  details.faq[open] .chev{transform:rotate(180deg)}
-  details.faq .ans{padding:0 var(--s2) var(--s6) calc(2.4em + var(--s4));margin:0;font-size:15px;line-height:1.62;color:var(--muted);max-width:60ch}
-
-  @keyframes blink{50%{opacity:0}}
-
-  /* ── responsive ──────────────────────────────────── */
-  @media (max-width:1020px){
-    .pipe-body{grid-template-columns:1fr}
-    .vline{display:none}
-    .arrow{flex-direction:row;justify-content:center;gap:var(--s3);padding:var(--s2) 0;border:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--bg-2)}
-    .arrow .ring{transform:rotate(90deg)}
-    .tpl-grid{grid-template-columns:1fr 1fr}
-    .foot-top{grid-template-columns:1fr 1fr}
-    .foot-brand{grid-column:1 / -1}
+  /* header ---------------------------------------------------------------- */
+  header.site{position:sticky;top:0;z-index:50;background:rgba(10,11,13,.82);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .nav{display:flex;align-items:center;justify-content:space-between;gap:16px;height:64px;min-width:0}
+  .brand{display:inline-flex;align-items:center;gap:11px;font-family:var(--display);
+    font-weight:600;font-size:18px;letter-spacing:-.01em;min-width:0}
+  .brand .glyph{width:28px;height:28px;border-radius:7px;flex:none;
+    background:linear-gradient(150deg,#3B74F0,#1D4ED8);
+    display:grid;place-items:center;color:var(--on-accent);font-family:var(--mono);
+    font-weight:700;font-size:15px}
+  .nav-r{display:flex;align-items:center;gap:10px;flex:none}
+  .nav-link{font-family:var(--mono);font-size:14px;color:var(--muted);padding:9px 12px;border-radius:7px}
+  .nav-link:hover{color:var(--ink)}
+  .nav-toggle{display:none;width:44px;height:44px;align-items:center;justify-content:center;flex:none;
+    border:1px solid var(--line-2);border-radius:8px;background:transparent;color:var(--ink)}
+  .nav-toggle:hover{border-color:var(--accent-line)}
+  .nav-toggle .x{display:none}
+  .nav-toggle[aria-expanded="true"] .bars{display:none}
+  .nav-toggle[aria-expanded="true"] .x{display:block}
+  .mnav{display:none}
+  @media(max-width:560px){
+    .nav-link,.demo-btn{display:none}
+    .nav-toggle{display:inline-flex}
+    .mnav{display:block;border-top:1px solid var(--line);background:var(--bg-2)}
+    .mnav[hidden]{display:none}
+    .mnav .wrap{padding-block:8px}
+    .mnav a{display:block;padding:14px 4px;font-family:var(--mono);font-size:15px;color:var(--muted);
+      border-bottom:1px solid var(--line)}
+    .mnav a:last-child{border-bottom:0}
+    .mnav a:hover{color:var(--ink)}
   }
-  @media (max-width:760px){
-    .wrap{padding:0 var(--s5)}
-    .nav-links{display:none}
-    .hero-in{padding:var(--s14) 0 var(--s12)}
-    .strip{grid-template-columns:1fr}
-    .feat{border-left:0;border-top:1px solid var(--line)}
-    .feat:first-child{border-top:0}
-    .pipe-bar .meta,.pipe-bar .dots{display:none}
-    .pipe-bar{gap:var(--s3)}
-    .tpl-grid{grid-template-columns:1fr}
-    .metrics{grid-template-columns:1fr}
-    .metric{border-left:0;border-top:1px solid var(--line);padding:var(--s8) var(--s6)}
-    .metric:first-child{border-top:0}
-    .det-grid{grid-template-columns:1fr}
-    .price-grid{grid-template-columns:1fr}
-    .foot-top{grid-template-columns:1fr}
-    section.block{padding:var(--s16) 0}
-  }
-  @media (prefers-reduced-motion:reduce){
-    h1 .caret{animation:none}
-    *{transition:none!important}
+
+  /* hero ------------------------------------------------------------------ */
+  .hero{position:relative;padding-top:clamp(48px,7vw,84px);padding-bottom:clamp(56px,7vw,96px)}
+  .hero::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+    background:
+      radial-gradient(60% 50% at 50% -8%,rgba(37,99,235,.16),transparent 70%),
+      linear-gradient(var(--line) 1px,transparent 1px) 0 0/100% 88px,
+      linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/88px 100%;
+    -webkit-mask-image:linear-gradient(180deg,#000,transparent 78%);
+            mask-image:linear-gradient(180deg,#000,transparent 78%);opacity:.6}
+  .hero .wrap{position:relative;z-index:1}
+  .hero-top{max-width:880px;margin-inline:auto;text-align:center}
+  .hero h1{font-size:clamp(46px,8.6vw,104px);line-height:.94;letter-spacing:-.038em;font-weight:700}
+  .hero h1 .fade{color:var(--muted)}
+  .hero-sub{margin:24px auto 0;max-width:60ch;color:var(--muted);
+    font-size:clamp(16px,1.7vw,20px);line-height:1.6}
+  .hero-sub b{color:var(--ink-soft);font-weight:500}
+  .hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:32px}
+  .hero-canvas{margin:clamp(40px,6vw,72px) auto 0;max-width:1060px}
+
+  /* hero signature artifact: wireframe -> code */
+  .build{display:grid;grid-template-columns:1.05fr 1fr;min-width:0}
+  @media(max-width:760px){.build{grid-template-columns:1fr}}
+  .build-pane{min-width:0;padding:0}
+  .build-pane.wire{border-right:1px solid var(--line)}
+  @media(max-width:760px){.build-pane.wire{border-right:0;border-bottom:1px solid var(--line)}}
+  .pane-head{display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:11px 16px;border-bottom:1px solid var(--line);min-width:0}
+  .pane-head .ttl{font-family:var(--mono);font-size:12px;color:var(--quiet);letter-spacing:.03em;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pane-head .ttl b{color:var(--accent-bright);font-weight:600}
+  .wireframe{padding:18px;display:flex;flex-direction:column;gap:12px}
+  .wf{border:1px dashed var(--line-2);border-radius:8px;background:rgba(255,255,255,.012);
+    padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+  .wf .label{font-family:var(--mono);font-size:10.5px;color:var(--quiet);letter-spacing:.05em}
+  .wf .bar{height:8px;border-radius:4px;background:var(--line-2)}
+  .wf .bar.lg{height:12px;width:62%}
+  .wf .bar.sm{width:38%;background:var(--line)}
+  .wf.sel{border-style:solid;border-color:var(--accent-line);background:var(--accent-sunk)}
+  .wf-row{display:flex;gap:8px}
+  .wf-row .bar{flex:1;min-width:0}
+  .code{background:var(--well);padding:16px 18px;overflow-x:auto;min-width:0}
+  .code pre{margin:0;font-family:var(--mono);font-size:12.5px;line-height:1.85;color:var(--ink-soft)}
+  .code .ln{color:var(--quiet);opacity:.5;user-select:none;display:inline-block;width:1.6em;
+    text-align:right;margin-right:14px}
+  .k{color:var(--accent-bright)}.s{color:var(--good)}.t{color:#E58E6B}.c{color:var(--quiet)}.a{color:var(--ink)}
+  .build-foot{display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    padding:11px 18px;border-top:1px solid var(--line);background:var(--panel-2);min-width:0}
+  .stat-ok{font-family:var(--mono);font-size:12.5px;color:var(--good);display:inline-flex;align-items:center;gap:7px}
+  .build-foot .meta{font-family:var(--mono);font-size:12.5px;color:var(--quiet)}
+
+  /* step / story sections ------------------------------------------------- */
+  .step{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(32px,5vw,72px);
+    align-items:center}
+  .step.rev{grid-template-columns:minmax(0,7fr) minmax(0,5fr)}
+  @media(max-width:880px){.step,.step.rev{grid-template-columns:1fr;gap:36px}
+    .step.rev .step-copy{order:-1}}
+  .step-copy{min-width:0}
+  .step h2{margin-top:18px;font-size:clamp(40px,7vw,84px);line-height:1.0;letter-spacing:-.03em;font-weight:600}
+  .step h2 .fade{color:var(--muted)}
+  .step p.body{margin-top:20px;color:var(--muted);max-width:46ch;line-height:1.65}
+  .step .step-cta{margin-top:28px}
+  .step-art{min-width:0}
+
+  /* 01 sitemap artifact */
+  .sitemap{padding:22px clamp(18px,3vw,30px) 26px}
+  .sm-root{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:13px;
+    color:var(--ink);background:var(--panel-2);border:1px solid var(--line-2);
+    padding:9px 15px;border-radius:8px;margin-bottom:6px}
+  .sm-root .ico{color:var(--accent)}
+  .sm-tree{display:grid;gap:9px;margin-left:14px;padding-left:22px;border-left:1px solid var(--line-2)}
+  .sm-node{display:flex;align-items:center;gap:12px;background:var(--panel-2);
+    border:1px solid var(--line);border-radius:8px;padding:11px 14px;min-width:0;position:relative}
+  .sm-node::before{content:"";position:absolute;left:-22px;top:50%;width:18px;height:1px;background:var(--line-2)}
+  .sm-node .pg{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
+  .sm-node .pg .nm{font-family:var(--display);font-weight:500;font-size:15px;color:var(--ink)}
+  .sm-node .pg .pa{font-family:var(--mono);font-size:11.5px;color:var(--quiet)}
+  .sm-node .chg{font-family:var(--mono);font-size:11.5px;color:var(--muted);
+    border:1px solid var(--line);border-radius:6px;padding:6px 12px;background:transparent;flex:none}
+  .sm-node .chg:hover{color:var(--accent-bright);border-color:var(--accent-line)}
+  .sm-node .ico{color:var(--quiet);flex:none}
+
+  /* 02 experiment artifact: tabs + wireframe variations */
+  .tabs{min-width:0}
+  .tablist{display:flex;gap:6px;padding:6px;background:var(--panel-2);border:1px solid var(--line);
+    border-radius:10px;width:max-content;max-width:100%;overflow-x:auto}
+  .tab{font-family:var(--mono);font-size:13px;color:var(--muted);background:transparent;border:0;
+    padding:9px 16px;border-radius:7px;white-space:nowrap}
+  .tab[aria-selected="true"]{background:var(--accent-sunk);color:var(--accent-bright);
+    box-shadow:inset 0 0 0 1px var(--accent-line)}
+  .tab:hover{color:var(--ink)}
+  .tabpanel{margin-top:16px}
+  .tabpanel[hidden]{display:none}
+  .variations{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media(max-width:560px){.variations{grid-template-columns:repeat(2,1fr)}}
+  .vthumb{min-width:0;border:1px solid var(--line);border-radius:10px;background:var(--well);
+    padding:12px;display:flex;flex-direction:column;gap:8px;min-height:150px}
+  .vthumb.active{border-color:var(--accent-line);box-shadow:0 0 0 1px var(--accent-line)}
+  .vthumb .vb{border-radius:4px;background:var(--line-2)}
+  .vthumb .vb.hero{height:24px;background:var(--accent-sunk);border:1px solid var(--accent-line)}
+  .vthumb .vb.row{height:14px}
+  .vthumb .vrow{display:flex;gap:6px}
+  .vthumb .vrow .vb{flex:1;min-width:0;height:30px}
+  .vcap{font-family:var(--mono);font-size:11px;color:var(--quiet);margin-top:auto;letter-spacing:.03em}
+
+  /* 03 export code artifact */
+  .term-body{background:var(--well);padding:18px clamp(16px,2.5vw,24px);overflow-x:auto}
+  .term-body pre{margin:0;font-family:var(--mono);font-size:13px;line-height:1.9;color:var(--ink-soft)}
+  .prompt{color:var(--accent-bright)}
+  .ok{color:var(--good)}.dim{color:var(--quiet)}
+
+  /* complete-site tabs section */
+  .complete{background:var(--bg-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .complete-head{max-width:760px}
+  .complete-head h2{font-size:clamp(36px,5.6vw,72px);line-height:1.0;margin-top:18px;letter-spacing:-.03em}
+  .complete-head p{margin-top:20px;color:var(--muted);max-width:52ch;line-height:1.65}
+  .complete-head p b{color:var(--ink-soft);font-weight:500}
+  .complete-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);
+    gap:clamp(24px,4vw,52px);align-items:start}
+  @media(max-width:880px){.complete-grid{grid-template-columns:1fr}}
+  .pageinfo{min-width:0}
+  .pageinfo h3{font-family:var(--display);font-size:24px;font-weight:600;margin-bottom:14px}
+  .pageinfo p{color:var(--muted);line-height:1.65;margin-bottom:20px}
+  .pageinfo .tags{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:24px}
+  .pageinfo .acts{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+  .pageinfo .clients{font-family:var(--mono);font-size:13px;color:var(--quiet)}
+  .preview-card{min-width:0;background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r0);overflow:hidden}
+  .pv-mock{padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+  .pv-hero{border-radius:10px;background:linear-gradient(160deg,rgba(37,99,235,.20),rgba(37,99,235,.05));
+    border:1px solid var(--accent-line);padding:22px;display:flex;flex-direction:column;gap:10px;min-width:0}
+  .pv-hero .b1{height:14px;width:70%;border-radius:5px;background:rgba(255,255,255,.22)}
+  .pv-hero .b2{height:9px;width:48%;border-radius:5px;background:rgba(255,255,255,.13)}
+  .pv-hero .pill{height:24px;width:96px;border-radius:6px;background:var(--accent);margin-top:4px}
+  .pv-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;min-width:0}
+  .pv-col{min-width:0;border:1px solid var(--line);border-radius:8px;background:var(--well);
+    padding:12px;display:flex;flex-direction:column;gap:7px}
+  .pv-col .sq{height:26px;border-radius:6px;background:var(--line-2)}
+  .pv-col .l{height:7px;border-radius:4px;background:var(--line-2)}
+  .pv-col .l.sh{width:60%;background:var(--line)}
+
+  /* templates ------------------------------------------------------------- */
+  .tpl-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
+  .tpl-head h2{font-size:clamp(30px,4.2vw,54px);max-width:18ch;line-height:1.05;letter-spacing:-.025em}
+  .tpl-acts{display:flex;gap:12px;flex-wrap:wrap}
+  .tpl-grid{margin-top:40px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  @media(max-width:880px){.tpl-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:520px){.tpl-grid{grid-template-columns:1fr}}
+  .tpl{min-width:0;border:1px solid var(--line);border-radius:var(--r1);overflow:hidden;
+    background:var(--panel);transition:border-color .15s}
+  .tpl:hover{border-color:var(--accent-line)}
+  .tpl .shot{aspect-ratio:16/11;overflow:hidden;border-bottom:1px solid var(--line);background:var(--well)}
+  .tpl .shot img{width:100%;height:100%;object-fit:cover;filter:saturate(.82) brightness(.92)}
+  .tpl .meta{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;min-width:0}
+  .tpl .meta .nm{font-family:var(--display);font-weight:500;font-size:16px}
+  .tpl .meta .ty{font-family:var(--mono);font-size:11.5px;color:var(--quiet)}
+
+  /* logo wall ------------------------------------------------------------- */
+  .proof{border-top:1px solid var(--line);padding-block:clamp(48px,6vw,72px)}
+  .proof .cap{text-align:center;font-family:var(--mono);font-size:12.5px;letter-spacing:.06em;
+    color:var(--quiet);text-transform:uppercase}
+  .logos{margin-top:28px;display:flex;flex-wrap:wrap;justify-content:center;gap:14px 40px;align-items:center}
+  .logos span{font-family:var(--display);font-weight:600;font-size:clamp(17px,2.2vw,23px);
+    color:var(--quiet);letter-spacing:-.01em;opacity:.9}
+
+  /* features -------------------------------------------------------------- */
+  .feat-head{max-width:760px}
+  .feat-head h2{font-size:clamp(36px,6vw,80px);line-height:1.0;margin-top:18px;letter-spacing:-.03em}
+  .feat-head p{margin-top:22px;color:var(--muted);max-width:54ch;line-height:1.65}
+  .feat-head p b{color:var(--ink-soft);font-weight:500}
+  .feat-grid{margin-top:44px;display:grid;grid-template-columns:repeat(6,1fr);gap:18px}
+  @media(max-width:880px){.feat-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:560px){.feat-grid{grid-template-columns:1fr}}
+  .card{min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:var(--r1);
+    padding:24px 26px;display:flex;flex-direction:column;gap:14px}
+  .card h3{font-family:var(--display);font-size:19px;font-weight:600;letter-spacing:-.01em}
+  .card p{color:var(--muted);font-size:15px;line-height:1.6}
+  .card .ico{width:34px;height:34px;border-radius:9px;background:var(--accent-sunk);
+    border:1px solid var(--accent-line);display:grid;place-items:center;color:var(--accent-bright);flex:none}
+  .span-3{grid-column:span 3}
+  @media(max-width:880px){.span-3{grid-column:span 1}}
+  @media(max-width:560px){.span-3{grid-column:span 1}}
+  .searchbar{margin-top:6px;display:flex;align-items:center;gap:11px;background:var(--well);
+    border:1px solid var(--line-2);border-radius:9px;padding:11px 14px;min-width:0}
+  .searchbar .ph{font-family:var(--sans);color:var(--quiet);font-size:14px;flex:1;min-width:0}
+  .searchbar kbd{font-family:var(--mono);font-size:11px;color:var(--muted);background:var(--panel-2);
+    border:1px solid var(--line);border-radius:5px;padding:3px 7px}
+  .cwv{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:4px}
+  @media(max-width:480px){.cwv{grid-template-columns:1fr}}
+  .cwv .m{min-width:0;border:1px solid var(--line);border-radius:9px;background:var(--well);padding:14px 16px}
+  .cwv .m .v{font-family:var(--mono);font-weight:600;font-size:26px;color:var(--good);line-height:1}
+  .cwv .m .lbl{font-family:var(--mono);font-size:11px;color:var(--quiet);margin-top:8px;letter-spacing:.02em}
+
+  /* pricing --------------------------------------------------------------- */
+  .pricing{background:var(--bg-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .price-head{text-align:center;max-width:640px;margin-inline:auto}
+  .price-head h2{font-size:clamp(34px,5vw,66px);line-height:1.02;margin-top:18px;letter-spacing:-.03em}
+  .price-head .eyebrow{justify-content:center}
+  .price-head .eyebrow::before{display:none}
+  .price-grid{margin-top:48px;display:grid;grid-template-columns:repeat(2,1fr);gap:20px;
+    max-width:860px;margin-inline:auto}
+  @media(max-width:720px){.price-grid{grid-template-columns:1fr}}
+  .plan{min-width:0;background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r0);
+    padding:clamp(26px,3vw,34px);display:flex;flex-direction:column;gap:20px}
+  .plan.feature{border-color:var(--accent-line);box-shadow:0 0 0 1px var(--accent-line)}
+  .plan-top{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+  .plan .name{font-family:var(--display);font-size:22px;font-weight:600}
+  .plan .reco{font-family:var(--mono);font-size:11px;color:var(--accent-bright);background:var(--accent-sunk);
+    border:1px solid var(--accent-line);padding:4px 10px;border-radius:6px;letter-spacing:.03em}
+  .plan .priceline{display:flex;align-items:baseline;gap:10px}
+  .plan .amt{font-family:var(--display);font-size:46px;font-weight:600;letter-spacing:-.02em}
+  .plan .fee{font-family:var(--mono);font-size:12.5px;color:var(--quiet)}
+  .plan .desc{color:var(--muted);font-size:15px}
+  .plan ul{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+  .plan li{display:flex;align-items:center;gap:11px;font-size:15px;color:var(--ink-soft);min-width:0}
+  .plan li svg{color:var(--good);flex:none}
+  .plan li .badge{margin-left:auto}
+  .plan .btn{justify-content:center;width:100%}
+  .custom{margin:32px auto 0;max-width:860px;display:flex;align-items:center;justify-content:space-between;
+    gap:20px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:var(--r1);
+    padding:20px 28px}
+  .custom p{color:var(--muted);font-size:15px;max-width:48ch}
+  .custom p b{color:var(--ink-soft);font-weight:500}
+
+  /* faq ------------------------------------------------------------------- */
+  .faq-grid{margin-top:44px;max-width:860px;margin-inline:auto;border-top:1px solid var(--line)}
+  details.q{border-bottom:1px solid var(--line)}
+  details.q summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;
+    gap:18px;padding:22px 4px;font-family:var(--display);font-weight:500;font-size:clamp(17px,2vw,21px);
+    color:var(--ink);min-width:0}
+  details.q summary::-webkit-details-marker{display:none}
+  details.q .pm{flex:none;width:26px;height:26px;border:1px solid var(--line-2);border-radius:7px;
+    display:grid;place-items:center;color:var(--accent-bright);transition:transform .2s,border-color .15s}
+  details.q[open] .pm{transform:rotate(45deg);border-color:var(--accent-line)}
+  details.q summary:hover .pm{border-color:var(--accent-line)}
+  details.q .ans{padding:0 4px 24px;color:var(--muted);max-width:64ch;line-height:1.7;font-size:16px}
+
+  /* marquee + final ------------------------------------------------------- */
+  .ship{border-top:1px solid var(--line);overflow:hidden;padding-block:clamp(40px,5vw,64px)}
+  .marquee{display:flex;gap:0;width:max-content;animation:slide 22s linear infinite}
+  .marquee .it{font-family:var(--display);font-weight:700;font-size:clamp(40px,8vw,96px);
+    letter-spacing:-.03em;color:transparent;-webkit-text-stroke:1px var(--line-2);padding-inline:26px}
+  .marquee .it:nth-child(odd){color:var(--accent);-webkit-text-stroke:0}
+  @keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* footer ---------------------------------------------------------------- */
+  footer.site{border-top:1px solid var(--line);background:var(--bg-2)}
+  .foot{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:32px;padding-block:clamp(48px,6vw,72px)}
+  @media(max-width:680px){.foot{grid-template-columns:1fr 1fr}.foot .fbrand{grid-column:1/-1}}
+  .fbrand p{margin-top:16px;color:var(--quiet);font-size:14px;max-width:36ch;line-height:1.6}
+  .fcol h4{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--quiet);font-weight:500;margin-bottom:16px}
+  .fcol a{display:block;padding:7px 0;color:var(--muted);font-size:15px}
+  .fcol a:hover{color:var(--ink)}
+  .foot-bottom{border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;
+    gap:16px;flex-wrap:wrap;padding-block:22px}
+  .foot-bottom .cp{font-family:var(--mono);font-size:12.5px;color:var(--quiet)}
+  .foot-bottom .legal{display:flex;gap:22px;flex-wrap:wrap}
+  .foot-bottom .legal a{font-family:var(--mono);font-size:12.5px;color:var(--quiet)}
+  .foot-bottom .legal a:hover{color:var(--ink)}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+    html{scroll-behavior:auto}
+    .marquee{animation:none;transform:translateX(0)}
   }
 </style>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 
 <header class="site">
-  <div class="wrap"><nav>
-    <a class="brand" href="#" aria-label="Prime UI — home">
-      <span class="glyph" aria-hidden="true">
-        <svg width="16" height="16" viewBox="0 0 18 18" fill="none">
-          <path d="M4 5l3 4-3 4" stroke="#3D7BFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M9.5 13.5h4.5" stroke="#838A96" stroke-width="1.6" stroke-linecap="round"/>
-        </svg>
-      </span>
-      Prime UI <span class="ver mono">v2.4</span>
+  <div class="wrap nav">
+    <a class="brand" href="#" aria-label="Prime UI home">
+      <span class="glyph" aria-hidden="true">P</span>
+      <span>Prime UI</span>
     </a>
-    <div class="nav-links">
-      <a href="#build">How it works</a>
+    <nav class="nav-r" aria-label="Primary">
+      <a class="nav-link" href="#pricing">Pricing</a>
+      <a class="nav-link" href="#faq">FAQ</a>
+      <a class="nav-link" href="#templates">Templates</a>
+      <a class="btn btn-ghost demo-btn" href="#templates"><span>Live Demo</span></a>
+      <a class="btn btn-primary" href="#pricing"><span>Get Started</span></a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu">
+        <svg class="bars" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <svg class="x" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+    </nav>
+  </div>
+  <div class="mnav" id="mobile-nav" hidden>
+    <div class="wrap">
+      <a href="#templates">Live Demo</a>
       <a href="#templates">Templates</a>
-      <a href="#features">Features</a>
       <a href="#pricing">Pricing</a>
       <a href="#faq">FAQ</a>
     </div>
-    <div class="nav-right">
-      <a class="btn btn-ghost" href="#build">Sign in</a>
-      <a class="btn btn-cta" href="#build">Get started
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9m0 0L8.5 4.5M12 8l-3.5 3.5" stroke="#08090C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </a>
-    </div>
-  </nav></div>
+  </div>
 </header>
 
-<main>
+<main id="main">
+
   <!-- HERO -->
-  <section class="hero">
-    <div class="wrap hero-in">
-      <p class="kicker mono"><span class="br">//</span> from wireframe to production</p>
-      <h1>Build sites fast.<br>Fear no code.<span class="caret" aria-hidden="true"></span></h1>
-      <p class="lede">Go from a <b>wireframe</b> or a one-line <b>prompt</b> to production-ready <b>Next.js&nbsp;+&nbsp;Tailwind</b>. Real components — typed, accessible, and readable. Code you can own, review, and ship.</p>
-
-      <div class="cta-row">
-        <a class="btn btn-cta" href="#build">Get started
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9m0 0L8.5 4.5M12 8l-3.5 3.5" stroke="#08090C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </a>
-        <a class="btn btn-outline" href="#build">
-          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 3.5h7a1.5 1.5 0 011.5 1.5v8M3 3.5v9h8.5M3 3.5L1.5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Read the docs
-        </a>
+  <section class="hero" aria-labelledby="hero-h">
+    <div class="wrap">
+      <div class="hero-top">
+        <h1 id="hero-h">Build sites fast.<br><span class="fade">Fear no code.</span></h1>
+        <p class="hero-sub">Prime UI is the <b>missing foundation for AI-generated websites</b>. Go from sitemaps and wireframes to production-ready Next.js and Tailwind CSS code in minutes. Built for consistent results — no prompt engineering required.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#pricing"><span>Get Started</span></a>
+          <a class="btn btn-ghost" href="#templates">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M5 3.5v9l7-4.5-7-4.5Z" fill="currentColor"/></svg>
+            <span>Live Demo</span>
+          </a>
+        </div>
       </div>
 
-      <div class="cmd">
-        <span class="pr mono" aria-hidden="true">$</span>
-        <code>npx create-prime-app</code>
-        <button class="copy" type="button" data-copy="npx create-prime-app" aria-label="Copy install command">
-          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="5.5" y="5.5" width="8" height="8" rx="1.6" stroke="currentColor" stroke-width="1.3"/><path d="M3.5 10.5H3a.5.5 0 01-.5-.5V3a.5.5 0 01.5-.5h7a.5.5 0 01.5.5v.5" stroke="currentColor" stroke-width="1.3"/></svg>
-          <span class="copy-label">Copy</span>
-        </button>
-      </div>
-
-      <div class="spec mono">
-        <span><span class="ok" aria-hidden="true"></span>Next.js 15</span>
-        <span class="sep" aria-hidden="true"></span>
-        <span>Tailwind v4</span>
-        <span class="sep" aria-hidden="true"></span>
-        <span>TypeScript</span>
-        <span class="sep" aria-hidden="true"></span>
-        <span>MIT licensed</span>
+      <!-- signature artifact: wireframe -> code -->
+      <div class="hero-canvas">
+        <div class="window" role="img" aria-label="Prime UI editor: a page wireframe on the left is exported as production-ready Next.js and Tailwind code on the right, with a passing build.">
+          <div class="winbar">
+            <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="url">prime-ui · canvas — localhost:3000</span>
+          </div>
+          <div class="build">
+            <div class="build-pane wire">
+              <div class="pane-head"><span class="ttl"><b>wireframe</b> / home.page</span><span class="ttl">3 sections</span></div>
+              <div class="wireframe" aria-hidden="true">
+                <div class="wf sel">
+                  <span class="label">HERO</span>
+                  <div class="bar lg"></div><div class="bar sm"></div>
+                </div>
+                <div class="wf">
+                  <span class="label">FEATURES</span>
+                  <div class="wf-row"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+                </div>
+                <div class="wf">
+                  <span class="label">PRICING</span>
+                  <div class="wf-row"><div class="bar"></div><div class="bar"></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="build-pane">
+              <div class="pane-head"><span class="ttl"><b>export</b> / home.tsx</span><span class="ttl">Next.js + Tailwind</span></div>
+              <div class="code" aria-hidden="true"><pre><span class="ln">1</span><span class="k">export default function</span> <span class="t">Home</span>() {
+<span class="ln">2</span>  <span class="k">return</span> (
+<span class="ln">3</span>    &lt;<span class="t">main</span> <span class="a">className</span>=<span class="s">"mx-auto max-w-6xl"</span>&gt;
+<span class="ln">4</span>      &lt;<span class="t">Hero</span> <span class="a">title</span>=<span class="s">"Build sites fast."</span> /&gt;
+<span class="ln">5</span>      &lt;<span class="t">Features</span> <span class="a">cols</span>={<span class="s">3</span>} /&gt;
+<span class="ln">6</span>      &lt;<span class="t">Pricing</span> <span class="a">plans</span>={<span class="s">plans</span>} /&gt;
+<span class="ln">7</span>    &lt;/<span class="t">main</span>&gt;
+<span class="ln">8</span>  )
+<span class="ln">9</span>}</pre></div>
+            </div>
+          </div>
+          <div class="build-foot">
+            <span class="stat-ok" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              build passed
+            </span>
+            <span class="meta">0 errors · 0 unused classes · 12.4 kB</span>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- SIGNATURE: the build pipeline -->
-  <section class="block" id="build">
-    <div class="wrap">
-      <div class="sec-head">
-        <p class="sec-kicker mono"><span class="br">//</span> how it works · 01 → 03</p>
-        <h2>Start with a sitemap. Export to code.</h2>
-        <p class="sec-lede">Outline the vision, experiment quickly, then export. Prime UI assembles the layout from your component system and emits clean, typed Next.js and Tailwind. The same path every time — built for consistent results, no prompt-engineering.</p>
+  <!-- 01 SITEMAP -->
+  <section aria-labelledby="s01">
+    <div class="wrap step">
+      <div class="step-copy">
+        <span class="eyebrow"><span class="num">01</span> Start with a sitemap</span>
+        <h2 id="s01">Outline the<br>vision.</h2>
+        <p class="body">Describe the site you have in mind and Prime UI lays out the page tree — every route, every slug, every content type, mapped before a single line of code. Rename, reorder, or branch any page in place.</p>
+        <a class="btn btn-soft step-cta" href="#templates"><span>See it in action</span></a>
       </div>
-
-      <div class="pipe">
-        <div class="pipe-bar">
-          <div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
-          <div class="tabs" aria-hidden="true">
-            <span class="tab">wireframe.fig</span>
-            <span class="tab on">app/page.tsx</span>
-            <span class="tab">preview</span>
+      <div class="step-art">
+        <div class="window">
+          <div class="winbar">
+            <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="url">sitemap — 6 pages</span>
           </div>
-          <span class="meta mono"><span class="ok" aria-hidden="true"></span>build ready · 0.8s</span>
+          <div class="sitemap">
+            <div class="sm-root">
+              <svg class="ico" width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              primeui.com
+            </div>
+            <div class="sm-tree">
+              <div class="sm-node">
+                <svg class="ico" width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2.5 7L8 2.5 13.5 7v6h-11V7Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+                <span class="pg"><span class="nm">Home</span><span class="pa">/</span></span>
+                <button class="chg" type="button">Change</button>
+              </div>
+              <div class="sm-node">
+                <svg class="ico" width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 2.5h10v11H3zM5.5 6h5M5.5 8.5h5M5.5 11h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                <span class="pg"><span class="nm">Blog</span><span class="pa">/blog</span></span>
+                <button class="chg" type="button">Change</button>
+              </div>
+              <div class="sm-node">
+                <svg class="ico" width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2v12M5 4.5h4.5a2 2 0 010 4H6a2 2 0 000 4h5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                <span class="pg"><span class="nm">Pricing</span><span class="pa">/pricing</span></span>
+                <button class="chg" type="button">Change</button>
+              </div>
+              <div class="sm-node">
+                <svg class="ico" width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 2.5h6l2.5 2.5v8.5H4zM10 2.5V5h2.5" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+                <span class="pg"><span class="nm">Documentation</span><span class="pa">/docs</span></span>
+                <button class="chg" type="button">Change</button>
+              </div>
+              <div class="sm-node">
+                <svg class="ico" width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2.5l4.5 2v3.5c0 3-2 4.5-4.5 5.5-2.5-1-4.5-2.5-4.5-5.5V4.5L8 2.5Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+                <span class="pg"><span class="nm">Privacy Policy</span><span class="pa">/privacy-policy</span></span>
+                <button class="chg" type="button">Change</button>
+              </div>
+              <div class="sm-node">
+                <svg class="ico" width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 2.5h6l2.5 2.5v8.5H4zM6 8h4M6 10.5h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="pg"><span class="nm">Terms &amp; Conditions</span><span class="pa">/terms-and-conditions</span></span>
+                <button class="chg" type="button">Change</button>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
+    </div>
+  </section>
 
-        <div class="pipe-body">
-          <!-- 1 — wireframe -->
-          <div class="pane">
-            <div class="pane-cap mono"><span class="snum">01</span><span class="dotc" aria-hidden="true"></span>sitemap → wireframe</div>
-            <div class="wf" role="img" aria-label="A low-fidelity wireframe: a navigation bar, a two-line heading, two buttons, and a three-card grid.">
-              <div class="wbar"><i></i><i></i><i></i></div>
-              <div class="wblock w90"></div>
-              <div class="wblock w50"></div>
-              <div class="wbtns"><u></u><u></u></div>
-              <div class="wgrid"><div class="wcard"></div><div class="wcard"></div><div class="wcard"></div></div>
-            </div>
+  <!-- 02 EXPERIMENT -->
+  <section class="complete" aria-labelledby="s02">
+    <div class="wrap step rev">
+      <div class="step-art">
+        <div class="window">
+          <div class="winbar">
+            <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="url">layout variations — page: home</span>
           </div>
+          <div style="padding:18px clamp(16px,2.5vw,24px) 22px">
+            <div class="tabs" data-tabs>
+              <div class="tablist" role="tablist" aria-label="Variation mode">
+                <button class="tab" role="tab" id="x-tab-1" aria-controls="x-pan-1" aria-selected="true">Layout</button>
+                <button class="tab" role="tab" id="x-tab-2" aria-controls="x-pan-2" aria-selected="false" tabindex="-1">Content</button>
+                <button class="tab" role="tab" id="x-tab-3" aria-controls="x-pan-3" aria-selected="false" tabindex="-1">Section</button>
+              </div>
 
-          <div class="arrow" aria-hidden="true">
-            <span class="ring"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 8h9m0 0L8.5 4.5M12 8l-3.5 3.5" stroke="#3D7BFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-            <span class="lbl mono">build</span>
-          </div>
-
-          <!-- 2 — code -->
-          <div class="pane">
-            <div class="pane-cap mono"><span class="snum">02</span><span class="dotc" aria-hidden="true"></span>export → app/page.tsx</div>
-            <div class="editor">
-              <pre class="code" aria-label="Generated page.tsx source code"><span class="row"><span class="gut" aria-hidden="true">1</span><span class="tk-com">// generated from your design — not prompted</span></span><span class="row"><span class="gut" aria-hidden="true">2</span><span class="tk-key">import</span><span class="tk-pun"> { </span><span class="tk-comp">Hero</span><span class="tk-pun">, </span><span class="tk-comp">Button</span><span class="tk-pun">, </span><span class="tk-comp">Grid</span><span class="tk-pun"> } </span><span class="tk-key">from</span><span class="tk-str"> "prime-ui"</span></span><span class="row"><span class="gut" aria-hidden="true">3</span><span> </span></span><span class="row"><span class="gut" aria-hidden="true">4</span><span class="tk-key">export default function</span><span class="tk-fn"> Page</span><span class="tk-pun">() {</span></span><span class="row"><span class="gut" aria-hidden="true">5</span><span class="tk-pun">  </span><span class="tk-key">return</span><span class="tk-pun"> (</span></span><span class="row"><span class="gut" aria-hidden="true">6</span><span class="tk-pun">    &lt;</span><span class="tk-comp">Hero</span></span><span class="row"><span class="gut" aria-hidden="true">7</span><span class="tk-attr">      title</span><span class="tk-pun">=</span><span class="tk-str">"Build sites fast"</span></span><span class="row"><span class="gut" aria-hidden="true">8</span><span class="tk-attr">      lede</span><span class="tk-pun">=</span><span class="tk-str">"Fear no code."</span></span><span class="row"><span class="gut" aria-hidden="true">9</span><span class="tk-pun">    &gt;</span></span><span class="row"><span class="gut" aria-hidden="true">10</span><span class="tk-pun">      &lt;</span><span class="tk-comp">Button</span><span class="tk-attr"> intent</span><span class="tk-pun">=</span><span class="tk-str">"primary"</span><span class="tk-pun">&gt;</span><span class="tk-fn">Get started</span><span class="tk-pun">&lt;/</span><span class="tk-comp">Button</span><span class="tk-pun">&gt;</span></span><span class="row"><span class="gut" aria-hidden="true">11</span><span class="tk-pun">      &lt;</span><span class="tk-comp">Button</span><span class="tk-attr"> intent</span><span class="tk-pun">=</span><span class="tk-str">"ghost"</span><span class="tk-pun">&gt;</span><span class="tk-fn">Docs</span><span class="tk-pun">&lt;/</span><span class="tk-comp">Button</span><span class="tk-pun">&gt;</span></span><span class="row"><span class="gut" aria-hidden="true">12</span><span class="tk-pun">    &lt;/</span><span class="tk-comp">Hero</span><span class="tk-pun">&gt;</span></span><span class="row"><span class="gut" aria-hidden="true">13</span><span class="tk-pun">  )</span></span><span class="row"><span class="gut" aria-hidden="true">14</span><span class="tk-pun">}</span></span></pre>
-            </div>
-          </div>
-
-          <div class="arrow" aria-hidden="true">
-            <span class="ring"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 8h9m0 0L8.5 4.5M12 8l-3.5 3.5" stroke="#3D7BFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-            <span class="lbl mono">render</span>
-          </div>
-
-          <!-- 3 — rendered -->
-          <div class="pane">
-            <div class="pane-cap mono"><span class="snum">03</span><span class="dotc" aria-hidden="true"></span>complete site</div>
-            <div class="render" role="img" aria-label="The rendered live site: a styled navigation bar, the heading 'Build sites fast', a lede, a primary and a ghost button, and a three-card feature grid.">
-              <div class="urlbar mono"><span class="lock" aria-hidden="true"></span>localhost:3000</div>
-              <div class="site">
-                <div class="rnav"><span class="ld" aria-hidden="true"></span><b>Prime UI</b><span class="rl" aria-hidden="true"><s></s><s></s><s></s></span></div>
-                <h4>Build sites fast</h4>
-                <p class="rl-lede">Wireframe to production, in one step.</p>
-                <div class="rbtns"><span class="rb p">Get started</span><span class="rb g">Docs</span></div>
-                <div class="rgrid" aria-hidden="true">
-                  <div class="rcard"><span class="ic"></span><u></u><u class="s"></u></div>
-                  <div class="rcard"><span class="ic"></span><u></u><u class="s"></u></div>
-                  <div class="rcard"><span class="ic"></span><u></u><u class="s"></u></div>
+              <div class="tabpanel" role="tabpanel" id="x-pan-1" aria-labelledby="x-tab-1">
+                <div class="variations">
+                  <div class="vthumb active" aria-hidden="true"><div class="vb hero"></div><div class="vrow"><div class="vb"></div><div class="vb"></div></div><div class="vb row"></div><span class="vcap">centered</span></div>
+                  <div class="vthumb" aria-hidden="true"><div class="vb hero"></div><div class="vb row"></div><div class="vrow"><div class="vb"></div><div class="vb"></div><div class="vb"></div></div><span class="vcap">split</span></div>
+                  <div class="vthumb" aria-hidden="true"><div class="vrow"><div class="vb"></div><div class="vb hero" style="flex:1"></div></div><div class="vb row"></div><div class="vb row"></div><span class="vcap">sidebar</span></div>
+                </div>
+              </div>
+              <div class="tabpanel" role="tabpanel" id="x-pan-2" aria-labelledby="x-tab-2" hidden>
+                <div class="variations">
+                  <div class="vthumb" aria-hidden="true"><div class="vb row"></div><div class="vb row" style="width:80%"></div><div class="vb row" style="width:60%"></div><span class="vcap">concise</span></div>
+                  <div class="vthumb active" aria-hidden="true"><div class="vb row"></div><div class="vb row"></div><div class="vb row" style="width:70%"></div><div class="vb row" style="width:85%"></div><span class="vcap">detailed</span></div>
+                  <div class="vthumb" aria-hidden="true"><div class="vb hero"></div><div class="vb row" style="width:75%"></div><span class="vcap">punchy</span></div>
+                </div>
+              </div>
+              <div class="tabpanel" role="tabpanel" id="x-pan-3" aria-labelledby="x-tab-3" hidden>
+                <div class="variations">
+                  <div class="vthumb" aria-hidden="true"><div class="vrow"><div class="vb"></div><div class="vb"></div><div class="vb"></div></div><span class="vcap">features</span></div>
+                  <div class="vthumb" aria-hidden="true"><div class="vb hero" style="height:40px"></div><span class="vcap">stats</span></div>
+                  <div class="vthumb active" aria-hidden="true"><div class="vb row"></div><div class="vrow"><div class="vb"></div><div class="vb"></div></div><span class="vcap">testimonial</span></div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      <!-- complete-site closer -->
-      <div class="pipe-foot">
-        <span class="fin mono"><b>Complete site.</b> Ready to take off — deploy the generated repo as-is.</span>
-        <span class="ship mono"><span class="ok" aria-hidden="true"></span>deployed · 0.8s build</span>
+      <div class="step-copy">
+        <span class="eyebrow"><span class="num">02</span> Experiment quickly</span>
+        <h2 id="s02">On ideas<br>that build.</h2>
+        <p class="body">Ask AI to generate multiple full-page layout variations and explore different ways to structure your site. Pages always look great thanks to our section-matching algorithm that ensures visual balance and consistency.</p>
       </div>
+    </div>
+  </section>
 
-      <!-- proof -->
-      <div class="proof">
-        <span class="lab mono">TRUSTED BY CREATORS &amp; BUSINESSES</span>
-        <div class="logos" aria-label="Teams building with Prime UI">
-          <span>Forbes</span><span>Modal</span><span>Dagster</span><span>Statsig</span><span>Deno</span><span>Case Status</span>
+  <!-- 03 EXPORT -->
+  <section aria-labelledby="s03">
+    <div class="wrap step">
+      <div class="step-copy">
+        <span class="eyebrow"><span class="num">03</span> Export to code</span>
+        <h2 id="s03">That really<br>works.</h2>
+        <p class="body">No black box. Prime UI ships clean, readable Next.js and Tailwind CSS — properly typed, accessible, and free of dead classes. Drop it into your repo and keep building.</p>
+        <a class="btn btn-primary step-cta" href="#pricing"><span>Get Started</span></a>
+      </div>
+      <div class="step-art">
+        <div class="window">
+          <div class="winbar">
+            <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="url">zsh — primeui export</span>
+          </div>
+          <div class="term-body" aria-hidden="true">
+<pre><span class="prompt">$</span> primeui export --target next
+<span class="dim">→ resolving 6 pages · 24 sections</span>
+<span class="dim">→ generating app/ routes</span>
+<span class="ok">✓</span> app/page.tsx
+<span class="ok">✓</span> app/blog/page.tsx
+<span class="ok">✓</span> app/pricing/page.tsx
+<span class="ok">✓</span> app/docs/[slug]/page.tsx
+<span class="ok">✓</span> tailwind.config.ts
+<span class="ok">✓</span> components/ <span class="dim">(28 files)</span>
+
+<span class="ok">●</span> exported in <span class="ok">3.2s</span> — <span class="dim">0 errors, 0 unused classes</span></pre>
+          </div>
+          <div class="build-foot">
+            <span class="stat-ok" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              type-checked
+            </span>
+            <span class="meta">Next.js 15 · Tailwind v4 · TypeScript</span>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- TEMPLATES SHOWCASE -->
-  <section class="block" id="templates">
+  <!-- COMPLETE SITE -->
+  <section class="complete" aria-labelledby="cs-h">
     <div class="wrap">
-      <div class="sec-head">
-        <p class="sec-kicker mono"><span class="br">//</span> crafted by humans · scaled with AI</p>
-        <h2>Exceptional templates for every project.</h2>
-        <p class="sec-lede">Start from a real, production-grade layout — not a blank canvas. Landing pages, SaaS, docs and more, each built from the same component system so the code stays clean however far you take it.</p>
+      <div class="complete-head">
+        <span class="eyebrow">Complete site</span>
+        <h2 id="cs-h">Ready to take off.</h2>
+        <p>Create more than just a landing page — also <b>blog, pricing, or even documentation</b>. Every page comes automatically with all necessary content blocks, data organization, and SEO optimizations, making it a breeze to evolve your site smoothly.</p>
       </div>
 
+      <div class="tabs" data-tabs style="margin-top:36px">
+        <div class="complete-grid">
+          <div class="pageinfo">
+            <div class="tablist" role="tablist" aria-label="Page type" style="margin-bottom:28px">
+              <button class="tab" role="tab" id="c-tab-1" aria-controls="c-pan-1" aria-selected="true">Landing Pages</button>
+              <button class="tab" role="tab" id="c-tab-2" aria-controls="c-pan-2" aria-selected="false" tabindex="-1">Blog</button>
+              <button class="tab" role="tab" id="c-tab-3" aria-controls="c-pan-3" aria-selected="false" tabindex="-1">Docs</button>
+              <button class="tab" role="tab" id="c-tab-4" aria-controls="c-pan-4" aria-selected="false" tabindex="-1">Pricing</button>
+            </div>
+
+            <div class="tabpanel" role="tabpanel" id="c-pan-1" aria-labelledby="c-tab-1">
+              <h3>Landing Pages</h3>
+              <p>Build high-converting landing pages on an infinite canvas with hundreds of modern components. From feature sections and testimonials to stats or compliance blocks.</p>
+              <div class="tags">
+                <span class="tag accent">200+ UI components</span>
+                <span class="tag">AI-assisted page creation</span>
+                <span class="tag">Shadcn-compatible</span>
+              </div>
+              <div class="acts">
+                <a class="btn btn-primary" href="#templates"><span>Live Demo</span></a>
+                <span class="clients">Join 1k+ clients today</span>
+              </div>
+            </div>
+            <div class="tabpanel" role="tabpanel" id="c-pan-2" aria-labelledby="c-tab-2" hidden>
+              <h3>Blog</h3>
+              <p>Ship a fast, well-structured blog with index, tags, and article pages. Markdown in, clean semantic HTML out — with reading-friendly typography by default.</p>
+              <div class="tags">
+                <span class="tag accent">Markdown native</span>
+                <span class="tag">RSS &amp; sitemap</span>
+                <span class="tag">Tag taxonomy</span>
+              </div>
+              <div class="acts">
+                <a class="btn btn-primary" href="#templates"><span>Live Demo</span></a>
+                <span class="clients">SEO-ready out of the box</span>
+              </div>
+            </div>
+            <div class="tabpanel" role="tabpanel" id="c-pan-3" aria-labelledby="c-tab-3" hidden>
+              <h3>Documentation</h3>
+              <p>Generate a docs site with nested navigation, search, and anchored headings. Content blocks and code samples render consistently across light and dark.</p>
+              <div class="tags">
+                <span class="tag accent">Nested nav</span>
+                <span class="tag">Instant search</span>
+                <span class="tag">Code blocks</span>
+              </div>
+              <div class="acts">
+                <a class="btn btn-primary" href="#templates"><span>Live Demo</span></a>
+                <span class="clients">Versioned &amp; linkable</span>
+              </div>
+            </div>
+            <div class="tabpanel" role="tabpanel" id="c-pan-4" aria-labelledby="c-tab-4" hidden>
+              <h3>Pricing</h3>
+              <p>Lay out clear pricing with plan comparison, feature lists, and a built-in FAQ. Every tier is balanced by the section-matching algorithm so it reads at a glance.</p>
+              <div class="tags">
+                <span class="tag accent">Plan comparison</span>
+                <span class="tag">FAQ block</span>
+                <span class="tag">Stripe-ready</span>
+              </div>
+              <div class="acts">
+                <a class="btn btn-primary" href="#pricing"><span>Live Demo</span></a>
+                <span class="clients">Convert on the first draft</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="preview-card" aria-hidden="true">
+            <div class="winbar">
+              <span class="dots"><i></i><i></i><i></i></span>
+              <span class="url">preview — generated page</span>
+            </div>
+            <div class="pv-mock">
+              <div class="pv-hero">
+                <div class="b1"></div><div class="b2"></div><div class="pill"></div>
+              </div>
+              <div class="pv-cols">
+                <div class="pv-col"><div class="sq"></div><div class="l"></div><div class="l sh"></div></div>
+                <div class="pv-col"><div class="sq"></div><div class="l"></div><div class="l sh"></div></div>
+                <div class="pv-col"><div class="sq"></div><div class="l"></div><div class="l sh"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEMPLATES -->
+  <section id="templates" aria-labelledby="tpl-h">
+    <div class="wrap">
+      <div class="tpl-head">
+        <div>
+          <span class="eyebrow">Templates</span>
+          <h2 id="tpl-h" style="margin-top:16px">Exceptional website templates for all projects.</h2>
+        </div>
+        <div class="tpl-acts">
+          <a class="btn btn-ghost" href="#templates"><span>Explore templates</span></a>
+          <a class="btn btn-primary" href="#pricing"><span>Start for free</span></a>
+        </div>
+      </div>
       <div class="tpl-grid">
         <article class="tpl">
-          <div class="thumb" role="img" aria-label="Template preview: a marketing landing page with a hero and a three-card feature row.">
-            <div class="tnav" aria-hidden="true"><i></i><i></i><i></i><span class="turl"></span></div>
-            <div class="tbody" aria-hidden="true">
-              <div class="tbar a"></div><div class="tbar b"></div><div class="tbar c"></div>
-              <div class="trow"><span></span><span></span><span></span></div>
-            </div>
-          </div>
-          <div class="cap"><h3>Landing</h3><span class="tt mono">marketing</span></div>
+          <div class="shot"><img src="https://picsum.photos/seed/primeui-saas/640/440" width="640" height="440" loading="lazy" alt="Atlas SaaS template preview"></div>
+          <div class="meta"><span class="nm">Atlas</span><span class="ty">SaaS</span></div>
         </article>
-
         <article class="tpl">
-          <div class="thumb" role="img" aria-label="Template preview: a SaaS dashboard with a sidebar and content panels.">
-            <div class="tnav" aria-hidden="true"><i></i><i></i><i></i><span class="turl"></span></div>
-            <div class="tbody" aria-hidden="true">
-              <div class="tbar a"></div><div class="tbar b"></div>
-              <div class="trow"><span></span><span></span><span></span></div>
-              <div class="tbar c" style="margin-top:9px"></div>
-            </div>
-          </div>
-          <div class="cap"><h3>SaaS</h3><span class="tt mono">app</span></div>
+          <div class="shot"><img src="https://picsum.photos/seed/primeui-agency/640/440" width="640" height="440" loading="lazy" alt="Studio agency template preview"></div>
+          <div class="meta"><span class="nm">Studio</span><span class="ty">Agency</span></div>
         </article>
-
         <article class="tpl">
-          <div class="thumb" role="img" aria-label="Template preview: a documentation site with a navigation sidebar and an article column.">
-            <div class="tnav" aria-hidden="true"><i></i><i></i><i></i><span class="turl"></span></div>
-            <div class="tbody" aria-hidden="true">
-              <div class="tbar a"></div><div class="tbar b"></div><div class="tbar b"></div><div class="tbar c"></div>
-            </div>
-          </div>
-          <div class="cap"><h3>Documentation</h3><span class="tt mono">docs</span></div>
+          <div class="shot"><img src="https://picsum.photos/seed/primeui-docs/640/440" width="640" height="440" loading="lazy" alt="Manual documentation template preview"></div>
+          <div class="meta"><span class="nm">Manual</span><span class="ty">Docs</span></div>
         </article>
-
         <article class="tpl">
-          <div class="thumb" role="img" aria-label="Template preview: a portfolio site with a large title and a gallery grid.">
-            <div class="tnav" aria-hidden="true"><i></i><i></i><i></i><span class="turl"></span></div>
-            <div class="tbody" aria-hidden="true">
-              <div class="tbar a"></div>
-              <div class="trow"><span></span><span></span><span></span></div>
-              <div class="trow"><span></span><span></span><span></span></div>
-            </div>
-          </div>
-          <div class="cap"><h3>Portfolio</h3><span class="tt mono">personal</span></div>
+          <div class="shot"><img src="https://picsum.photos/seed/primeui-startup/640/440" width="640" height="440" loading="lazy" alt="Launch startup template preview"></div>
+          <div class="meta"><span class="nm">Launch</span><span class="ty">Startup</span></div>
         </article>
-
         <article class="tpl">
-          <div class="thumb" role="img" aria-label="Template preview: a blog index with stacked article rows.">
-            <div class="tnav" aria-hidden="true"><i></i><i></i><i></i><span class="turl"></span></div>
-            <div class="tbody" aria-hidden="true">
-              <div class="tbar a"></div><div class="tbar b"></div><div class="tbar b"></div><div class="tbar b"></div><div class="tbar c"></div>
-            </div>
-          </div>
-          <div class="cap"><h3>Blog</h3><span class="tt mono">content</span></div>
+          <div class="shot"><img src="https://picsum.photos/seed/primeui-portfolio/640/440" width="640" height="440" loading="lazy" alt="Folio portfolio template preview"></div>
+          <div class="meta"><span class="nm">Folio</span><span class="ty">Portfolio</span></div>
         </article>
-
         <article class="tpl">
-          <div class="thumb" role="img" aria-label="Template preview: a pricing page with two plan columns.">
-            <div class="tnav" aria-hidden="true"><i></i><i></i><i></i><span class="turl"></span></div>
-            <div class="tbody" aria-hidden="true">
-              <div class="tbar a"></div>
-              <div class="trow" style="grid-template-columns:1fr 1fr"><span style="height:60px"></span><span style="height:60px"></span></div>
-            </div>
-          </div>
-          <div class="cap"><h3>Pricing</h3><span class="tt mono">commerce</span></div>
+          <div class="shot"><img src="https://picsum.photos/seed/primeui-blog/640/440" width="640" height="440" loading="lazy" alt="Dispatch blog template preview"></div>
+          <div class="meta"><span class="nm">Dispatch</span><span class="ty">Blog</span></div>
         </article>
       </div>
     </div>
   </section>
 
-  <!-- FEATURE STRIP -->
-  <section class="block" id="features">
+  <!-- LOGO WALL -->
+  <section class="proof" aria-label="Trusted by creators and businesses">
     <div class="wrap">
-      <div class="sec-head">
-        <p class="sec-kicker mono"><span class="br">//</span> built for shipping</p>
-        <h2>A design system that ships itself.</h2>
-        <p class="sec-lede">Not a generator that hands you a mess to clean up. Prime UI outputs the same code a senior engineer would — and keeps it consistent as the project grows.</p>
-      </div>
-
-      <div class="strip">
-        <article class="feat">
-          <div class="ficon" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.4" stroke="#3D7BFF" stroke-width="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.4" stroke="#3D7BFF" stroke-width="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.4" stroke="#3D7BFF" stroke-width="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.4" stroke="#3D7BFF" stroke-width="1.5" opacity=".45"/></svg>
-          </div>
-          <h3>Consistent components</h3>
-          <p>One system, every page. Spacing, color, radius and states come from shared tokens — so nothing drifts as the codebase grows.</p>
-          <span class="ftag mono">tokens · variants · states</span>
-        </article>
-
-        <article class="feat">
-          <div class="ficon" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5" width="17" height="14" rx="2" stroke="#3D7BFF" stroke-width="1.5"/><path d="M7 10.5l2.5 2-2.5 2M12 14.5h4" stroke="#3D7BFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <h3>Production output</h3>
-          <p>Clean Next.js and Tailwind — typed, accessible, and readable. No wrapper soup or inline magic. Code you'd be happy to write by hand.</p>
-          <span class="ftag mono">next.js · tailwind · ts</span>
-        </article>
-
-        <article class="feat">
-          <div class="ficon" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 8h9M18 8h1M5 16h1M10 16h9" stroke="#3D7BFF" stroke-width="1.5" stroke-linecap="round"/><circle cx="16" cy="8" r="2.4" stroke="#3D7BFF" stroke-width="1.5"/><circle cx="8" cy="16" r="2.4" stroke="#3D7BFF" stroke-width="1.5"/></svg>
-          </div>
-          <h3>No prompt-engineering</h3>
-          <p>Direct controls, not incantations. Tune layout, spacing and tokens visually — deterministic results you can predict and version, not reroll.</p>
-          <span class="ftag mono">deterministic · versioned</span>
-        </article>
+      <p class="cap">Trusted by creators &amp; businesses</p>
+      <div class="logos">
+        <span>Forbes</span><span>Modal</span><span>Dagster</span><span>DigSouth</span>
+        <span>Statsig</span><span>Deno</span><span>Case&nbsp;Status</span>
       </div>
     </div>
   </section>
 
-  <!-- CLEAN CODE · CORE WEB VITALS -->
-  <section class="block" id="performance">
+  <!-- FEATURES -->
+  <section aria-labelledby="feat-h">
     <div class="wrap">
-      <div class="sec-head">
-        <p class="sec-kicker mono"><span class="br">//</span> clean code</p>
-        <h2>Fast by default. Measured, not promised.</h2>
-        <p class="sec-lede">Core Web Vitals tested for optimal UX — smooth loading, crisp interactions, fewer layout shifts. Every template ships in the green.</p>
+      <div class="feat-head">
+        <span class="eyebrow">Features</span>
+        <h2 id="feat-h">Crafted by humans.<br><span class="fade">Scaled with AI.</span></h2>
+        <p>You know what you need to build. We know how to build it. Prime UI gives you <b>10+ years of experience building marketing sites</b> wrapped up in an intelligent system. Pick what fits, move fast, and ship a site that looks good from the first draft.</p>
       </div>
 
-      <div class="metrics" role="group" aria-label="Core Web Vitals — all passing">
-        <div class="metric">
-          <div class="big">0.2s</div>
-          <div class="lab mono">First Contentful Paint</div>
-          <span class="pass mono"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-6.5" stroke="#5BD08A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>FCP · Good</span>
-        </div>
-        <div class="metric">
-          <div class="big">0.4s</div>
-          <div class="lab mono">Largest Contentful Paint</div>
-          <span class="pass mono"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-6.5" stroke="#5BD08A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>LCP · Good</span>
-        </div>
-        <div class="metric">
-          <div class="big">0ms</div>
-          <div class="lab mono">Total Blocking Time</div>
-          <span class="pass mono"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-6.5" stroke="#5BD08A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>TBT · Good</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CRAFTED-IN DETAILS -->
-  <section class="block" id="details">
-    <div class="wrap">
-      <div class="sec-head">
-        <p class="sec-kicker mono"><span class="br">//</span> crafted in, not bolted on</p>
-        <h2>The details, handled.</h2>
-        <p class="sec-lede">Clean components, subtle animations and micro-interactions built in to feel good. Less assembly, more shipping.</p>
-      </div>
-
-      <div class="det-grid">
-        <article class="det">
-          <span class="dicon" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="6" stroke="#3D7BFF" stroke-width="1.5"/><path d="M12 6v12" stroke="#3D7BFF" stroke-width="1.5"/><path d="M12 6a6 6 0 010 12z" fill="#3D7BFF" opacity=".3"/></svg>
-          </span>
-          <div><h3>Light and dark modes</h3><p>Every template ships both themes from one token set — switch with a class, no duplicate styles to maintain.</p></div>
+      <div class="feat-grid">
+        <article class="card span-3">
+          <div class="ico" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M6.5 5L3 9l3.5 4M11.5 5L15 9l-3.5 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h3>Clean code. Built with love.</h3>
+          <p>Quickly add components that feel smooth and native — from tabs to search bars to full pages. Clean components, subtle animations, and micro-interactions built in. Less assembly, more shipping.</p>
+          <div class="searchbar">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="4.5" stroke="var(--quiet)" stroke-width="1.4"/><path d="M10.5 10.5L14 14" stroke="var(--quiet)" stroke-width="1.4" stroke-linecap="round"/></svg>
+            <span class="ph">Search components…</span>
+            <kbd>⌘K</kbd>
+          </div>
         </article>
 
-        <article class="det">
-          <span class="dicon" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 8c2 0 2.5 8 4.5 8S12 9 12 9s.5 7 2.5 7S17 8 19 8" stroke="#3D7BFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </span>
-          <div><h3>Polished components</h3><p>Clean states, sensible focus rings and motion that explains change — not decoration. It feels native because the details are done.</p></div>
+        <article class="card span-3">
+          <div class="ico" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2v4M9 12v4M2 9h4M12 9h4M4.2 4.2l2.6 2.6M11.2 11.2l2.6 2.6M13.8 4.2l-2.6 2.6M6.8 11.2l-2.6 2.6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          </div>
+          <h3>Core Web Vitals, tested.</h3>
+          <p>Tuned for optimal UX: smooth loading, crisp interactions, and fewer layout shifts on every generated page.</p>
+          <div class="cwv">
+            <div class="m"><div class="v">0.2s</div><div class="lbl">FCP</div></div>
+            <div class="m"><div class="v">0.4s</div><div class="lbl">LCP</div></div>
+            <div class="m"><div class="v">0ms</div><div class="lbl">TBT</div></div>
+          </div>
         </article>
 
-        <article class="det">
-          <span class="dicon" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3.5" y="6" width="17" height="12" rx="2" stroke="#3D7BFF" stroke-width="1.5"/><path d="M6.5 14.5V9.5L9 12l2.5-2.5v5M14.5 9.5v5M14.5 14.5l2 2 2-2" stroke="#3D7BFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </span>
-          <div><h3>Markdown support</h3><p>Write content in Markdown and render it with the same type scale and spacing as the rest of the site. Docs and blogs, no fuss.</p></div>
+        <article class="card span-3">
+          <div class="ico" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 3a6 6 0 100 12 4 4 0 010-12Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+          </div>
+          <h3>Light &amp; dark modes</h3>
+          <p>Built to export one or both — and keep the output lean, without any unused code.</p>
         </article>
 
-        <article class="det">
-          <span class="dicon" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="#3D7BFF" stroke-width="1.5"/><path d="M4 12h16M12 4c2.5 2.2 2.5 13.8 0 16M12 4c-2.5 2.2-2.5 13.8 0 16" stroke="#3D7BFF" stroke-width="1.5"/></svg>
-          </span>
-          <div><h3>SEO, sorted</h3><p>Never think about SEO again — clean semantic tags, correct links and properly sized images generated for you on every page.</p></div>
+        <article class="card span-3">
+          <div class="ico" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 13l4-8 4 8M5.4 10h5.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h3>Polished typography</h3>
+          <p>Type that reads well and looks great on any device, dialed in for every breakpoint.</p>
+        </article>
+
+        <article class="card span-3">
+          <div class="ico" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 4.5h12v9H3zM5 11V7l2 2 2-2v4M11.5 7v4M11.5 11l1.5-1.5M11.5 11l-1.5-1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h3>Markdown support</h3>
+          <p>Simple, flexible content editing — write in Markdown and let Prime UI handle the structure.</p>
+        </article>
+
+        <article class="card span-3">
+          <div class="ico" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6.2" stroke="currentColor" stroke-width="1.3"/><path d="M2.8 9h12.4M9 2.8c1.8 1.7 2.8 3.9 2.8 6.2S10.8 13.5 9 15.2C7.2 13.5 6.2 11.3 6.2 9S7.2 4.5 9 2.8Z" stroke="currentColor" stroke-width="1.3"/></svg>
+          </div>
+          <h3>SEO, handled</h3>
+          <p>Never think about SEO again — built-in clean tags, correct links, and properly sized images.</p>
         </article>
       </div>
     </div>
   </section>
 
   <!-- PRICING -->
-  <section class="block" id="pricing">
+  <section class="pricing" id="pricing" aria-labelledby="price-h">
     <div class="wrap">
-      <div class="sec-head mid">
-        <p class="sec-kicker mono"><span class="br">//</span> pricing</p>
-        <h2>Need a site? Start with Prime UI.</h2>
-        <p class="sec-lede" style="margin-left:auto;margin-right:auto">One-time fee. Own the code forever — no subscription, no lock-in. Join 1k+ clients shipping with Prime UI today.</p>
+      <div class="price-head">
+        <span class="eyebrow">Pricing</span>
+        <h2 id="price-h">Need a site? Start with Prime UI.</h2>
       </div>
-
       <div class="price-grid">
-        <article class="plan">
-          <div class="ph"><span class="pname">Personal</span></div>
-          <div class="amt"><b>$99</b><span class="per mono">one-time fee</span></div>
-          <p class="pdesc">For solo builders shipping sites fast.</p>
+        <div class="plan">
+          <div class="plan-top">
+            <span class="name">Personal</span>
+          </div>
+          <div class="priceline"><span class="amt">$99</span><span class="fee">one-time fee</span></div>
+          <p class="desc">For solo builders shipping sites fast.</p>
+          <a class="btn btn-ghost" href="#"><span>Get Started</span></a>
           <ul>
-            <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-6.5" stroke="#5BD08A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>All website templates</li>
-            <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-6.5" stroke="#5BD08A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Full component library</li>
-            <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-6.5" stroke="#5BD08A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Next.js + Tailwind export</li>
-            <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-6.5" stroke="#5BD08A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Use on 1 project</li>
+            <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Single user license</li>
+            <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Unlimited projects</li>
+            <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>200+ UI components</li>
+            <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Standard email support</li>
+            <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Generous AI credits</li>
+            <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>MCP <span class="badge soon">Coming soon</span></li>
+            <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Skills.md &amp; AI Designer</li>
           </ul>
-          <a class="btn btn-outline" href="#" style="height:44px">Start for free</a>
-          <span class="note mono">No card required to try</span>
-        </article>
+        </div>
 
-        <article class="plan pop">
-          <div class="ph"><span class="pname">Business</span><span class="badge mono">MOST POPULAR</span></div>
-          <div class="amt"><b>$299</b><span class="per mono">one-time fee</span></div>
-          <p class="pdesc">For teams scaling projects together.</p>
+        <div class="plan feature">
+          <div class="plan-top">
+            <span class="name">Business</span>
+            <span class="reco">Most teams</span>
+          </div>
+          <div class="priceline"><span class="amt">$299</span><span class="fee">one-time fee</span></div>
+          <p class="desc">For teams scaling projects together.</p>
+          <a class="btn btn-primary" href="#"><span>Get Started</span></a>
           <ul>
-            <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-6.5" stroke="#5BD08A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Everything in Personal</li>
-            <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-6.5" stroke="#5BD08A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Unlimited client projects</li>
-            <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-6.5" stroke="#5BD08A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Team license, up to 10 seats</li>
-            <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-6.5" stroke="#5BD08A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Priority support</li>
+            <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Unlimited user licenses</li>
+            <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Unlimited projects</li>
+            <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>200+ UI components</li>
+            <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Private Slack channel</li>
+            <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Generous AI credits</li>
+            <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>MCP <span class="badge soon">Coming soon</span></li>
+            <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Skills.md &amp; AI Designer</li>
           </ul>
-          <a class="btn btn-cta" href="#" style="height:48px">Explore templates
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9m0 0L8.5 4.5M12 8l-3.5 3.5" stroke="#08090C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
-          <span class="note mono">Cancel anytime — it's one-time</span>
-        </article>
+        </div>
+      </div>
+      <div class="custom">
+        <p>Need something custom? We offer <b>tailored setups for teams</b> and special use cases.</p>
+        <a class="btn btn-soft" href="#"><span>Contact Us</span></a>
       </div>
     </div>
   </section>
 
   <!-- FAQ -->
-  <section class="block" id="faq">
+  <section id="faq" aria-labelledby="faq-h">
     <div class="wrap">
-      <div class="sec-head mid">
-        <p class="sec-kicker mono"><span class="br">//</span> faq</p>
-        <h2>Your questions, answered.</h2>
+      <div style="text-align:center">
+        <span class="eyebrow" style="justify-content:center">FAQ</span>
+        <h2 id="faq-h" style="font-size:clamp(30px,4.6vw,58px);margin-top:16px;line-height:1.02;letter-spacing:-.03em">Your questions, answered.</h2>
       </div>
-
-      <div class="faq-wrap">
-        <details class="faq" open>
-          <summary><span class="qn mono">01</span>What kind of sites can I build with Prime UI?
-            <svg class="chev" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </summary>
-          <p class="ans">Marketing landing pages, SaaS apps, documentation, portfolios and blogs. Anything you'd build with Next.js and Tailwind — Prime UI just gives you a production-grade head start and keeps the code consistent as it grows.</p>
+      <div class="faq-grid">
+        <details class="q">
+          <summary>Who is Prime UI for? <span class="pm" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></summary>
+          <p class="ans">Founders, indie hackers, designers, and agencies who want a production-quality marketing site without wiring up components from scratch. If you can describe the site, Prime UI builds the foundation.</p>
         </details>
-
-        <details class="faq">
-          <summary><span class="qn mono">02</span>Does Prime UI generate the full design for my site?
-            <svg class="chev" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </summary>
-          <p class="ans">It assembles real layouts from a designed component system, so the output is coherent rather than random. You start from a sitemap or wireframe, tune it with direct controls, then export — no prompt-engineering and no mess to clean up.</p>
+        <details class="q">
+          <summary>What kind of sites can I build with Prime UI? <span class="pm" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></summary>
+          <p class="ans">Marketing and content sites: landing pages, blogs, documentation, pricing, and changelogs — anything that ships as static or server-rendered Next.js with Tailwind CSS.</p>
         </details>
-
-        <details class="faq">
-          <summary><span class="qn mono">03</span>How does licensing work?
-            <svg class="chev" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </summary>
-          <p class="ans">It's a one-time fee, not a subscription. Personal covers one project; Business covers unlimited client projects and a team of up to ten. Once you've exported, the code is yours to own, modify and ship.</p>
+        <details class="q">
+          <summary>Who built Prime UI? <span class="pm" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></summary>
+          <p class="ans">A small team of engineers and designers who spent 10+ years building marketing sites. Prime UI is that experience, encoded into an intelligent system.</p>
         </details>
-
-        <details class="faq">
-          <summary><span class="qn mono">04</span>Do you work with agencies?
-            <svg class="chev" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </summary>
-          <p class="ans">Yes. The Business license is built for agencies and studios shipping multiple client sites — unlimited projects, team seats and priority support. Get in touch if you need a larger seat count.</p>
+        <details class="q">
+          <summary>Does Prime UI generate the full design for my site? <span class="pm" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></summary>
+          <p class="ans">It generates a complete, balanced starting point — structure, sections, and styling. You stay in control and refine from a first draft that already looks good.</p>
         </details>
-
-        <details class="faq">
-          <summary><span class="qn mono">05</span>What support do you offer?
-            <svg class="chev" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </summary>
-          <p class="ans">Documentation and a CLI reference cover the common path. Personal includes community support; Business adds priority email support with a one-business-day response target.</p>
+        <details class="q">
+          <summary>Which plan is best for me? <span class="pm" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></summary>
+          <p class="ans">Solo builders take Personal. Teams shipping multiple sites take Business for unlimited seats and a private Slack channel. Both include unlimited projects.</p>
+        </details>
+        <details class="q">
+          <summary>How does licensing work? <span class="pm" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></summary>
+          <p class="ans">A one-time fee, no subscription. Personal covers a single user; Business covers your whole team. Build unlimited projects on either license.</p>
+        </details>
+        <details class="q">
+          <summary>Do you work with agencies? <span class="pm" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></summary>
+          <p class="ans">Yes — Business is built for agencies running many client projects. Need a custom setup or volume terms? Contact us and we'll tailor it.</p>
+        </details>
+        <details class="q">
+          <summary>What support do you offer? <span class="pm" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></summary>
+          <p class="ans">Personal includes standard email support. Business adds a private Slack channel with direct access to the team.</p>
         </details>
       </div>
     </div>
   </section>
+
+  <!-- SHIP MARQUEE -->
+  <section class="ship" aria-hidden="true">
+    <div class="marquee">
+      <span class="it">ship it</span><span class="it">ship it</span><span class="it">ship it</span><span class="it">ship it</span>
+      <span class="it">ship it</span><span class="it">ship it</span><span class="it">ship it</span><span class="it">ship it</span>
+    </div>
+  </section>
+
 </main>
 
 <footer class="site">
   <div class="wrap">
-    <div class="foot-top">
-      <div class="foot-brand">
-        <a class="brand" href="#" aria-label="Prime UI — home">
-          <span class="glyph" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 18 18" fill="none">
-              <path d="M4 5l3 4-3 4" stroke="#3D7BFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M9.5 13.5h4.5" stroke="#838A96" stroke-width="1.6" stroke-linecap="round"/>
-            </svg>
-          </span>
-          Prime UI
+    <div class="foot">
+      <div class="fbrand">
+        <a class="brand" href="#" aria-label="Prime UI home">
+          <span class="glyph" aria-hidden="true">P</span><span>Prime UI</span>
         </a>
-        <p>The dev tool for building sites fast — from wireframe to production-ready code.</p>
-        <div class="cmd">
-          <span class="pr mono" aria-hidden="true">$</span>
-          <code>npm i prime-ui</code>
-          <button class="copy" type="button" data-copy="npm i prime-ui" aria-label="Copy npm install command">
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="5.5" y="5.5" width="8" height="8" rx="1.6" stroke="currentColor" stroke-width="1.3"/><path d="M3.5 10.5H3a.5.5 0 01-.5-.5V3a.5.5 0 01.5-.5h7a.5.5 0 01.5.5v.5" stroke="currentColor" stroke-width="1.3"/></svg>
-            <span class="copy-label">Copy</span>
-          </button>
-        </div>
+        <p>The missing foundation for AI-generated websites. Sitemaps and wireframes to production-ready Next.js, fast.</p>
       </div>
-      <nav class="foot-col" aria-label="Product">
-        <h5>Product</h5>
+      <nav class="fcol" aria-label="Product">
+        <h4>Product</h4>
+        <a href="#templates">Live Demo</a>
         <a href="#templates">Templates</a>
-        <a href="#features">Features</a>
         <a href="#pricing">Pricing</a>
-        <a href="#faq">FAQ</a>
-      </nav>
-      <nav class="foot-col" aria-label="Resources">
-        <h5>Resources</h5>
-        <a href="#">Home</a>
-        <a href="#">Blog</a>
         <a href="#">Documentation</a>
-        <a href="#">CLI reference</a>
       </nav>
-      <nav class="foot-col" aria-label="Company">
-        <h5>Company</h5>
-        <a href="#">About</a>
-        <a href="#">GitHub</a>
-        <a href="#">Contact</a>
-        <a href="#">Status</a>
+      <nav class="fcol" aria-label="Company">
+        <h4>Company</h4>
+        <a href="#">Blog</a>
+        <a href="#">Contact us</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms &amp; Conditions</a>
       </nav>
     </div>
-    <div class="foot-bot">
-      <span>© 2026 Prime UI Labs</span>
-      <span class="status mono"><span class="ok" aria-hidden="true"></span>All systems operational</span>
-      <span class="legal"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">License</a></span>
+    <div class="foot-bottom">
+      <span class="cp">© 2026 Prime UI. All rights reserved.</span>
+      <div class="legal">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Follow Us</a>
+      </div>
     </div>
   </div>
 </footer>
 
 <script>
-  document.querySelectorAll('[data-copy]').forEach(function(btn){
-    btn.addEventListener('click', function(){
-      var text = btn.getAttribute('data-copy');
-      if (navigator.clipboard) { navigator.clipboard.writeText(text).catch(function(){}); }
-      var lbl = btn.querySelector('.copy-label');
-      var prevLabel = lbl ? lbl.textContent : '';
-      btn.classList.add('copied');
-      btn.setAttribute('aria-label','Copied to clipboard');
-      if (lbl) lbl.textContent = 'Copied';
-      setTimeout(function(){
-        btn.classList.remove('copied');
-        btn.setAttribute('aria-label','Copy install command');
-        if (lbl) lbl.textContent = prevLabel;
-      }, 1500);
+  // Mobile nav disclosure (progressive enhancement). Links remain reachable without JS via the panel.
+  (function(){
+    var toggle = document.querySelector('.nav-toggle');
+    var panel = document.getElementById('mobile-nav');
+    if(!toggle || !panel) return;
+    function setOpen(open){
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      panel.hidden = !open;
+    }
+    toggle.addEventListener('click', function(){
+      setOpen(toggle.getAttribute('aria-expanded') !== 'true');
+    });
+    panel.addEventListener('click', function(e){ if(e.target.closest('a')) setOpen(false); });
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true'){ setOpen(false); toggle.focus(); }
+    });
+  })();
+
+  // Accessible tabs (progressive enhancement). Without JS, all panels show.
+  document.querySelectorAll('[data-tabs]').forEach(function(group){
+    var tabs = Array.prototype.slice.call(group.querySelectorAll('[role="tab"]'));
+    function select(tab){
+      tabs.forEach(function(t){
+        var selected = t === tab;
+        t.setAttribute('aria-selected', selected ? 'true' : 'false');
+        t.tabIndex = selected ? 0 : -1;
+        var panel = document.getElementById(t.getAttribute('aria-controls'));
+        if(panel) panel.hidden = !selected;
+      });
+    }
+    var current = tabs.filter(function(t){return t.getAttribute('aria-selected')==='true';})[0] || tabs[0];
+    select(current);
+    tabs.forEach(function(tab, i){
+      tab.addEventListener('click', function(){ select(tab); });
+      tab.addEventListener('keydown', function(e){
+        var idx = null;
+        if(e.key==='ArrowRight'||e.key==='ArrowDown') idx = (i+1)%tabs.length;
+        else if(e.key==='ArrowLeft'||e.key==='ArrowUp') idx = (i-1+tabs.length)%tabs.length;
+        else if(e.key==='Home') idx = 0;
+        else if(e.key==='End') idx = tabs.length-1;
+        if(idx!==null){ e.preventDefault(); select(tabs[idx]); tabs[idx].focus(); }
+      });
     });
   });
 </script>

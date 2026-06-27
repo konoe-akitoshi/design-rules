@@ -3,851 +3,712 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>pool — Shared money, made simple</title>
-<!-- benchmark #8: pool（架空のフィンテック / shared money）— refs/pool.html(poolmoney.com)の正解に対するフルクローン。
-     題材=「お金をプールして共有する」共有口座。構造はランディング骨格でなく、口座/明細/台帳の native な様式から導く。
-     全8セクション: nav / hero(実機) / 製品4機能(POOL·SPLIT·SPEND·CONTROL) / 「1,000 ways」名前付きPool台帳 /
-       1枚のデビットカード節 / 大ステートメントCTA(Bank alone, or pool together) / FAQ / footer。
-     bespoke palette(bright): 淡い寒色ブルー地(#E9EFF6) + ニアブラック ink + ライム1アクセント(#C8F03C)。
-       ライムは light なので「文字色には使わず」濃インク地/CTAの "塗り" にだけ使う(ink on lime ≈14:1)。アクセントは1色厳守、
-       金額は色に頼らず符号＋矢印で二重符号化(WCAG 1.4.1)。
-     書体: 見出し=Anton(極太コンデンス・グロテスク=signature, real の "bold condensed" を体現)。本文/UI/mono風ラベル=Inter。最大2系統。
-     外部依存は Google Fonts のみ。-->
+<title>Pool — One shared account for every shared life</title>
+<meta name="description" content="Pool is the shared financial account for every shared life. Collect money with no fees, spend from a shared debit card, and set granular controls over who can spend.">
+<!-- benchmark #8: poolmoney.com のクローン。題材=共有口座のフィンテック(shared money)。
+     STEP0 で実物のトークンをサンプリングして修正:
+       ・地は WARM SAND #E0D8CD（前版の cool sage #E9EEEB は誤り）。ベース地は deep teal #001F22（body bg）。raised teal #003439。
+       ・lime アクセントは実物に存在しない → 撤去。teal+sand の極めて抑制された2色系（color-system「ゼロアクセント可」）。
+       ・書体は Inter 1書体のみ（実物 = Inter）。前版の Saira Condensed + Space Mono は撤去。階層はサイズ/ウェイトで作る。
+       ・ロゴは実物の SVG グリフ（viewBox 0 0 74 24 = 4弁スパークル + "Pool"）をそのまま再構築。
+       ・IA: 4機能は「単一のタブ式 product-demo」(Collaborate/Collect/Spend/Manage) に統合。前版の4交互フィーチャー行＝テンプレ再展開なので撤去。
+     section順: nav → hero → tab式 product-demo → 1,000 ways(写真先導カード marquee) → debit card → safety(dark) → final CTA → FAQ → footer。 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    /* bespoke bright palette — pale cool-blue ground, near-black ink, ONE lime accent */
-    --ground:#E9EFF6;       /* 淡い寒色ブルー地（最背面） */
-    --ground-2:#DFE8F2;     /* 沈み・帯・track */
-    --surface:#FFFFFF;      /* カード・パネル面 */
-    --surface-2:#F4F8FC;    /* 弱いパネル・hover地 */
-    --ink:#0F141A;          /* 主要テキスト（ニアブラック・寒色寄せ）on ground ≈16:1 */
-    --ink-soft:#283039;     /* 副次見出し */
-    --muted:#4F5C6B;        /* 二次テキスト on ground ≈5.4:1 / on white ≈6.2:1 */
-    --quiet:#5B6675;        /* ラベル・小overline用。darkened to clear 4.5:1: on ground ≈4.9:1 / on white ≈5.8:1 */
-    --line:#D4DEE9;         /* ヘアライン（影の代わり） */
-    --line-2:#BCCAD8;       /* 強い境界 */
-    --rule:#0F141A;         /* 明細票の太罫（ink） */
-    --lime:#C8F03C;         /* アクセント（CTA塗り・マーカー・進捗） ink on lime ≈14:1 */
-    --lime-deep:#B7E223;    /* hover/押下 */
-    /* dark panel(アプリ残高カード)用 */
-    --ondark:#FFFFFF;
-    --ondark-mut:#A9B6C3;   /* on ink ≈8:1 */
-    --ondark-line:rgba(255,255,255,.14);
-    --sans:"Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-    --disp:"Anton","Inter Tight",Impact,sans-serif;
+    /* bespoke palette — deep teal ground + warm sand. one accent system = teal/sand (zero saturated accent). */
+    --bg:#001F22; --bg-2:#003439; --bg-3:#06292C;     /* dark teal grounds / raised */
+    --sand:#E0D8CD; --sand-2:#EAE3D8; --cream:#F4EFE7; /* warm light grounds / surfaces */
+    --ink:#001F22; --ink-soft:#234039; --ink-muted:#4A5A55; /* text on light */
+    --fg:#ECE6D7; --fg-muted:#B7AEA1; --fg-quiet:#8C8377;   /* text on dark (≥4.5 / ≥3) */
+    --line:#CFC8BB; --line-strong:#BCB3A4;                 /* hairline on light */
+    --line-dark:rgba(255,255,255,.10); --line-dark-2:rgba(255,255,255,.18);
+    --pos:#1C6138;            /* incoming money — always paired with + sign + up-arrow (not colour-only) */
+    /* spacing — 4pt grid */
     --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:20px;--s6:24px;--s8:32px;--s10:40px;--s12:48px;--s14:56px;--s16:64px;--s20:80px;--s24:96px;
-    --r-pill:999px;--r-panel:16px;--r-card:12px;--r-md:8px;--r-sm:4px;
+    --sans:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+    --maxw:1180px;
   }
   *{box-sizing:border-box}
-  html{-webkit-text-size-adjust:100%}
-  body{
-    margin:0;background:var(--ground);color:var(--ink);
-    font-family:var(--sans);font-size:16px;line-height:1.6;
-    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
-  }
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden}
   a{color:inherit;text-decoration:none}
-  ul{margin:0;padding:0;list-style:none}
-  :focus-visible{outline:3px solid var(--ink);outline-offset:3px;border-radius:6px}
-  .wrap{max-width:1180px;margin:0 auto;padding:0 var(--s10)}
-  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);border:0}
-  /* mono-style label (real site の font-mono uppercase を Inter で代替) */
-  .mono{font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+  h1,h2,h3,h4,h5,p{margin:0}
+  img{display:block;max-width:100%}
+  ::selection{background:var(--sand);color:var(--ink)}
+  :focus-visible{outline:2px solid var(--fg);outline-offset:2px;border-radius:3px}
+  .sand :focus-visible{outline-color:var(--ink)}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--s6)}
+  .amt{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
 
-  /* ---------- nav ---------- */
-  header{position:relative;z-index:5}
-  nav{padding:var(--s5) 0}
-  .nav-in{display:flex;align-items:center;gap:var(--s8)}
-  .mark{display:inline-flex;align-items:center;gap:9px;font-weight:800;font-size:21px;letter-spacing:-.02em;color:var(--ink)}
-  .nav-links{display:flex;gap:var(--s6);margin:0 auto}
-  .nav-links a{color:var(--muted);font-size:15px;font-weight:600}
-  .nav-links a:hover{color:var(--ink)}
-  .nav-right{display:flex;align-items:center;gap:var(--s3)}
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);
-    font-family:var(--sans);font-weight:700;cursor:pointer;border:0;white-space:nowrap;
-    transition:background .15s ease,color .15s ease,border-color .15s ease,transform .12s ease}
-  .btn:active{transform:translateY(1px)}
-  .btn-login{min-height:44px;padding:0 var(--s4);font-size:15px;color:var(--ink);background:transparent}
-  .btn-login:hover{background:var(--surface-2)}
-  .btn-chip{min-height:44px;padding:0 var(--s5);font-size:15px;border-radius:var(--r-pill);
-    background:var(--lime);color:var(--ink)}
-  .btn-chip:hover{background:var(--lime-deep)}
-  .btn-login,.btn-chip{border-radius:var(--r-pill)}
-  .btn-login{border:1.5px solid var(--line-2)}
+  /* ---- type: ONE family, hierarchy by size/weight ---- */
+  h1{font-family:var(--sans);font-weight:800;font-size:clamp(44px,7.4vw,88px);line-height:1.0;letter-spacing:-.03em;text-wrap:balance}
+  h2.sect{font-family:var(--sans);font-weight:800;font-size:clamp(30px,4.3vw,50px);line-height:1.04;letter-spacing:-.025em;text-wrap:balance}
+  h2.display{font-weight:800;font-size:clamp(40px,6.6vw,84px);line-height:.98;letter-spacing:-.03em;text-wrap:balance}
+  h3{font-weight:700;font-size:21px;line-height:1.15;letter-spacing:-.01em}
+  .eyebrow{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--fg-quiet)}
+  .sand .eyebrow{color:var(--ink-muted)}
+  .lede{font-size:clamp(17px,1.5vw,20px);line-height:1.55;color:var(--fg-muted);max-width:48ch}
+  .sand .lede{color:var(--ink-soft)}
 
-  /* ---------- hero ---------- */
-  .hero{display:grid;grid-template-columns:1.06fr .94fr;gap:var(--s16);align-items:center;
-    padding:var(--s12) 0 var(--s20)}
-  .eyebrow{display:inline-flex;align-items:center;gap:var(--s2);
-    font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);
-    margin:0 0 var(--s5)}
-  .eyebrow .live{width:8px;height:8px;border-radius:50%;background:var(--lime);
-    border:1.5px solid var(--ink);box-shadow:0 0 0 3px rgba(200,240,60,.35)}
-  h1{font-family:var(--disp);font-weight:400;font-size:clamp(52px,9.2vw,108px);line-height:.9;
-    letter-spacing:.005em;text-transform:uppercase;margin:0 0 var(--s6);color:var(--ink)}
-  h1 .hl{position:relative;white-space:nowrap;padding:0 .1em;color:var(--ink)}
-  h1 .hl::before{content:"";position:absolute;left:0;right:0;bottom:.08em;top:.16em;
-    background:var(--lime);z-index:-1;border-radius:6px;transform:rotate(-1.2deg)}
-  .lede{font-size:19px;line-height:1.55;color:var(--ink-soft);max-width:40ch;margin:0 0 var(--s8)}
-  .cta-row{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s4)}
-  .btn-cta{min-height:54px;padding:15px var(--s8) 17px;font-size:17px;border-radius:var(--r-pill);
-    background:var(--lime);color:var(--ink)}
-  .btn-cta:hover{background:var(--lime-deep)}
-  .btn-cta svg{margin-left:2px}
-  .btn-secondary{min-height:54px;padding:15px var(--s6) 17px;font-size:16px;border-radius:var(--r-pill);
-    background:var(--surface);color:var(--ink);border:1.5px solid var(--line-2)}
-  .btn-secondary:hover{background:var(--surface-2);border-color:var(--ink)}
+  /* ---- buttons (pill) ---- */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);font-family:var(--sans);font-weight:600;font-size:15px;letter-spacing:.01em;cursor:pointer;border:1px solid transparent;min-height:48px;padding:12px 24px;border-radius:999px;transition:background .15s,border-color .15s,color .15s}
+  .btn svg{flex:0 0 auto}
+  /* dark context (default): filled = cream */
+  .btn-fill{background:var(--cream);color:var(--ink);border-color:var(--cream)}
+  .btn-fill:hover{background:#fff;border-color:#fff}
+  .btn-ghost{background:transparent;color:var(--fg);border-color:var(--line-dark-2)}
+  .btn-ghost:hover{background:rgba(255,255,255,.06);border-color:var(--fg-muted)}
+  /* light (sand) context: filled = teal */
+  .sand .btn-fill{background:var(--ink);color:var(--cream);border-color:var(--ink)}
+  .sand .btn-fill:hover{background:var(--bg-2);border-color:var(--bg-2)}
+  .sand .btn-ghost{background:transparent;color:var(--ink);border-color:var(--line-strong)}
+  .sand .btn-ghost:hover{background:rgba(0,31,34,.05);border-color:var(--ink-soft)}
 
-  .badges{display:flex;flex-wrap:wrap;gap:var(--s2);margin-top:var(--s6)}
-  .badge{display:inline-flex;align-items:center;gap:6px;
-    font-size:13.5px;font-weight:600;color:var(--ink-soft);
-    background:var(--surface);border:1px solid var(--line);border-radius:var(--r-pill);
-    padding:6px 14px 6px 12px}
-  .badge svg{color:var(--ink);flex:none}
+  /* ---- nav ---- */
+  header.nav{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:saturate(1.2) blur(10px);border-bottom:1px solid var(--line-dark);padding-top:env(safe-area-inset-top)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;gap:var(--s4);height:64px;min-width:0}
+  .logo{display:inline-flex;align-items:center;color:var(--fg)}
+  .logo svg{display:block;width:78px;height:auto}
+  .nav-links{display:flex;align-items:center;gap:var(--s2)}
+  .nav-links .lnk{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;font-size:14px;font-weight:500;color:var(--fg-muted)}
+  .nav-links .lnk:hover{color:var(--fg)}
+  .nav-links .signin{color:var(--fg);font-weight:600}
+  .nav-links .btn{min-height:44px;padding:10px 20px;margin-left:var(--s2)}
 
-  .trust{display:flex;align-items:center;gap:var(--s2);margin-top:var(--s6);
-    color:var(--muted);font-size:13.5px;line-height:1.45;max-width:42ch}
-  .trust svg{flex:none;color:var(--quiet)}
+  /* mobile disclosure nav */
+  .m-disc{display:none;position:relative}
+  .m-disc>summary{list-style:none;display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:12px;border:1px solid var(--line-dark-2);color:var(--fg);cursor:pointer}
+  .m-disc>summary::-webkit-details-marker{display:none}
+  .m-disc .ic-close{display:none}
+  .m-disc[open] .ic-open{display:none}
+  .m-disc[open] .ic-close{display:inline-flex}
+  .m-panel{position:absolute;right:0;top:calc(100% + 10px);min-width:220px;background:var(--bg-2);border:1px solid var(--line-dark);border-radius:14px;padding:var(--s3);display:flex;flex-direction:column;gap:var(--s1);box-shadow:0 8px 24px rgba(0,0,0,.32)}
+  .m-panel a{display:flex;align-items:center;min-height:48px;padding:0 var(--s4);border-radius:10px;font-size:15px;font-weight:500;color:var(--fg)}
+  .m-panel a:hover{background:rgba(255,255,255,.06)}
+  .m-panel .btn{margin-top:var(--s2)}
 
-  /* ---------- product card (phone) ---------- */
-  .device-col{display:flex;justify-content:center}
-  .phone-wrap{position:relative;width:100%;max-width:340px}
-  .phone{position:relative;background:#0C1116;border-radius:42px;padding:10px;
-    box-shadow:0 2px 4px rgba(15,20,26,.06),0 30px 60px -32px rgba(15,20,26,.45)}
-  .screen{background:var(--surface);border-radius:32px;overflow:hidden}
-  .statusbar{display:flex;align-items:center;justify-content:space-between;
-    padding:14px 22px 6px;font-size:13px;font-weight:700;color:var(--ink);letter-spacing:.02em}
-  .statusbar .sb-icons{display:inline-flex;align-items:center;gap:7px;color:var(--ink)}
-  .app-head{display:flex;align-items:center;gap:var(--s2);padding:var(--s2) var(--s5) var(--s3)}
-  .app-head .ah-title{font-weight:800;font-size:15px;letter-spacing:-.01em}
-  .app-head .ah-sub{font-size:12px;color:var(--quiet);font-weight:600}
-  .app-head .ah-spacer{margin-left:auto}
-  .icon-pill{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;
-    background:var(--surface-2);border:1px solid var(--line);color:var(--ink-soft)}
+  /* ---- hero ---- */
+  .hero{padding:var(--s16) 0 var(--s12)}
+  .hero h1{margin-bottom:var(--s5);max-width:14ch}
+  .hero .lede{margin-bottom:var(--s8)}
+  .hero-actions{display:flex;align-items:center;gap:var(--s4);flex-wrap:wrap}
+  .trust{margin-top:var(--s10);display:flex;gap:var(--s3);align-items:flex-start;max-width:60ch;color:var(--fg-muted);font-size:13px;line-height:1.5}
+  .trust svg{flex:0 0 auto;margin-top:2px;color:var(--fg-quiet)}
 
-  /* balance card — dark panel where lime pops */
-  .balance{margin:0 var(--s4) var(--s4);background:var(--ink);border-radius:var(--r-panel);
-    padding:var(--s4) var(--s5) var(--s5)}
-  .bal-top{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--s3)}
-  .bal-label{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ondark-mut)}
-  .bal-pool{margin-top:3px;font-size:14px;font-weight:700;color:var(--ondark)}
-  .avatars{display:inline-flex;flex-direction:row-reverse}
-  .avatars .av{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;
-    font-size:11px;font-weight:700;color:var(--ink);margin-left:-7px;border:2px solid var(--ink)}
-  .av.a1{background:#D7E0EB}.av.a2{background:#C5D2E0}.av.a3{background:#E2E8F0}
-  .av.you{background:var(--lime)}
-  .av.more{background:#39424C;color:var(--ondark);font-size:10px}
-  .bal-amount{margin:var(--s4) 0 0;font-weight:800;font-size:36px;letter-spacing:-.02em;color:var(--ondark);
-    font-variant-numeric:tabular-nums}
-  .goal{margin-top:var(--s4)}
-  .goal-track{height:9px;border-radius:var(--r-pill);background:var(--ondark-line);overflow:hidden}
-  .goal-fill{height:100%;width:83%;background:var(--lime);border-radius:var(--r-pill)}
-  .goal-meta{display:flex;justify-content:space-between;align-items:baseline;margin-top:9px;
-    font-size:12.5px;color:var(--ondark-mut);font-weight:600;font-variant-numeric:tabular-nums}
-  .goal-meta b{color:var(--ondark);font-weight:700}
-  .bal-actions{display:flex;gap:var(--s2);margin-top:var(--s5)}
-  .bal-actions .ba{flex:1;min-height:44px;border-radius:10px;display:inline-flex;align-items:center;
-    justify-content:center;gap:7px;font-size:14px;font-weight:700}
-  .ba-add{background:var(--lime);color:var(--ink)}
-  .ba-req{background:transparent;color:var(--ondark);border:1.5px solid var(--ondark-line)}
+  /* ---- product demo (single tabbed component: text + app screen swap together) ---- */
+  .demo-sect{padding:var(--s12) 0 var(--s16)}
+  .demo{border:0;padding:0;margin:0;min-width:0}
+  .demo-tabs{display:flex;gap:var(--s2);flex-wrap:wrap;margin-bottom:var(--s10)}
+  .tab{position:relative;display:inline-flex;align-items:center;min-height:44px;padding:10px 20px;border-radius:999px;border:1px solid var(--line-dark-2);font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--fg-muted);cursor:pointer}
+  .tab:hover{border-color:var(--fg-muted);color:var(--fg)}
+  .tab input{position:absolute;width:1px;height:1px;opacity:0;margin:0}
+  .demo:has(input[value="collab"]:checked) .tab.t-collab,
+  .demo:has(input[value="collect"]:checked) .tab.t-collect,
+  .demo:has(input[value="spend"]:checked) .tab.t-spend,
+  .demo:has(input[value="manage"]:checked) .tab.t-manage{background:var(--cream);border-color:var(--cream);color:var(--ink)}
+  .tab:has(input:focus-visible){outline:2px solid var(--fg);outline-offset:2px}
 
-  /* recent activity — statement rows */
-  .recent{padding:var(--s2) var(--s5) var(--s5)}
-  .rec-head{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
-    color:var(--quiet);padding:var(--s2) 0 var(--s2)}
-  .act{display:flex;align-items:center;gap:var(--s3);padding:var(--s3) 0;border-top:1px solid var(--line)}
-  .act .a-ic{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;flex:none;
-    font-size:13px;font-weight:700;color:var(--ink)}
-  .a-ic.in{background:#D7E0EB}.a-ic.in2{background:#C5D2E0}
-  .a-ic.split{background:var(--surface-2);border:1px solid var(--line);color:var(--ink-soft)}
-  .act .a-body{min-width:0}
-  .act .a-name{font-size:14px;font-weight:700;line-height:1.3}
-  .act .a-meta{font-size:12.5px;color:var(--muted);line-height:1.3}
-  .act .a-amt{margin-left:auto;font-size:14.5px;font-weight:800;color:var(--ink);
-    font-variant-numeric:tabular-nums;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
-  .act .a-amt.out{color:var(--ink-soft);font-weight:700}
+  .demo-grid{display:grid;grid-template-columns:1fr 1.02fr;gap:var(--s14);align-items:center}
+  .demo-grid>*{min-width:0}
+  .tp,.sp{display:none}
+  .demo:has(input[value="collab"]:checked) .tp-collab,
+  .demo:has(input[value="collect"]:checked) .tp-collect,
+  .demo:has(input[value="spend"]:checked) .tp-spend,
+  .demo:has(input[value="manage"]:checked) .tp-manage{display:block}
+  .demo:has(input[value="collab"]:checked) .sp-collab,
+  .demo:has(input[value="collect"]:checked) .sp-collect,
+  .demo:has(input[value="spend"]:checked) .sp-spend,
+  .demo:has(input[value="manage"]:checked) .sp-manage{display:block;animation:panel-in .18s ease-out}
+  @keyframes panel-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  .tp .eyebrow{margin-bottom:var(--s3)}
+  .tp h2{margin-bottom:var(--s4)}
 
-  /* floating split pip */
-  .pip{position:absolute;left:-26px;bottom:64px;width:186px;background:var(--surface);
-    border:1px solid var(--line);border-radius:var(--r-card);padding:var(--s3) var(--s4);
-    box-shadow:0 1px 2px rgba(15,20,26,.05),0 18px 36px -20px rgba(15,20,26,.4)}
-  .pip-h{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700}
-  .pip-h .dot{width:22px;height:22px;border-radius:7px;background:var(--lime);display:grid;place-items:center;color:var(--ink)}
-  .pip-sub{font-size:12px;color:var(--muted);margin-top:5px}
-  .pip-row{display:flex;align-items:center;justify-content:space-between;margin-top:var(--s3)}
-  .pip-avs{display:inline-flex;flex-direction:row-reverse}
-  .pip-avs i{width:20px;height:20px;border-radius:50%;margin-left:-6px;border:2px solid var(--surface);display:block}
-  .pip-avs i:nth-child(1){background:#C5D2E0}.pip-avs i:nth-child(2){background:#D7E0EB}
-  .pip-avs i:nth-child(3){background:#E2E8F0}.pip-avs i:nth-child(4){background:var(--lime)}
-  .pip-each{font-size:14px;font-weight:800;font-variant-numeric:tabular-nums}
+  /* app screen (light card on the dark band) */
+  .screen{background:var(--cream);color:var(--ink);border:1px solid var(--line);border-radius:16px;padding:var(--s5);max-width:430px;margin:0 auto;min-height:430px;box-shadow:0 1px 0 rgba(0,0,0,.05)}
+  .scr-head{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);padding-bottom:var(--s4);border-bottom:1px solid var(--line);min-width:0}
+  .scr-name{display:flex;align-items:center;gap:8px;font-weight:700;font-size:19px;letter-spacing:-.01em;min-width:0;color:var(--ink)}
+  .scr-bal{font-weight:700;font-size:16px;color:var(--ink)}
+  .scr-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-muted);margin:var(--s4) 0 var(--s2)}
+  .lrow{display:flex;align-items:center;gap:var(--s3);padding:10px 0;border-bottom:1px solid var(--line);min-width:0}
+  .lrow:last-child{border-bottom:0}
+  .lrow .grow{min-width:0;flex:1}
+  .lrow .nm{display:block;font-weight:600;font-size:15px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .lrow .sub{display:block;font-size:13px;color:var(--ink-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .avatar{width:36px;height:36px;border-radius:50%;flex:0 0 auto;object-fit:cover;background:var(--sand);border:1px solid var(--line)}
+  .avatar.sm{width:28px;height:28px}
+  .role{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 10px;border-radius:999px;background:transparent;color:var(--ink-soft);border:1px solid var(--line-strong);white-space:nowrap;flex:0 0 auto}
+  .role.own{background:var(--ink);border-color:var(--ink);color:var(--cream)}
+  .amt-out{font-weight:600;font-size:15px;color:var(--ink);white-space:nowrap}
+  .amt-in{font-weight:700;font-size:15px;color:var(--pos);white-space:nowrap;display:inline-flex;align-items:center;gap:3px}
+  .stack{display:flex;align-items:center}
+  .stack img{margin-left:-8px;box-shadow:0 0 0 2px var(--cream)}
+  .stack img:first-child{margin-left:0}
+  .stack .more{margin-left:-8px;width:28px;height:28px;border-radius:50%;background:var(--ink);color:var(--cream);font-size:11px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px var(--cream);flex:0 0 auto}
+  .bar{height:8px;border-radius:999px;background:var(--sand);overflow:hidden;margin:var(--s2) 0}
+  .bar>i{display:block;height:100%;background:var(--ink);border-radius:999px}
+  .goal{display:flex;justify-content:space-between;font-size:13px;color:var(--ink-muted)}
+  .sw{width:40px;height:24px;border-radius:999px;background:var(--line-strong);position:relative;flex:0 0 auto}
+  .sw::after{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff}
+  .sw.on{background:var(--ink)}
+  .sw.on::after{left:18px}
+  .badge-free{display:inline-flex;align-items:center;gap:6px;margin-top:var(--s4);padding:7px 14px;border-radius:999px;background:var(--sand);border:1px solid var(--line);font-size:13px;font-weight:600;color:var(--ink)}
+  .chip-card{display:inline-flex;align-items:center;gap:8px;margin-top:var(--s4);padding:9px 14px;border-radius:10px;background:var(--bg);color:var(--fg);font-size:12px;font-weight:600;letter-spacing:.04em}
+  .chip-card .vd{width:8px;height:8px;border-radius:50%;background:var(--sand)}
 
-  /* ---------- section scaffolding ---------- */
-  .sec-head{max-width:52ch}
-  .sec-head .kicker{display:inline-block;font-size:13px;color:var(--muted);margin:0 0 var(--s4)}
-  .sec-head h2{font-family:var(--disp);font-weight:400;font-size:clamp(30px,4.6vw,50px);
-    line-height:1;letter-spacing:.01em;text-transform:uppercase;margin:0 0 var(--s4);color:var(--ink)}
-  .sec-head p{margin:0;font-size:17px;color:var(--muted);max-width:48ch}
+  /* ---- 1,000 ways marquee (photo-led cards) ---- */
+  .ways{padding:var(--s16) 0;border-top:1px solid var(--line-dark);overflow:hidden}
+  .ways-head{max-width:var(--maxw);margin:0 auto var(--s12);padding:0 var(--s6)}
+  .ways-head .eyebrow{margin-bottom:var(--s3)}
+  .ways-head h2{margin-bottom:var(--s4)}
+  .marq{position:relative;display:flex;flex-direction:column;gap:var(--s4);-webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
+  .track{display:flex;gap:var(--s4);width:max-content;will-change:transform}
+  .track.a{animation:scrollA 48s linear infinite}
+  .track.b{animation:scrollB 58s linear infinite}
+  @keyframes scrollA{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  @keyframes scrollB{from{transform:translateX(-50%)}to{transform:translateX(0)}}
+  .marq:hover .track{animation-play-state:paused}
+  .pcard{flex:0 0 auto;width:248px;background:var(--cream);border:1px solid var(--line);border-radius:14px;overflow:hidden;min-width:0}
+  .pcard .ph{display:block;width:100%;height:108px;object-fit:cover;background:var(--sand)}
+  .pcard .pbody{padding:14px 16px}
+  .pcard .pn{display:flex;align-items:center;gap:6px;font-weight:700;font-size:17px;letter-spacing:-.01em;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pcard .pb{display:block;margin-top:4px;font-weight:700;font-size:15px;color:var(--ink)}
+  .pcard .pf{margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:var(--s2)}
+  .pcard .ps{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-muted)}
 
-  /* ---------- feature ledger (POOL·SPLIT·SPEND·CONTROL) ---------- */
-  .benefits{background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-  .benefits .inner{padding:var(--s20) 0}
-  .ben-head{margin:0 0 var(--s12)}
-  .ledger{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s6)}
-  .item{padding-top:var(--s5);border-top:2px solid var(--rule)}
-  .item .ic{width:44px;height:44px;border-radius:12px;background:var(--ground);
-    border:1px solid var(--line);display:grid;place-items:center;color:var(--ink);margin-bottom:var(--s5)}
-  .item .word{font-family:var(--disp);font-weight:400;font-size:28px;line-height:1;
-    letter-spacing:.02em;text-transform:uppercase;margin:0 0 var(--s3)}
-  .item h3{font-size:17px;font-weight:700;letter-spacing:-.01em;margin:0 0 var(--s2);line-height:1.3}
-  .item p{margin:0;font-size:14.5px;color:var(--muted);line-height:1.55}
+  /* ---- debit card section (sand) ---- */
+  .card-sect{padding:var(--s16) 0}
+  .card-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s14);align-items:center}
+  .card-grid>*{min-width:0}
+  .dcard{background:var(--bg);color:var(--fg);border-radius:16px;padding:var(--s6);aspect-ratio:1.6/1;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;max-width:420px}
+  .dcard::after{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.05)}
+  .dcard .dtop{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1}
+  .dcard .dmark{display:inline-flex;color:var(--fg)}
+  .dcard .dmark svg{width:64px;height:auto;display:block}
+  .dcard .dlabel{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--fg-quiet)}
+  .dcard .dchip{width:38px;height:28px;border-radius:6px;background:#C7BFA6;position:relative;z-index:1}
+  .dcard .dnum{font-size:17px;font-weight:500;letter-spacing:.14em;position:relative;z-index:1}
+  .dcard .dfoot{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--s4);position:relative;z-index:1}
+  .dcard .dname{font-weight:600;font-size:15px;color:var(--fg)}
+  .card-copy .eyebrow{margin-bottom:var(--s3)}
+  .card-copy h2{margin:0 0 var(--s4)}
+  .card-copy .lede{margin-bottom:var(--s6)}
+  .linked{background:var(--cream);border:1px solid var(--line);border-radius:14px;padding:var(--s5);max-width:400px}
+  .linked h4{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:var(--s2)}
 
-  /* ---------- 1,000 ways to pool — wall of named pools (台帳) ---------- */
-  .ways{padding:var(--s20) 0}
-  .ways .ways-head{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--s8);
-    flex-wrap:wrap;margin-bottom:var(--s10)}
-  .uc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s4)}
-  .tile{display:flex;flex-direction:column;gap:var(--s4);background:var(--surface);
-    border:1px solid var(--line);border-radius:var(--r-panel);padding:var(--s4) var(--s5) var(--s4);
-    transition:border-color .15s ease,transform .12s ease}
-  .tile:hover{border-color:var(--line-2);transform:translateY(-2px)}
-  .tile-top{display:flex;align-items:center;justify-content:space-between;gap:var(--s2)}
-  .tile-ic{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;flex:none;
-    background:var(--ground);border:1px solid var(--line);color:var(--ink)}
-  .tile-cat{font-size:11px;color:var(--quiet);letter-spacing:.08em;text-transform:uppercase;font-weight:700}
-  .tile-name{font-size:16px;font-weight:700;letter-spacing:-.01em;line-height:1.25;margin:0}
-  .tile-foot{display:flex;align-items:center;justify-content:space-between;gap:var(--s2);
-    margin-top:auto;padding-top:var(--s3);border-top:1px solid var(--line)}
-  .tile-avs{display:inline-flex;flex-direction:row-reverse}
-  .tile-avs i{width:21px;height:21px;border-radius:50%;margin-left:-6px;border:2px solid var(--surface);
-    display:grid;place-items:center;font-size:9px;font-weight:700;color:var(--ink);background:#D7E0EB}
-  .tile-avs i.lime{background:var(--lime)}
-  .tile-amt{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--ink)}
-  .tile-amt span{display:block;font-size:10.5px;font-weight:700;color:var(--quiet);letter-spacing:.06em;
-    text-transform:uppercase;text-align:right;margin-bottom:1px}
+  /* ---- safety band (dark) ---- */
+  .safety{background:var(--bg-2)}
+  .safety-in{padding:var(--s20) 0;display:grid;grid-template-columns:1.1fr .9fr;gap:var(--s14);align-items:center}
+  .safety-in>*{min-width:0}
+  .safety .eyebrow{color:var(--sand);margin-bottom:var(--s3)}
+  .safety h2{font-weight:800;font-size:clamp(28px,3.8vw,46px);line-height:1.05;color:var(--fg);margin-bottom:var(--s5);letter-spacing:-.02em;text-wrap:balance}
+  .safety p{color:var(--fg-muted);max-width:50ch;font-size:17px}
+  .safety .note{margin-top:var(--s5);font-size:14px;color:var(--fg-muted)}
+  .stat{background:var(--bg);border:1px solid var(--line-dark);border-radius:16px;padding:var(--s8)}
+  .stat .lock{display:inline-flex;width:48px;height:48px;border-radius:12px;background:rgba(255,255,255,.06);color:var(--sand);align-items:center;justify-content:center;margin-bottom:var(--s5)}
+  .stat .big{font-weight:800;font-size:clamp(42px,5.6vw,68px);line-height:.95;color:var(--fg);letter-spacing:-.03em}
+  .stat .cap{margin-top:var(--s3);font-size:14px;color:var(--fg-muted)}
 
-  /* ---------- one card for every pool ---------- */
-  .cardsec{background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-  .cardsec .inner{padding:var(--s20) 0;display:grid;grid-template-columns:1fr 1fr;gap:var(--s16);align-items:center}
-  .cs-copy h2{font-family:var(--disp);font-weight:400;font-size:clamp(30px,4.6vw,50px);line-height:1;
-    letter-spacing:.01em;text-transform:uppercase;margin:0 0 var(--s4);color:var(--ink)}
-  .cs-copy p.lead{margin:0 0 var(--s6);font-size:17px;color:var(--muted);max-width:42ch}
-  .cs-list{display:flex;flex-direction:column;gap:var(--s4)}
-  .cs-list li{display:flex;gap:var(--s3);align-items:flex-start}
-  .cs-list .cs-ic{width:28px;height:28px;border-radius:8px;flex:none;display:grid;place-items:center;
-    background:var(--lime);color:var(--ink)}
-  .cs-list b{display:block;font-size:15px;font-weight:700;letter-spacing:-.01em}
-  .cs-list span{font-size:14px;color:var(--muted)}
-  /* visual: debit card + linked pools */
-  .cs-visual{display:flex;flex-direction:column;gap:var(--s5);align-items:stretch}
-  .debit{position:relative;background:linear-gradient(150deg,#10171F 0%,#1A2730 100%);
-    border-radius:18px;padding:var(--s6);min-height:208px;color:var(--ondark);
-    display:flex;flex-direction:column;justify-content:space-between;
-    box-shadow:0 2px 4px rgba(15,20,26,.06),0 26px 50px -30px rgba(15,20,26,.5)}
-  .debit .d-top{display:flex;align-items:center;justify-content:space-between}
-  .debit .d-brand{font-weight:800;font-size:17px;letter-spacing:-.01em}
-  .debit .d-chip{width:40px;height:30px;border-radius:6px;background:var(--lime)}
-  .debit .d-num{font-size:18px;letter-spacing:.18em;font-variant-numeric:tabular-nums;color:var(--ondark);font-weight:600}
-  .debit .d-bot{display:flex;align-items:flex-end;justify-content:space-between}
-  .debit .d-name{font-size:13px;color:var(--ondark-mut);letter-spacing:.04em;text-transform:uppercase;font-weight:700}
-  .debit .d-mark{display:inline-flex;gap:-8px}
-  .debit .d-mark i{width:24px;height:24px;border-radius:50%;display:block}
-  .debit .d-mark i:nth-child(1){background:rgba(255,255,255,.55)}
-  .debit .d-mark i:nth-child(2){background:var(--lime);margin-left:-9px}
-  .linked{background:var(--ground);border:1px solid var(--line);border-radius:var(--r-card);padding:var(--s4) var(--s5)}
-  .linked .lk-head{font-size:11px;color:var(--quiet);letter-spacing:.08em;text-transform:uppercase;
-    font-weight:700;margin-bottom:var(--s2)}
-  .lk-row{display:flex;align-items:center;gap:var(--s3);padding:var(--s3) 0;border-top:1px solid var(--line)}
-  .lk-row:first-of-type{border-top:0}
-  .lk-ic{width:30px;height:30px;border-radius:9px;flex:none;display:grid;place-items:center;
-    background:var(--surface);border:1px solid var(--line);color:var(--ink)}
-  .lk-name{font-size:14px;font-weight:700;line-height:1.25}
-  .lk-role{font-size:12px;color:var(--muted)}
-  .lk-amt{margin-left:auto;font-size:14px;font-weight:800;font-variant-numeric:tabular-nums}
-  .role{display:inline-flex;align-items:center;gap:5px;margin-left:auto;
-    font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
-    background:var(--lime);color:var(--ink);border-radius:var(--r-pill);padding:3px 9px}
-  .lk-row .lk-amt{margin-left:var(--s3)}
+  /* ---- final CTA (sand) ---- */
+  .final{padding:var(--s24) 0;text-align:center}
+  .final h2{margin-bottom:var(--s5)}
+  .final .lede{margin:0 auto var(--s8);text-align:center;color:var(--ink-soft)}
+  .final-actions{display:flex;gap:var(--s4);justify-content:center;flex-wrap:wrap}
 
-  /* ---------- pre-footer CTA (big statement) ---------- */
-  .cta-band{padding:var(--s20) 0 var(--s12)}
-  .cta-panel{background:var(--ink);border-radius:24px;padding:var(--s14) var(--s12);
-    display:flex;align-items:center;justify-content:space-between;gap:var(--s10);flex-wrap:wrap}
-  .cta-panel h2{font-family:var(--disp);font-weight:400;font-size:clamp(34px,5vw,62px);line-height:.92;
-    letter-spacing:.01em;text-transform:uppercase;margin:0;color:var(--ondark);max-width:13ch}
-  .cta-panel h2 em{font-style:normal;color:var(--lime)}
-  .cta-panel .cp-right{display:flex;flex-direction:column;gap:var(--s4);align-items:flex-start;max-width:34ch}
-  .cta-panel p{margin:0;color:var(--ondark-mut);font-size:16px}
-  .cp-actions{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s4)}
-  .btn-cta-dark{min-height:54px;padding:15px var(--s8) 17px;font-size:17px;border-radius:var(--r-pill);
-    background:var(--lime);color:var(--ink);font-weight:700}
-  .btn-cta-dark:hover{background:var(--lime-deep)}
-  .link-light{display:inline-flex;align-items:center;gap:6px;color:var(--ondark);font-weight:700;font-size:15px;
-    min-height:44px}
-  .link-light:hover{color:var(--lime)}
+  /* ---- FAQ (sand) ---- */
+  .faq{padding:var(--s8) 0 var(--s20)}
+  .faq-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:var(--s14);align-items:start}
+  .faq-grid>*{min-width:0}
+  .faq h2{position:sticky;top:88px}
+  details.q{border-bottom:1px solid var(--line-strong)}
+  details.q summary{list-style:none;cursor:pointer;display:flex;align-items:flex-start;justify-content:space-between;gap:var(--s5);padding:var(--s5) 0;font-weight:700;font-size:19px;letter-spacing:-.01em;line-height:1.2;min-height:48px;color:var(--ink)}
+  details.q summary::-webkit-details-marker{display:none}
+  details.q .ico{flex:0 0 auto;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;color:var(--ink-soft);transition:transform .2s}
+  details.q[open] .ico{transform:rotate(45deg)}
+  details.q .ans{padding:0 0 var(--s6);max-width:64ch}
+  details.q .ans p{color:var(--ink-soft);font-size:16px;margin-bottom:var(--s3)}
+  details.q .ans p:last-child{margin-bottom:0}
+  details.q .ans a{color:var(--ink);text-decoration:underline;text-underline-offset:2px}
 
-  /* ---------- FAQ ---------- */
-  .faq{padding:var(--s20) 0}
-  .faq .inner{display:grid;grid-template-columns:.8fr 1.2fr;gap:var(--s16);align-items:start}
-  .faq .sec-head{position:sticky;top:var(--s8)}
-  .faq-list{border-top:1px solid var(--line-2)}
-  details{border-bottom:1px solid var(--line)}
-  summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:var(--s4);
-    padding:var(--s5) 0;font-size:18px;font-weight:700;letter-spacing:-.01em;color:var(--ink);min-height:48px}
-  summary::-webkit-details-marker{display:none}
-  .q-sign{margin-left:auto;width:30px;height:30px;flex:none;border-radius:50%;border:1.5px solid var(--line-2);
-    display:grid;place-items:center;color:var(--ink);transition:transform .2s ease,background .15s ease}
-  summary:hover .q-sign{background:var(--surface)}
-  details[open] .q-sign{transform:rotate(45deg);background:var(--lime);border-color:var(--lime)}
-  .faq-a{margin:0;padding:0 var(--s12) var(--s6) 0;color:var(--muted);font-size:15.5px;line-height:1.65;max-width:60ch}
-  .faq-a a{color:var(--ink);font-weight:700;text-decoration:underline;text-underline-offset:2px}
+  /* ---- footer (dark) ---- */
+  footer.foot{background:var(--bg);color:var(--fg);overflow:hidden;border-top:1px solid var(--line-dark)}
+  .foot-top{padding:var(--s20) 0 var(--s14);display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:var(--s10)}
+  .foot-top>*{min-width:0}
+  .foot .logo svg{width:88px}
+  .foot .tag{margin-top:var(--s4);color:var(--fg-muted);max-width:34ch;font-size:15px}
+  .foot h5{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--fg-quiet);margin-bottom:var(--s4)}
+  .foot ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+  .foot ul a{display:inline-flex;align-items:center;min-height:36px;font-size:14px;color:var(--fg-muted)}
+  .foot ul a:hover{color:var(--fg)}
+  .foot-legal{border-top:1px solid var(--line-dark);padding:var(--s8) 0 var(--s10)}
+  .foot-legal p{color:var(--fg-quiet);font-size:12px;line-height:1.6;margin-bottom:var(--s3)}
+  .foot-legal .row{display:flex;align-items:center;justify-content:space-between;gap:var(--s5);flex-wrap:wrap;margin-bottom:var(--s6)}
+  .foot-legal .copy{font-size:12px;font-weight:600;letter-spacing:.04em;color:var(--fg-muted)}
+  .wordmark{font-weight:800;font-size:clamp(38px,11vw,176px);line-height:.82;letter-spacing:-.03em;color:transparent;-webkit-text-stroke:1px var(--line-dark-2);padding:var(--s8) 0 max(var(--s8),env(safe-area-inset-bottom));text-align:center;white-space:nowrap}
 
-  /* ---------- footer ---------- */
-  footer{padding:var(--s10) 0 var(--s12)}
-  .foot-cta{display:flex;align-items:center;justify-content:space-between;gap:var(--s6);flex-wrap:wrap;
-    padding-bottom:var(--s10);margin-bottom:var(--s10);border-bottom:1px solid var(--line)}
-  .foot-cta p{margin:0;font-family:var(--disp);font-weight:400;font-size:clamp(24px,3vw,34px);
-    line-height:1;letter-spacing:.01em;text-transform:uppercase;color:var(--ink);max-width:16ch}
-  .foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:var(--s8);
-    padding-bottom:var(--s10);border-bottom:1px solid var(--line)}
-  .foot-brand .mark{margin-bottom:var(--s3)}
-  .foot-brand p{margin:0;color:var(--muted);font-size:14px;max-width:30ch}
-  .foot-col h4{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
-    color:var(--quiet);margin:0 0 var(--s4)}
-  .foot-col a{display:block;color:var(--muted);font-size:14.5px;padding:5px 0;font-weight:500}
-  .foot-col a:hover{color:var(--ink)}
-  .foot-bot{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--s6);
-    padding-top:var(--s6);flex-wrap:wrap}
-  .foot-bot .legal{color:var(--quiet);font-size:12.5px;line-height:1.6;max-width:62ch}
-  .foot-bot .legal strong{color:var(--muted);font-weight:600}
-  .socials{display:flex;gap:var(--s2)}
-  .socials a{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;
-    border:1px solid var(--line);background:var(--surface);color:var(--ink-soft)}
-  .socials a:hover{color:var(--ink);border-color:var(--line-2)}
+  /* ---- mobile sticky CTA (thumb zone) ---- */
+  .m-cta{display:none;position:fixed;left:0;right:0;bottom:0;z-index:60;padding:var(--s3) var(--s4) calc(var(--s3) + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(10px);border-top:1px solid var(--line-dark)}
+  .m-cta .btn{width:100%}
 
-  /* ---------- mobile sticky CTA ---------- */
-  .sticky-cta{display:none}
-
-  /* ---------- responsive ---------- */
-  @media (max-width:960px){
-    .wrap{padding:0 var(--s5)}
+  /* ---- responsive ---- */
+  @media (max-width:900px){
+    .demo-grid,.card-grid,.safety-in,.faq-grid,.foot-top{grid-template-columns:1fr;gap:var(--s10)}
+    .faq h2{position:static}
+    .demo-grid .demo-screen{order:-1}
+    .foot-top{grid-template-columns:1fr 1fr}
+    .foot-top .foot-brand{grid-column:1 / -1}
+  }
+  @media (max-width:720px){
     .nav-links{display:none}
-    .hero{grid-template-columns:1fr;gap:var(--s12);padding:var(--s8) 0 var(--s14)}
-    .device-col{order:-1}
-    .lede{max-width:none}
-    .ledger{grid-template-columns:repeat(2,1fr);gap:var(--s8) var(--s6)}
-    .benefits .inner{padding:var(--s14) 0}
-    .uc-grid{grid-template-columns:repeat(2,1fr)}
-    .ways{padding:var(--s14) 0}
-    .cardsec .inner{grid-template-columns:1fr;gap:var(--s10);padding:var(--s14) 0}
-    .cs-visual{order:-1}
-    .faq{padding:var(--s14) 0}
-    .faq .inner{grid-template-columns:1fr;gap:var(--s8)}
-    .faq .sec-head{position:static}
-    .cta-panel{padding:var(--s12) var(--s6);flex-direction:column;align-items:flex-start;gap:var(--s6)}
-    .foot-grid{grid-template-columns:1fr 1fr;gap:var(--s8) var(--s6)}
-    .foot-brand{grid-column:1 / -1}
-    body{padding-bottom:88px}
-    .sticky-cta{display:block;position:fixed;left:0;right:0;bottom:0;z-index:30;
-      background:rgba(233,239,246,.92);backdrop-filter:saturate(1.4) blur(10px);
-      border-top:1px solid var(--line);
-      padding:10px var(--s5) calc(10px + env(safe-area-inset-bottom));
-      padding-left:calc(var(--s5) + env(safe-area-inset-left));
-      padding-right:calc(var(--s5) + env(safe-area-inset-right))}
-    .sticky-cta .btn-cta{display:flex;width:100%;min-height:52px;padding:14px var(--s6) 16px}
+    .m-disc{display:block}
+    .m-cta{display:block}
+    body{padding-bottom:84px}
   }
   @media (max-width:560px){
-    .ledger{grid-template-columns:1fr}
-    .uc-grid{grid-template-columns:1fr}
+    .wrap{padding:0 var(--s4)}
+    .foot-top{grid-template-columns:1fr}
+    .stack img{margin-left:-10px}
   }
-  @media (max-width:420px){
-    h1{font-size:clamp(44px,13vw,60px)}
-    .pip{left:-10px;width:170px}
-  }
-  @media (prefers-reduced-motion:reduce){
-    *{transition:none!important}
-    .btn:active{transform:none}
-    h1 .hl::before{transform:none}
-    .tile:hover{transform:none}
-    details[open] .q-sign{transition:none}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    *{transition:none !important;animation:none !important}
+    .track{animation:none !important}
+    .marq{overflow-x:auto;-webkit-mask-image:none;mask-image:none}
   }
 </style>
 </head>
-<body>
+<body id="top">
 
-<header>
-  <nav><div class="wrap nav-in">
-    <a class="mark" href="#" aria-label="pool home">
-      <svg width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true">
-        <circle cx="10" cy="13" r="7.2" fill="#C8F03C" stroke="#0F141A" stroke-width="1.8"/>
-        <circle cx="16" cy="13" r="7.2" fill="none" stroke="#0F141A" stroke-width="1.8"/>
+<!-- ===== NAV ===== -->
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="#top" aria-label="Pool — Home">
+      <svg viewBox="0 0 74 24" fill="currentColor" role="img" aria-label="Pool" xmlns="http://www.w3.org/2000/svg">
+        <path d="M23.6631 10.606C22.6201 11.649 19.4771 10.195 16.6411 7.35898C13.8051 4.52298 12.3521 1.37998 13.3941 0.336983C14.4371 -0.705017 17.5801 0.747983 20.4161 3.58398C23.2521 6.41998 24.7051 9.56298 23.6631 10.606Z"/>
+        <path d="M10.6061 23.662C9.56305 24.705 6.42005 23.251 3.58405 20.415C0.749053 17.58 -0.704947 14.436 0.337053 13.394C1.38005 12.352 4.52305 13.805 7.35905 16.641C10.1951 19.477 11.6481 22.619 10.6061 23.662Z"/>
+        <path d="M13.394 23.662C12.351 22.619 13.805 19.476 16.641 16.64C19.477 13.804 22.62 12.351 23.663 13.393C24.705 14.436 23.252 17.579 20.416 20.415C17.58 23.251 14.437 24.704 13.394 23.662Z"/>
+        <path d="M0.338055 10.606C-0.704945 9.56299 0.749055 6.41999 3.58506 3.58399C6.42006 0.748992 9.56406 -0.705008 10.6061 0.336992C11.6481 1.37999 10.1951 4.52299 7.35906 7.35899C4.52306 10.195 1.38106 11.648 0.338055 10.606Z"/>
+        <path d="M35.757 20.068H32.307V3.966H37.708C41.581 3.966 43.998 6.097 43.998 9.594C43.998 13.068 41.581 15.222 37.708 15.222H35.758L35.757 20.068ZM37.52 12.287C39.538 12.287 40.571 11.095 40.571 9.593C40.571 8.067 39.538 6.899 37.52 6.899H35.757V12.287H37.52Z"/>
+        <path d="M50.47 7.487C46.801 7.487 44.703 10.359 44.703 13.903C44.703 17.447 46.83 20.319 50.47 20.319C54.11 20.319 56.237 17.447 56.237 13.903C56.237 10.359 54.14 7.487 50.47 7.487ZM50.47 17.599C48.872 17.599 47.989 15.944 47.989 13.903C47.989 11.862 48.872 10.207 50.47 10.207C52.068 10.207 52.951 11.862 52.951 13.903C52.951 15.944 52.067 17.599 50.47 17.599Z"/>
+        <path d="M63.199 7.487C59.53 7.487 57.432 10.359 57.432 13.903C57.432 17.447 59.559 20.319 63.199 20.319C66.839 20.319 68.966 17.447 68.966 13.903C68.966 10.359 66.869 7.487 63.199 7.487ZM63.199 17.599C61.601 17.599 60.718 15.944 60.718 13.903C60.718 11.862 61.601 10.207 63.199 10.207C64.797 10.207 65.68 11.862 65.68 13.903C65.68 15.944 64.796 17.599 63.199 17.599Z"/>
+        <path d="M74 3.966H70.714V20.068H74V3.966Z"/>
       </svg>
-      pool
     </a>
-    <div class="nav-links">
-      <a href="#how">How it works</a>
-      <a href="#ways">Use cases</a>
-      <a href="#card">The card</a>
-      <a href="#faq">FAQ</a>
-    </div>
-    <div class="nav-right">
-      <a class="btn btn-login" href="#">Sign in</a>
-      <a class="btn btn-chip" href="#join">Create my pool</a>
-    </div>
-  </div></nav>
+
+    <nav class="nav-links" aria-label="Primary">
+      <a class="lnk" href="#top">Careers</a>
+      <a class="lnk signin" href="#top">Sign In</a>
+      <a class="btn btn-fill" href="#top">Create My Pool</a>
+    </nav>
+
+    <details class="m-disc">
+      <summary aria-label="Open menu">
+        <span class="ic-open" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+        <span class="ic-close" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M18 6 6 18M6 6l12 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+      </summary>
+      <div class="m-panel">
+        <a href="#top">Careers</a>
+        <a href="#top">Sign In</a>
+        <a class="btn btn-fill" href="#top">Create My Pool</a>
+      </div>
+    </details>
+  </div>
 </header>
 
 <main>
-  <!-- 1 · HERO -->
-  <section class="hero wrap">
-    <div class="hero-copy">
-      <p class="eyebrow"><span class="live" aria-hidden="true"></span>Now in private beta</p>
-      <h1>Shared money,<br>made <span class="hl">simple.</span></h1>
-      <p class="lede">A new account built for more — more people, more control, a purpose all its own. Pool money with people you trust, then spend, split and settle without the awkward math.</p>
 
-      <div class="cta-row">
-        <a class="btn btn-cta" id="join" href="#">Create my pool
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M3.5 9h11m0 0L10 4.5M14.5 9 10 13.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </a>
-        <a class="btn btn-secondary" href="#how">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.4" stroke="currentColor" stroke-width="1.5"/><path d="M6.6 5.5 11 8l-4.4 2.5V5.5Z" fill="currentColor"/></svg>
-          See how it works
-        </a>
+  <!-- ===== HERO ===== -->
+  <section class="hero">
+    <div class="wrap">
+      <h1>One account<br>isn&rsquo;t enough.</h1>
+      <p class="lede">Pool is a new account designed for more: more people, more control, a purpose all its own. Make as many as you need.</p>
+      <div class="hero-actions">
+        <a class="btn btn-fill" href="#top">Create My Pool</a>
+        <a class="btn btn-ghost" href="#how">See how it works</a>
       </div>
-
-      <div class="badges">
-        <span class="badge"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.4 6.5 11.4 12.5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>No fees to collect</span>
-        <span class="badge"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.4 6.5 11.4 12.5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Make as many as you need</span>
-        <span class="badge"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.4 6.5 11.4 12.5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Bank-grade encryption</span>
-      </div>
-
       <p class="trust">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1.6 2.8 3.7v4c0 3 2.2 5.4 5.2 6.7 3-1.3 5.2-3.7 5.2-6.7v-4L8 1.6Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M5.8 8 7.3 9.5 10.4 6.3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Pool is a financial technology company, not a bank. Funds are held at our partner bank and FDIC-insured up to $250,000.
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l7 3v5c0 4.2-2.9 7.6-7 9-4.1-1.4-7-4.8-7-9V6l7-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Pool is a financial technology company, not a bank. All banking services provided by First Internet Bank, Member&nbsp;FDIC.</span>
       </p>
     </div>
-
-    <!-- PRODUCT CARD -->
-    <div class="device-col">
-      <div class="phone-wrap">
-        <div class="phone" role="img" aria-label="pool アプリの画面。共有口座『Lisbon Trip』のプール残高は $2,480.00、$3,000 の目標に対して83%。メンバーは5人。最近の入出金として Maya が $120、Leo が $200 を入金し、Sol でのディナーを4人で1人あたり $16 に分割。">
-          <div class="screen">
-            <div class="statusbar">
-              <span>9:41</span>
-              <span class="sb-icons" aria-hidden="true">
-                <svg width="17" height="11" viewBox="0 0 17 11" fill="none"><rect x="0" y="7" width="3" height="4" rx="1" fill="currentColor"/><rect x="4.5" y="5" width="3" height="6" rx="1" fill="currentColor"/><rect x="9" y="2.5" width="3" height="8.5" rx="1" fill="currentColor"/><rect x="13.5" y="0" width="3" height="11" rx="1" fill="currentColor"/></svg>
-                <svg width="15" height="11" viewBox="0 0 16 12" fill="none"><path d="M8 10.2 1.6 4.4a8.6 8.6 0 0 1 12.8 0L8 10.2Z" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linejoin="round"/><circle cx="8" cy="9.3" r="1.1" fill="currentColor"/></svg>
-                <svg width="24" height="12" viewBox="0 0 24 12" fill="none"><rect x="1" y="1.5" width="19" height="9" rx="2.4" stroke="currentColor" stroke-width="1.2"/><rect x="2.8" y="3.3" width="13" height="5.4" rx="1.2" fill="currentColor"/><rect x="21" y="4" width="2" height="4" rx="1" fill="currentColor"/></svg>
-              </span>
-            </div>
-
-            <div class="app-head">
-              <div>
-                <div class="ah-title">Lisbon Trip</div>
-                <div class="ah-sub">Shared account · 5 members</div>
-              </div>
-              <span class="ah-spacer"></span>
-              <span class="icon-pill" aria-hidden="true">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2.2a2 2 0 0 1 2 2c2 .9 3 2.6 3 5.1l1 1.6H2l1-1.6c0-2.5 1-4.2 3-5.1a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M6.4 12.6a1.7 1.7 0 0 0 3.2 0" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-              </span>
-            </div>
-
-            <div class="balance">
-              <div class="bal-top">
-                <div>
-                  <div class="bal-label">Pooled balance</div>
-                  <div class="bal-pool">Goal · Lisbon, August</div>
-                </div>
-                <div class="avatars" aria-hidden="true">
-                  <span class="av more">+2</span>
-                  <span class="av a3">R</span>
-                  <span class="av a2">L</span>
-                  <span class="av a1">M</span>
-                  <span class="av you">You</span>
-                </div>
-              </div>
-              <div class="bal-amount">$2,480.00</div>
-              <div class="goal">
-                <div class="goal-track"><div class="goal-fill"></div></div>
-                <div class="goal-meta"><span><b>$2,480</b> of $3,000 goal</span><span>83%</span></div>
-              </div>
-              <div class="bal-actions">
-                <span class="ba ba-add">
-                  <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 3.2v9.6M3.2 8h9.6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>
-                  Add money
-                </span>
-                <span class="ba ba-req">
-                  <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 12.8V3.2m0 9.6L4 8.8M8 12.8l4-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                  Request
-                </span>
-              </div>
-            </div>
-
-            <div class="recent">
-              <div class="rec-head">Recent activity</div>
-              <ul>
-                <li class="act">
-                  <span class="a-ic in" aria-hidden="true">M</span>
-                  <span class="a-body">
-                    <span class="a-name">Maya added to the pool</span>
-                    <span class="a-meta">Today · 2:14 PM</span>
-                  </span>
-                  <span class="a-amt"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 9.5v-7M6 2.5 2.8 5.7M6 2.5l3.2 3.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>+$120.00</span>
-                </li>
-                <li class="act">
-                  <span class="a-ic split" aria-hidden="true">
-                    <svg width="17" height="17" viewBox="0 0 18 18" fill="none"><path d="M9 3v5m0 0-3 4m3-4 3 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="3" r="1.4" fill="currentColor"/></svg>
-                  </span>
-                  <span class="a-body">
-                    <span class="a-name">Dinner at Sol · split 4 ways</span>
-                    <span class="a-meta">Yesterday · your share</span>
-                  </span>
-                  <span class="a-amt out"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 2.5v7M6 9.5 2.8 6.3M6 9.5l3.2-3.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>-$16.00</span>
-                </li>
-                <li class="act">
-                  <span class="a-ic in2" aria-hidden="true">L</span>
-                  <span class="a-body">
-                    <span class="a-name">Leo added to the pool</span>
-                    <span class="a-meta">Mon · 9:02 AM</span>
-                  </span>
-                  <span class="a-amt"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 9.5v-7M6 2.5 2.8 5.7M6 2.5l3.2 3.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>+$200.00</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <div class="pip" aria-hidden="true">
-          <div class="pip-h">
-            <span class="dot"><svg width="13" height="13" viewBox="0 0 18 18" fill="none"><path d="M9 3v5m0 0-3 4m3-4 3 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="3" r="1.4" fill="currentColor"/></svg></span>
-            Dinner at Sol
-          </div>
-          <div class="pip-sub">Split evenly · 4 people</div>
-          <div class="pip-row">
-            <span class="pip-avs"><i></i><i></i><i></i><i></i></span>
-            <span class="pip-each">$16.00<span style="font-weight:600;color:var(--muted)"> each</span></span>
-          </div>
-        </div>
-      </div>
-    </div>
   </section>
 
-  <!-- 2 · FEATURE LEDGER — a dedicated place for shared money -->
-  <section class="benefits" id="how">
-    <div class="wrap inner">
-      <div class="sec-head ben-head">
-        <span class="kicker mono">How pool works</span>
-        <h2>A dedicated place<br>for shared money</h2>
-        <p>Turn financial chaos into organized collaboration. Collect, spend and manage money the right way — together, in one account.</p>
-      </div>
-      <div class="ledger">
-        <article class="item">
-          <span class="ic" aria-hidden="true">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="9.5" cy="12" r="6.2" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="14.5" cy="12" r="6.2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 7.4a6.2 6.2 0 0 0 0 9.2 6.2 6.2 0 0 0 0-9.2Z" fill="currentColor"/></svg>
-          </span>
-          <p class="word">Collect</p>
-          <h3>You keep what you collect</h3>
-          <p>Invite the group and watch every contribution add up. Pool never takes a percentage or charges a fee to collect money.</p>
-        </article>
-        <article class="item">
-          <span class="ic" aria-hidden="true">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 4v6m0 0-4 6m4-6 4 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="4" r="2" fill="currentColor"/><circle cx="8" cy="20" r="2" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="16" cy="20" r="2" fill="none" stroke="currentColor" stroke-width="1.7"/></svg>
-          </span>
-          <p class="word">Split</p>
-          <h3>Split bills, not friendships</h3>
-          <p>Snap a receipt and split any way you like — evenly, by item, or custom. Everyone sees who owes what, the moment it's added.</p>
-        </article>
-        <article class="item">
-          <span class="ic" aria-hidden="true">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="12.5" rx="2.4" stroke="currentColor" stroke-width="1.7"/><path d="M3 10h18" stroke="currentColor" stroke-width="1.7"/><path d="M6.5 14.5h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
-          </span>
-          <p class="word">Spend</p>
-          <h3>Spend straight from the pool</h3>
-          <p>Nothing extra to track. Spend directly out of any pool with a virtual or physical debit card — no reimbursements.</p>
-        </article>
-        <article class="item">
-          <span class="ic" aria-hidden="true">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 3.4 5 6.1v4.5c0 4 3 7 7 8.4 4-1.4 7-4.4 7-8.4V6.1L12 3.4Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 11.6 11 13.6 15.2 9" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </span>
-          <p class="word">Control</p>
-          <h3>Granular control over spending</h3>
-          <p>Assign roles and set limits on who can spend. Manage debit-card access for every member from one place.</p>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <!-- 3 · 1,000 WAYS TO POOL — wall of named pools -->
-  <section class="ways wrap" id="ways">
-    <div class="ways-head">
-      <div class="sec-head">
-        <span class="kicker mono">1,000 ways to pool</span>
-        <h2>A pool for<br>every plan</h2>
-      </div>
-      <p style="margin:0;max-width:38ch;color:var(--muted);font-size:17px">Pool is perfect for roommates, kids' teams and classrooms, emergency funds — and plenty of things we haven't thought of yet.</p>
-    </div>
-    <ul class="uc-grid">
-      <li class="tile">
-        <div class="tile-top">
-          <span class="tile-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 11 12 4l8 7M6 9.5V20h12V9.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <span class="tile-cat">Household</span>
-        </div>
-        <h3 class="tile-name">Roomies fund</h3>
-        <div class="tile-foot">
-          <span class="tile-avs" aria-hidden="true"><i class="lime">Y</i><i>K</i><i>D</i></span>
-          <span class="tile-amt"><span>Pooled</span>$414</span>
-        </div>
-      </li>
-      <li class="tile">
-        <div class="tile-top">
-          <span class="tile-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.7"/><path d="M12 4l2.5 4-2.5 4-2.5-4L12 4Zm0 16-2.5-4 2.5-4 2.5 4L12 20Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></span>
-          <span class="tile-cat">Sports</span>
-        </div>
-        <h3 class="tile-name">Laced team '26</h3>
-        <div class="tile-foot">
-          <span class="tile-avs" aria-hidden="true"><i class="lime">C</i><i>A</i><i>M</i></span>
-          <span class="tile-amt"><span>Pooled</span>$1,210</span>
-        </div>
-      </li>
-      <li class="tile">
-        <div class="tile-top">
-          <span class="tile-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 4 3 8l9 4 9-4-9-4Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M7 10.5V15c0 1.4 2.2 2.5 5 2.5s5-1.1 5-2.5v-4.5" stroke="currentColor" stroke-width="1.7"/></svg></span>
-          <span class="tile-cat">Classroom</span>
-        </div>
-        <h3 class="tile-name">Mrs. K's Class</h3>
-        <div class="tile-foot">
-          <span class="tile-avs" aria-hidden="true"><i class="lime">K</i><i>P</i><i>+8</i></span>
-          <span class="tile-amt"><span>Pooled</span>$1,210</span>
-        </div>
-      </li>
-      <li class="tile">
-        <div class="tile-top">
-          <span class="tile-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 18c2-6 5-9 7-9s5 3 7 9" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="17.5" cy="6.5" r="2.5" stroke="currentColor" stroke-width="1.7"/></svg></span>
-          <span class="tile-cat">Travel</span>
-        </div>
-        <h3 class="tile-name">Summer trip</h3>
-        <div class="tile-foot">
-          <span class="tile-avs" aria-hidden="true"><i class="lime">Y</i><i>N</i><i>+4</i></span>
-          <span class="tile-amt"><span>Pooled</span>$5,950</span>
-        </div>
-      </li>
-      <li class="tile">
-        <div class="tile-top">
-          <span class="tile-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="6" width="16" height="13" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M8 4v4M16 4v4M4 11h16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
-          <span class="tile-cat">Club</span>
-        </div>
-        <h3 class="tile-name">Mission Book Club</h3>
-        <div class="tile-foot">
-          <span class="tile-avs" aria-hidden="true"><i class="lime">J</i><i>S</i><i>R</i></span>
-          <span class="tile-amt"><span>Pooled</span>$224</span>
-        </div>
-      </li>
-      <li class="tile">
-        <div class="tile-top">
-          <span class="tile-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.7"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
-          <span class="tile-cat">Rec league</span>
-        </div>
-        <h3 class="tile-name">Intramural bball</h3>
-        <div class="tile-foot">
-          <span class="tile-avs" aria-hidden="true"><i class="lime">T</i><i>D</i><i>+5</i></span>
-          <span class="tile-amt"><span>Pooled</span>$463</span>
-        </div>
-      </li>
-      <li class="tile">
-        <div class="tile-top">
-          <span class="tile-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 20V8l7-4 7 4v12" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><rect x="9.5" y="13" width="5" height="7" stroke="currentColor" stroke-width="1.7"/></svg></span>
-          <span class="tile-cat">Housing</span>
-        </div>
-        <h3 class="tile-name">Communal Studio</h3>
-        <div class="tile-foot">
-          <span class="tile-avs" aria-hidden="true"><i class="lime">A</i><i>B</i><i>+3</i></span>
-          <span class="tile-amt"><span>Pooled</span>$1,132</span>
-        </div>
-      </li>
-      <li class="tile">
-        <div class="tile-top">
-          <span class="tile-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 19c2-7 5-10 8-10s4 1 4 1" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M14 6l5-2-2 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <span class="tile-cat">Care</span>
-        </div>
-        <h3 class="tile-name">Sophia's Nanny Fund</h3>
-        <div class="tile-foot">
-          <span class="tile-avs" aria-hidden="true"><i class="lime">S</i><i>M</i></span>
-          <span class="tile-amt"><span>Pooled</span>$958</span>
-        </div>
-      </li>
-    </ul>
-  </section>
-
-  <!-- 4 · ONE CARD FOR EVERY POOL -->
-  <section class="cardsec" id="card">
-    <div class="wrap inner">
-      <div class="cs-copy">
-        <span class="kicker mono" style="display:inline-block;color:var(--muted);font-size:13px;margin:0 0 var(--s4)">The pool card</span>
-        <h2>One card for<br>all your pools</h2>
-        <p class="lead">Get a free card and use it with any pool where you're a Spender. Just link it and swipe — no more reimbursements, just simple spending with community transparency.</p>
-        <ul class="cs-list">
-          <li>
-            <span class="cs-ic" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3.5 8.4 6.5 11.4 12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-            <span><b>Switch pools, one tap.</b> Choose which pool to spend from before you swipe.</span>
-          </li>
-          <li>
-            <span class="cs-ic" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3.5 8.4 6.5 11.4 12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-            <span><b>Virtual &amp; physical.</b> Spend online the second you're added, or carry the card.</span>
-          </li>
-          <li>
-            <span class="cs-ic" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3.5 8.4 6.5 11.4 12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-            <span><b>Everyone can see it.</b> Each purchase shows up in the pool's activity for the whole group.</span>
-          </li>
-        </ul>
-      </div>
-
-      <div class="cs-visual">
-        <div class="debit" role="img" aria-label="pool のデビットカード。カード番号は 0042 で終わり、名義は A. RIVERA。">
-          <div class="d-top">
-            <span class="d-brand">pool</span>
-            <span class="d-chip" aria-hidden="true"></span>
-          </div>
-          <div class="d-num" aria-hidden="true">5212 · · · · · · · · 0042</div>
-          <div class="d-bot">
-            <span class="d-name">A. Rivera</span>
-            <span class="d-mark" aria-hidden="true"><i></i><i></i></span>
-          </div>
-        </div>
-        <div class="linked">
-          <div class="lk-head mono">Linked pools · you're a Spender</div>
-          <div class="lk-row">
-            <span class="lk-ic" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 4 3 8l9 4 9-4-9-4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
-            <span class="lk-body"><span class="lk-name">Mrs. K's Class</span><span class="lk-role">Spender · classroom supplies</span></span>
-            <span class="lk-amt">$1,210</span>
-          </div>
-          <div class="lk-row">
-            <span class="lk-ic" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 11 12 4l8 7M6 9.5V20h12V9.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-            <span class="lk-body"><span class="lk-name">Roomies fund</span><span class="lk-role">Spender · groceries &amp; utilities</span></span>
-            <span class="lk-amt">$414</span>
-          </div>
-          <div class="lk-row">
-            <span class="lk-ic" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.8"/></svg></span>
-            <span class="lk-body"><span class="lk-name">Laced team '26</span><span class="lk-role">Spender · kit &amp; pitch fees</span></span>
-            <span class="lk-amt">$176</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 5 · BIG STATEMENT + CTA -->
-  <section class="cta-band">
+  <!-- ===== PRODUCT DEMO — single tabbed component (Collaborate / Collect / Spend / Manage) ===== -->
+  <section class="demo-sect" id="how">
     <div class="wrap">
-      <div class="cta-panel">
-        <h2>Bank alone, or <em>pool together.</em></h2>
-        <div class="cp-right">
-          <p>Your bank account is no place for other people's money. Pool is. Make your first one in under two minutes.</p>
-          <div class="cp-actions">
-            <a class="btn btn-cta-dark" href="#join">Create my pool
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M3.5 9h11m0 0L10 4.5M14.5 9 10 13.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </a>
-            <a class="link-light" href="#how">Learn more
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8h9m0 0L9 4.5M12.5 8 9 11.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </a>
+      <fieldset class="demo">
+        <legend class="sr-only">Choose what to preview in the Pool app</legend>
+
+        <div class="demo-tabs" role="group" aria-label="Pool features">
+          <label class="tab t-collab"><input type="radio" name="demo" value="collab" checked><span>Collaborate</span></label>
+          <label class="tab t-collect"><input type="radio" name="demo" value="collect"><span>Collect</span></label>
+          <label class="tab t-spend"><input type="radio" name="demo" value="spend"><span>Spend</span></label>
+          <label class="tab t-manage"><input type="radio" name="demo" value="manage"><span>Manage</span></label>
+        </div>
+
+        <div class="demo-grid">
+          <!-- text side -->
+          <div class="demo-copy">
+            <div class="tp tp-collab">
+              <span class="eyebrow">Collaborate</span>
+              <h2 class="sect">A dedicated place for shared money</h2>
+              <p class="lede">Turn financial chaos into organized collaboration. Invite collaborators, assign spending roles, and manage money the right way.</p>
+            </div>
+            <div class="tp tp-collect">
+              <span class="eyebrow">Collect</span>
+              <h2 class="sect">Collect money</h2>
+              <p class="lede">You keep what you collect. Pool does not take a percentage or charge fees to collect money.</p>
+            </div>
+            <div class="tp tp-spend">
+              <span class="eyebrow">Spend</span>
+              <h2 class="sect">Spend seamlessly from across your Pools</h2>
+              <p class="lede">Nothing extra to track. Simply spend directly out of the Pool with virtual and physical debit cards.</p>
+            </div>
+            <div class="tp tp-manage">
+              <span class="eyebrow">Manage</span>
+              <h2 class="sect">Granular control over who&rsquo;s able to spend</h2>
+              <p class="lede">Use our membership tools to set limits on who can spend and manage debit card access.</p>
+            </div>
           </div>
+
+          <!-- app screen side (above the fold → not lazy) -->
+          <div class="demo-screen">
+            <!-- COLLABORATE -->
+            <div class="screen sp sp-collab" role="img" aria-label="Pool app: the Roomies fund holding $1,414 with four members assigned Owner, Spender and Viewer roles.">
+              <div class="scr-head">
+                <span class="scr-name">Roomies fund <span aria-hidden="true">🌟</span></span>
+                <span class="scr-bal amt">$1,414.00</span>
+              </div>
+              <p class="scr-label">Members · 4</p>
+              <div class="lrow">
+                <img class="avatar" src="https://picsum.photos/seed/poolm1/72/72" width="36" height="36" alt="">
+                <span class="grow"><span class="nm">Alex Rivera</span></span>
+                <span class="role own">Owner</span>
+              </div>
+              <div class="lrow">
+                <img class="avatar" src="https://picsum.photos/seed/poolm2/72/72" width="36" height="36" alt="">
+                <span class="grow"><span class="nm">Mia Chen</span></span>
+                <span class="role">Spender</span>
+              </div>
+              <div class="lrow">
+                <img class="avatar" src="https://picsum.photos/seed/poolm3/72/72" width="36" height="36" alt="">
+                <span class="grow"><span class="nm">Jordan Lee</span></span>
+                <span class="role">Spender</span>
+              </div>
+              <div class="lrow">
+                <img class="avatar" src="https://picsum.photos/seed/poolm4/72/72" width="36" height="36" alt="">
+                <span class="grow"><span class="nm">Sam Park</span></span>
+                <span class="role">Viewer</span>
+              </div>
+              <span class="badge-free"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Invite collaborators</span>
+            </div>
+
+            <!-- COLLECT -->
+            <div class="screen sp sp-collect" role="img" aria-label="Pool app: the Summer trip collection at $5,950 of an $8,000 goal — 74 percent — with three contributors and no fees.">
+              <div class="scr-head">
+                <span class="scr-name">Summer trip</span>
+                <span class="scr-bal amt">$5,950</span>
+              </div>
+              <p class="scr-label">Collected · no fees</p>
+              <div class="bar"><i style="width:74%"></i></div>
+              <div class="goal"><span class="amt">$5,950 collected</span><span class="amt">74% of $8,000</span></div>
+              <p class="scr-label">Contributors</p>
+              <div class="lrow">
+                <img class="avatar sm" src="https://picsum.photos/seed/poolm2/72/72" width="28" height="28" alt="">
+                <span class="grow"><span class="nm">Mia Chen</span></span>
+                <span class="amt-in amt"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>+$1,500</span>
+              </div>
+              <div class="lrow">
+                <img class="avatar sm" src="https://picsum.photos/seed/poolm3/72/72" width="28" height="28" alt="">
+                <span class="grow"><span class="nm">Jordan Lee</span></span>
+                <span class="amt-in amt"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>+$2,000</span>
+              </div>
+              <div class="lrow">
+                <img class="avatar sm" src="https://picsum.photos/seed/poolm4/72/72" width="28" height="28" alt="">
+                <span class="grow"><span class="nm">Sam Park</span></span>
+                <span class="amt-in amt"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>+$2,450</span>
+              </div>
+              <span class="badge-free"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12l5 5L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>You keep 100% — Pool takes no cut.</span>
+            </div>
+
+            <!-- SPEND -->
+            <div class="screen sp sp-spend" role="img" aria-label="Pool app: recent card activity for Mrs. K's Class, three purchases and one top-up, on the Pool Visa debit card ending 4471.">
+              <div class="scr-head">
+                <span class="scr-name">Mrs. K&rsquo;s Class</span>
+                <span class="scr-bal amt">$1,210.00</span>
+              </div>
+              <p class="scr-label">Recent card activity</p>
+              <div class="lrow">
+                <span class="grow"><span class="nm">Blick Art Materials</span><span class="sub">Classroom supplies</span></span>
+                <span class="amt-out amt">&minus;$84.20</span>
+              </div>
+              <div class="lrow">
+                <span class="grow"><span class="nm">Field trip — Aquarium</span><span class="sub">Tickets ×24</span></span>
+                <span class="amt-out amt">&minus;$240.00</span>
+              </div>
+              <div class="lrow">
+                <span class="grow"><span class="nm">Scholastic Books</span><span class="sub">Reading corner</span></span>
+                <span class="amt-out amt">&minus;$56.00</span>
+              </div>
+              <div class="lrow">
+                <span class="grow"><span class="nm">Added by Mrs. K</span><span class="sub">Top-up</span></span>
+                <span class="amt-in amt"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>+$300.00</span>
+              </div>
+              <span class="chip-card"><span class="vd" aria-hidden="true"></span>POOL VISA · DEBIT ···· 4471</span>
+            </div>
+
+            <!-- MANAGE -->
+            <div class="screen sp sp-manage" role="img" aria-label="Pool app: spending controls for Intramural bball — a $200 weekly limit on with card access, a viewer set to view only, and an approval-over-$100 rule on.">
+              <div class="scr-head">
+                <span class="scr-name">Intramural bball <span aria-hidden="true">🏀</span></span>
+                <span class="scr-bal amt">$463.00</span>
+              </div>
+              <p class="scr-label">Spending controls</p>
+              <div class="lrow">
+                <img class="avatar sm" src="https://picsum.photos/seed/poolm3/72/72" width="28" height="28" alt="">
+                <span class="grow"><span class="nm">Jordan Lee</span><span class="sub">Spender · $200 / week</span></span>
+                <span class="sw on" role="img" aria-label="Card access on"></span>
+              </div>
+              <div class="lrow">
+                <img class="avatar sm" src="https://picsum.photos/seed/poolm4/72/72" width="28" height="28" alt="">
+                <span class="grow"><span class="nm">Sam Park</span><span class="sub">Viewer · view only</span></span>
+                <span class="sw" role="img" aria-label="Card access off"></span>
+              </div>
+              <p class="scr-label">Rules</p>
+              <div class="lrow">
+                <span class="grow"><span class="nm">Require approval over $100</span></span>
+                <span class="sw on" role="img" aria-label="On"></span>
+              </div>
+              <div class="lrow">
+                <span class="grow"><span class="nm">Freeze card payments</span></span>
+                <span class="sw" role="img" aria-label="Off"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    </div>
+  </section>
+
+  <!-- ===== 1,000 WAYS — photo-led marquee ===== -->
+  <section class="ways">
+    <div class="ways-head">
+      <span class="eyebrow">However you share</span>
+      <h2 class="sect">1,000 ways to Pool</h2>
+      <p class="lede">Pool is perfect for roommates, kids&rsquo; teams and classrooms, emergency funds, and even things we haven&rsquo;t thought of yet.</p>
+    </div>
+    <div class="marq" role="group" aria-label="Examples of Pools people have created">
+      <div class="track a">
+        <article class="pcard"><img class="ph" loading="lazy" src="https://picsum.photos/seed/poolway1/320/216" width="248" height="108" alt="A youth soccer team"><div class="pbody"><span class="pn">Laced team &rsquo;26 <span aria-hidden="true">⚽️</span></span><span class="pb amt">$1,210</span><div class="pf"><span class="ps">12 members</span><div class="stack"><img class="avatar sm" loading="lazy" src="https://picsum.photos/seed/p1/56/56" width="28" height="28" alt=""><img class="avatar sm" loading="lazy" src="https://picsum.photos/seed/p2/56/56" width="28" height="28" alt=""><span class="more">+10</span></div></div></div></article>
+        <article class="pcard"><img class="ph" loading="lazy" src="https://picsum.photos/seed/poolway2/320/216" width="248" height="108" alt="A shared apartment"><div class="pbody"><span class="pn">Roomies fund <span aria-hidden="true">🌟</span></span><span class="pb amt">$414</span><div class="pf"><span class="ps">4 members</span><div class="stack"><img class="avatar sm" loading="lazy" src="https://picsum.photos/seed/p3/56/56" width="28" height="28" alt=""><img class="avatar sm" loading="lazy" src="https://picsum.photos/seed/p4/56/56" width="28" height="28" alt=""></div></div></div></article>
+        <article class="pcard"><img class="ph" loading="lazy" src="https://picsum.photos/seed/poolway3/320/216" width="248" height="108" alt="A classroom"><div class="pbody"><span class="pn">Mrs. K&rsquo;s Class</span><span class="pb amt">$1,210</span><div class="pf"><span class="ps">26 members</span><div class="stack"><img class="avatar sm" loading="lazy" src="https://picsum.photos/seed/p5/56/56" width="28" height="28" alt=""><span class="more">+22</span></div></div></div></article>
+        <article class="pcard"><img class="ph" loading="lazy" src="https://picsum.photos/seed/poolway4/320/216" width="248" height="108" alt="A summer landscape"><div class="pbody"><span class="pn">Summer trip</span><span class="pb amt">$5,950</span><div class="pf"><span class="ps">9 members</span><div class="stack"><img class="avatar sm" loading="lazy" src="https://picsum.photos/seed/p6/56/56" width="28" height="28" alt=""><img class="avatar sm" loading="lazy" src="https://picsum.photos/seed/p7/56/56" width="28" height="28" alt=""></div></div></div></article>
+        <article class="pcard"><img class="ph" loading="lazy" src="https://picsum.photos/seed/poolway5/320/216" width="248" height="108" alt="A dinner table"><div class="pbody"><span class="pn">Monthly date <span aria-hidden="true">💘</span></span><span class="pb amt">$86</span><div class="pf"><span class="ps">2 members</span><div class="stack"><img class="avatar sm" loading="lazy" src="https://picsum.photos/seed/p8/56/56" width="28" height="28" alt=""></div></div></div></article>
+        <article class="pcard"><img class="ph" loading="lazy" src="https://picsum.photos/seed/poolway6/320/216" width="248" height="108" alt="A stack of books"><div class="pbody"><span class="pn">Mission Book Club</span><span class="pb amt">$224</span><div class="pf"><span class="ps">7 members</span><div class="stack"><img class="avatar sm" loading="lazy" src="https://picsum.photos/seed/p9/56/56" width="28" height="28" alt=""></div></div></div></article>
+        <!-- duplicate for seamless loop -->
+        <article class="pcard" aria-hidden="true"><img class="ph" loading="lazy" src="https://picsum.photos/seed/poolway1/320/216" width="248" height="108" alt=""><div class="pbody"><span class="pn">Laced team &rsquo;26 <span aria-hidden="true">⚽️</span></span><span class="pb amt">$1,210</span><div class="pf"><span class="ps">12 members</span><div class="stack"><img class="avatar sm" loading="lazy" src="https://picsum.photos/seed/p1/56/56" width="28" height="28" alt=""><img class="avatar sm" loading="lazy" src="https://picsum.photos/seed/p2/56/56" width="28" height="28" alt=""><span class="more">+10</span></div></div></div></article>
+        <article class="pcard" aria-hidden="true"><img class="ph" loading="lazy" src="https://picsum.photos/seed/poolway2/320/216" width="248" height="108" alt=""><div class="pbody"><span class="pn">Roomies fund <span aria-hidden="true">🌟</span></span><span class="pb amt">$414</span><div class="pf"><span class="ps">4 members</span><div class="stack"><img class="avatar sm" loading="lazy" src="https://picsum.photos/seed/p3/56/56" width="28" height="28" alt=""><img class="avatar sm" loading="lazy" src="https://picsum.photos/seed/p4/56/56" width="28" height="28" alt=""></div></div></div></article>
+        <article class="pcard" aria-hidden="true"><img class="ph" loading="lazy" src="https://picsum.photos/seed/poolway3/320/216" width="248" height="108" alt=""><div class="pbody"><span class="pn">Mrs. K&rsquo;s Class</span><span class="pb amt">$1,210</span><div class="pf"><span class="ps">26 members</span><div class="stack"><img class="avatar sm" loading="lazy" src="https://picsum.photos/seed/p5/56/56" width="28" height="28" alt=""><span class="more">+22</span></div></div></div></article>
+        <article class="pcard" aria-hidden="true"><img class="ph" loading="lazy" src="https://picsum.photos/seed/poolway4/320/216" width="248" height="108" alt=""><div class="pbody"><span class="pn">Summer trip</span><span class="pb amt">$5,950</span><div class="pf"><span class="ps">9 members</span><div class="stack"><img class="avatar sm" loading="lazy" src="https://picsum.photos/seed/p6/56/56" width="28" height="28" alt=""><img class="avatar sm" loading="lazy" src="https://picsum.photos/seed/p7/56/56" width="28" height="28" alt=""></div></div></div></article>
+        <article class="pcard" aria-hidden="true"><img class="ph" loading="lazy" src="https://picsum.photos/seed/poolway5/320/216" width="248" height="108" alt=""><div class="pbody"><span class="pn">Monthly date <span aria-hidden="true">💘</span></span><span class="pb amt">$86</span><div class="pf"><span class="ps">2 members</span><div class="stack"><img class="avatar sm" loading="lazy" src="https://picsum.photos/seed/p8/56/56" width="28" height="28" alt=""></div></div></div></article>
+        <article class="pcard" aria-hidden="true"><img class="ph" loading="lazy" src="https://picsum.photos/seed/poolway6/320/216" width="248" height="108" alt=""><div class="pbody"><span class="pn">Mission Book Club</span><span class="pb amt">$224</span><div class="pf"><span class="ps">7 members</span><div class="stack"><img class="avatar sm" loading="lazy" src="https://picsum.photos/seed/p9/56/56" width="28" height="28" alt=""></div></div></div></article>
+      </div>
+      <div class="track b">
+        <article class="pcard"><img class="ph" loading="lazy" src="https://picsum.photos/seed/poolwb1/320/216" width="248" height="108" alt="A basketball court"><div class="pbody"><span class="pn">Intramural bball <span aria-hidden="true">🏀</span></span><span class="pb amt">$463</span><div class="pf"><span class="ps">8 members</span><div class="stack"><img class="avatar sm" loading="lazy" src="https://picsum.photos/seed/q1/56/56" width="28" height="28" alt=""></div></div></div></article>
+        <article class="pcard"><img class="ph" loading="lazy" src="https://picsum.photos/seed/poolwb2/320/216" width="248" height="108" alt="An art studio"><div class="pbody"><span class="pn">Communal Studio</span><span class="pb amt">$1,132</span><div class="pf"><span class="ps">5 members</span><div class="stack"><img class="avatar sm" loading="lazy" src="https://picsum.photos/seed/q2/56/56" width="28" height="28" alt=""></div></div></div></article>
+        <article class="pcard"><img class="ph" loading="lazy" src="https://picsum.photos/seed/poolwb3/320/216" width="248" height="108" alt="A child's playroom"><div class="pbody"><span class="pn">Sophia&rsquo;s Nanny Fund</span><span class="pb amt">$958</span><div class="pf"><span class="ps">3 members</span><div class="stack"><img class="avatar sm" loading="lazy" src="https://picsum.photos/seed/q3/56/56" width="28" height="28" alt=""></div></div></div></article>
+        <article class="pcard"><img class="ph" loading="lazy" src="https://picsum.photos/seed/poolwb4/320/216" width="248" height="108" alt="A mountain town"><div class="pbody"><span class="pn">Crested Butte Trip <span aria-hidden="true">🏔️</span></span><span class="pb amt">$1,865</span><div class="pf"><span class="ps">12 members</span><div class="stack"><img class="avatar sm" loading="lazy" src="https://picsum.photos/seed/q4/56/56" width="28" height="28" alt=""><span class="more">+9</span></div></div></div></article>
+        <article class="pcard"><img class="ph" loading="lazy" src="https://picsum.photos/seed/poolwb5/320/216" width="248" height="108" alt="A house exterior"><div class="pbody"><span class="pn">Rent</span><span class="pb amt">$3,254</span><div class="pf"><span class="ps">4 members</span><div class="stack"><img class="avatar sm" loading="lazy" src="https://picsum.photos/seed/q5/56/56" width="28" height="28" alt=""></div></div></div></article>
+        <article class="pcard"><img class="ph" loading="lazy" src="https://picsum.photos/seed/poolwb6/320/216" width="248" height="108" alt="A bowl of ramen"><div class="pbody"><span class="pn">Crew dinner <span aria-hidden="true">🍜</span></span><span class="pb amt">$312</span><div class="pf"><span class="ps">6 members</span><div class="stack"><img class="avatar sm" loading="lazy" src="https://picsum.photos/seed/q6/56/56" width="28" height="28" alt=""></div></div></div></article>
+        <!-- duplicate -->
+        <article class="pcard" aria-hidden="true"><img class="ph" loading="lazy" src="https://picsum.photos/seed/poolwb1/320/216" width="248" height="108" alt=""><div class="pbody"><span class="pn">Intramural bball <span aria-hidden="true">🏀</span></span><span class="pb amt">$463</span><div class="pf"><span class="ps">8 members</span><div class="stack"><img class="avatar sm" loading="lazy" src="https://picsum.photos/seed/q1/56/56" width="28" height="28" alt=""></div></div></div></article>
+        <article class="pcard" aria-hidden="true"><img class="ph" loading="lazy" src="https://picsum.photos/seed/poolwb2/320/216" width="248" height="108" alt=""><div class="pbody"><span class="pn">Communal Studio</span><span class="pb amt">$1,132</span><div class="pf"><span class="ps">5 members</span><div class="stack"><img class="avatar sm" loading="lazy" src="https://picsum.photos/seed/q2/56/56" width="28" height="28" alt=""></div></div></div></article>
+        <article class="pcard" aria-hidden="true"><img class="ph" loading="lazy" src="https://picsum.photos/seed/poolwb3/320/216" width="248" height="108" alt=""><div class="pbody"><span class="pn">Sophia&rsquo;s Nanny Fund</span><span class="pb amt">$958</span><div class="pf"><span class="ps">3 members</span><div class="stack"><img class="avatar sm" loading="lazy" src="https://picsum.photos/seed/q3/56/56" width="28" height="28" alt=""></div></div></div></article>
+        <article class="pcard" aria-hidden="true"><img class="ph" loading="lazy" src="https://picsum.photos/seed/poolwb4/320/216" width="248" height="108" alt=""><div class="pbody"><span class="pn">Crested Butte Trip <span aria-hidden="true">🏔️</span></span><span class="pb amt">$1,865</span><div class="pf"><span class="ps">12 members</span><div class="stack"><img class="avatar sm" loading="lazy" src="https://picsum.photos/seed/q4/56/56" width="28" height="28" alt=""><span class="more">+9</span></div></div></div></article>
+        <article class="pcard" aria-hidden="true"><img class="ph" loading="lazy" src="https://picsum.photos/seed/poolwb5/320/216" width="248" height="108" alt=""><div class="pbody"><span class="pn">Rent</span><span class="pb amt">$3,254</span><div class="pf"><span class="ps">4 members</span><div class="stack"><img class="avatar sm" loading="lazy" src="https://picsum.photos/seed/q5/56/56" width="28" height="28" alt=""></div></div></div></article>
+        <article class="pcard" aria-hidden="true"><img class="ph" loading="lazy" src="https://picsum.photos/seed/poolwb6/320/216" width="248" height="108" alt=""><div class="pbody"><span class="pn">Crew dinner <span aria-hidden="true">🍜</span></span><span class="pb amt">$312</span><div class="pf"><span class="ps">6 members</span><div class="stack"><img class="avatar sm" loading="lazy" src="https://picsum.photos/seed/q6/56/56" width="28" height="28" alt=""></div></div></div></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ONE DEBIT CARD (sand) ===== -->
+  <section class="card-sect sand" id="card">
+    <div class="wrap card-grid">
+      <div>
+        <div class="dcard" role="img" aria-label="The Pool Visa debit card, linked to the Mrs. K's Class Pool, ending in 4471.">
+          <div class="dtop">
+            <span class="dmark" aria-hidden="true">
+              <svg viewBox="0 0 74 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M23.6631 10.606C22.6201 11.649 19.4771 10.195 16.6411 7.35898C13.8051 4.52298 12.3521 1.37998 13.3941 0.336983C14.4371 -0.705017 17.5801 0.747983 20.4161 3.58398C23.2521 6.41998 24.7051 9.56298 23.6631 10.606Z"/>
+                <path d="M10.6061 23.662C9.56305 24.705 6.42005 23.251 3.58405 20.415C0.749053 17.58 -0.704947 14.436 0.337053 13.394C1.38005 12.352 4.52305 13.805 7.35905 16.641C10.1951 19.477 11.6481 22.619 10.6061 23.662Z"/>
+                <path d="M13.394 23.662C12.351 22.619 13.805 19.476 16.641 16.64C19.477 13.804 22.62 12.351 23.663 13.393C24.705 14.436 23.252 17.579 20.416 20.415C17.58 23.251 14.437 24.704 13.394 23.662Z"/>
+                <path d="M0.338055 10.606C-0.704945 9.56299 0.749055 6.41999 3.58506 3.58399C6.42006 0.748992 9.56406 -0.705008 10.6061 0.336992C11.6481 1.37999 10.1951 4.52299 7.35906 7.35899C4.52306 10.195 1.38106 11.648 0.338055 10.606Z"/>
+                <path d="M35.757 20.068H32.307V3.966H37.708C41.581 3.966 43.998 6.097 43.998 9.594C43.998 13.068 41.581 15.222 37.708 15.222H35.758L35.757 20.068ZM37.52 12.287C39.538 12.287 40.571 11.095 40.571 9.593C40.571 8.067 39.538 6.899 37.52 6.899H35.757V12.287H37.52Z"/>
+                <path d="M50.47 7.487C46.801 7.487 44.703 10.359 44.703 13.903C44.703 17.447 46.83 20.319 50.47 20.319C54.11 20.319 56.237 17.447 56.237 13.903C56.237 10.359 54.14 7.487 50.47 7.487ZM50.47 17.599C48.872 17.599 47.989 15.944 47.989 13.903C47.989 11.862 48.872 10.207 50.47 10.207C52.068 10.207 52.951 11.862 52.951 13.903C52.951 15.944 52.067 17.599 50.47 17.599Z"/>
+                <path d="M63.199 7.487C59.53 7.487 57.432 10.359 57.432 13.903C57.432 17.447 59.559 20.319 63.199 20.319C66.839 20.319 68.966 17.447 68.966 13.903C68.966 10.359 66.869 7.487 63.199 7.487ZM63.199 17.599C61.601 17.599 60.718 15.944 60.718 13.903C60.718 11.862 61.601 10.207 63.199 10.207C64.797 10.207 65.68 11.862 65.68 13.903C65.68 15.944 64.796 17.599 63.199 17.599Z"/>
+                <path d="M74 3.966H70.714V20.068H74V3.966Z"/>
+              </svg>
+            </span>
+            <span class="dlabel">Visa Debit</span>
+          </div>
+          <div class="dchip" aria-hidden="true"></div>
+          <div class="dnum amt">···· ···· ···· 4471</div>
+          <div class="dfoot">
+            <span class="dname">A. Rivera</span>
+            <div style="text-align:right"><span class="dlabel">Linked Pool</span><br><span class="dname">Mrs. K&rsquo;s Class</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="card-copy">
+        <span class="eyebrow">The card</span>
+        <h2 class="sect">One debit card for all your Pools</h2>
+        <p class="lede">Get a free card and use it with any Pool where you&rsquo;re a Spender. Just link it and swipe. No more reimbursements, just simple spending with community transparency.</p>
+        <div class="linked">
+          <h4>Linked Pool — switch any time</h4>
+          <div class="lrow"><span class="grow"><span class="nm">Mrs. K&rsquo;s Class</span></span><span class="amt-out amt">$1,210</span></div>
+          <div class="lrow"><span class="grow"><span class="nm">Roomies fund</span></span><span class="amt-out amt">$414</span></div>
+          <div class="lrow"><span class="grow"><span class="nm">Laced team &rsquo;26</span></span><span class="amt-out amt">$176</span></div>
+          <div class="lrow"><span class="grow"><span class="nm">Summer trip</span></span><span class="amt-out amt">$5,950</span></div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 6 · FAQ -->
-  <section class="faq" id="faq">
-    <div class="wrap inner">
-      <div class="sec-head">
-        <span class="kicker mono">FAQ</span>
-        <h2>Answers to<br>your questions</h2>
-        <p>Everything else you might be wondering before you open your first pool.</p>
+  <!-- ===== SAFETY (dark) ===== -->
+  <section class="safety" id="safety">
+    <div class="wrap safety-in">
+      <div>
+        <span class="eyebrow">Safety first</span>
+        <h2>Built to keep shared money safe.</h2>
+        <p>Our system is designed with a security-first mindset, and we work hard to keep your money safe and personal data protected.</p>
+        <p class="note">Pool partners with First Internet Bank, Member FDIC, and Pool accounts are eligible for FDIC insurance up to $250,000 per depositor, per ownership category.*</p>
       </div>
-      <div class="faq-list">
-        <details open>
-          <summary>Does Pool charge fees?<span class="q-sign" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></span></summary>
-          <p class="faq-a">No. Pool does not charge monthly fees and never takes a percentage of the money you collect. You keep every cent that goes into your pool.</p>
+      <div class="stat">
+        <span class="lock"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="10" width="16" height="10" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M8 10V7a4 4 0 018 0v3" stroke="currentColor" stroke-width="1.7"/></svg></span>
+        <div class="big amt">$250,000</div>
+        <p class="cap">FDIC insurance eligibility per depositor, per ownership category, through First Internet Bank, Member FDIC.*</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FINAL CTA (sand) ===== -->
+  <section class="final sand">
+    <div class="wrap">
+      <h2 class="display">Bank alone,<br>Pool together.</h2>
+      <p class="lede">Your bank account is no place for other people&rsquo;s money. Pool is.</p>
+      <div class="final-actions">
+        <a class="btn btn-fill" href="#top">Create My Pool</a>
+        <a class="btn btn-ghost" href="#faq">Learn more</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FAQ (sand) ===== -->
+  <section class="faq sand" id="faq">
+    <div class="wrap faq-grid">
+      <h2 class="sect">Answers to your questions</h2>
+      <div>
+        <details class="q" open>
+          <summary>Does Pool charge fees?<span class="ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span></summary>
+          <div class="ans">
+            <p>Pool does not have mandatory monthly fees or minimum balance requirements. It&rsquo;s free to start a Pool, invite people, fund your Pool and use virtual and physical debit cards.</p>
+            <p>Pool charges transaction-based fees for certain types of opt-in transactions such as Instant Transfers. All transaction-based fees will be clearly labeled, and our Customer Support team is happy to answer any questions about fees.</p>
+          </div>
         </details>
-        <details>
-          <summary>How does Pool make money?<span class="q-sign" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></span></summary>
-          <p class="faq-a">Pool earns a share of the interchange paid by merchants when you spend with the Pool card, plus interest on funds held at our partner bank — not from your contributions.</p>
+        <details class="q">
+          <summary>How does Pool make money?<span class="ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span></summary>
+          <div class="ans">
+            <p>Pool makes money in a few different ways.</p>
+            <p>First, we charge a transaction fee for certain types of premium transactions like Instant Transfers.</p>
+            <p>Second, we collect a small fee from merchants whenever the Pool Visa debit card is used. The debit card is free for Pool&rsquo;s customers, and this fee is called an &ldquo;interchange fee.&rdquo; It&rsquo;s paid by merchants in the Visa network, not by Pool customers.</p>
+          </div>
         </details>
-        <details>
-          <summary>Is Pool a bank? Are my funds FDIC-insured?<span class="q-sign" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></span></summary>
-          <p class="faq-a">Pool is a financial technology company, not a bank. Banking services are provided by our partner bank, Member FDIC, where eligible deposits are insured up to $250,000 per depositor.</p>
+        <details class="q">
+          <summary>Is Pool a bank? Are my funds FDIC-insured?<span class="ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span></summary>
+          <div class="ans">
+            <p>Pool is a financial technology company, not a bank. All banking services are provided by First Internet Bank, Member FDIC.</p>
+            <p>At Pool, the ability to protect your funds and transact safely are top priorities. Earning your trust is important to us, and as a company we invest a lot of time, effort, and spend into keeping your money safe every day.</p>
+            <p>Your deposits are held at our partner bank, First Internet Bank, Member FDIC. Funds deposited into Pool accounts are insured up to $250,000 per depositor by the FDIC, provided requirements for pass-through insurance coverage are met.</p>
+          </div>
         </details>
-        <details>
-          <summary>How is Pool different from Venmo, Cash App or Splitwise?<span class="q-sign" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></span></summary>
-          <p class="faq-a">Splitting apps track who owes whom across personal balances. Pool is a real shared account: the money actually lives together, everyone can see it, and you spend directly from it with a card — no IOUs and no reimbursements.</p>
+        <details class="q">
+          <summary>How can I get in touch?<span class="ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span></summary>
+          <div class="ans">
+            <p>You can email our team at <a href="mailto:hello@poolmoney.com">hello@poolmoney.com</a>. We would love to hear from you!</p>
+          </div>
         </details>
-        <details>
-          <summary>How can I get in touch?<span class="q-sign" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></span></summary>
-          <p class="faq-a">Email our team at <a href="mailto:hello@poolmoney.com">hello@poolmoney.com</a>. We'd love to hear from you.</p>
+        <details class="q">
+          <summary>How is Pool different from other payments and splitting apps (Venmo, Cash App, Splitwise, PayPal, etc.)?<span class="ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span></summary>
+          <div class="ans">
+            <p>Pool offers a full financial account that can support multiple users who have shared access to funds (if you allow it). That&rsquo;s the big difference.</p>
+            <p>Instead of &ldquo;sending money&rdquo; or &ldquo;splitting a transaction,&rdquo; Pool operates with the core principle that money should be shared. You won&rsquo;t need to catalog transactions, or collect money every time your rent is due. Instead, you can add multiple users who all have access to the same account.</p>
+            <p>Finally, Pool allows you to set rules and permissions for how your Pool operates. You can add Spenders and Viewers to your Pool, depending on the access you want to allow.</p>
+          </div>
         </details>
       </div>
     </div>
   </section>
 </main>
 
-<footer>
+<!-- ===== FOOTER (dark) ===== -->
+<footer class="foot">
   <div class="wrap">
-    <div class="foot-cta">
-      <p>Bank alone, or pool together.</p>
-      <a class="btn btn-chip" href="#join" style="min-height:48px;padding:0 var(--s6);font-size:16px">Create my pool</a>
-    </div>
-    <div class="foot-grid">
+    <div class="foot-top">
       <div class="foot-brand">
-        <span class="mark" aria-hidden="true">
-          <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><circle cx="10" cy="13" r="7.2" fill="#C8F03C" stroke="#0F141A" stroke-width="1.8"/><circle cx="16" cy="13" r="7.2" fill="none" stroke="#0F141A" stroke-width="1.8"/></svg>
-          pool
+        <span class="logo" aria-hidden="true">
+          <svg viewBox="0 0 74 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M23.6631 10.606C22.6201 11.649 19.4771 10.195 16.6411 7.35898C13.8051 4.52298 12.3521 1.37998 13.3941 0.336983C14.4371 -0.705017 17.5801 0.747983 20.4161 3.58398C23.2521 6.41998 24.7051 9.56298 23.6631 10.606Z"/>
+            <path d="M10.6061 23.662C9.56305 24.705 6.42005 23.251 3.58405 20.415C0.749053 17.58 -0.704947 14.436 0.337053 13.394C1.38005 12.352 4.52305 13.805 7.35905 16.641C10.1951 19.477 11.6481 22.619 10.6061 23.662Z"/>
+            <path d="M13.394 23.662C12.351 22.619 13.805 19.476 16.641 16.64C19.477 13.804 22.62 12.351 23.663 13.393C24.705 14.436 23.252 17.579 20.416 20.415C17.58 23.251 14.437 24.704 13.394 23.662Z"/>
+            <path d="M0.338055 10.606C-0.704945 9.56299 0.749055 6.41999 3.58506 3.58399C6.42006 0.748992 9.56406 -0.705008 10.6061 0.336992C11.6481 1.37999 10.1951 4.52299 7.35906 7.35899C4.52306 10.195 1.38106 11.648 0.338055 10.606Z"/>
+            <path d="M35.757 20.068H32.307V3.966H37.708C41.581 3.966 43.998 6.097 43.998 9.594C43.998 13.068 41.581 15.222 37.708 15.222H35.758L35.757 20.068ZM37.52 12.287C39.538 12.287 40.571 11.095 40.571 9.593C40.571 8.067 39.538 6.899 37.52 6.899H35.757V12.287H37.52Z"/>
+            <path d="M50.47 7.487C46.801 7.487 44.703 10.359 44.703 13.903C44.703 17.447 46.83 20.319 50.47 20.319C54.11 20.319 56.237 17.447 56.237 13.903C56.237 10.359 54.14 7.487 50.47 7.487ZM50.47 17.599C48.872 17.599 47.989 15.944 47.989 13.903C47.989 11.862 48.872 10.207 50.47 10.207C52.068 10.207 52.951 11.862 52.951 13.903C52.951 15.944 52.067 17.599 50.47 17.599Z"/>
+            <path d="M63.199 7.487C59.53 7.487 57.432 10.359 57.432 13.903C57.432 17.447 59.559 20.319 63.199 20.319C66.839 20.319 68.966 17.447 68.966 13.903C68.966 10.359 66.869 7.487 63.199 7.487ZM63.199 17.599C61.601 17.599 60.718 15.944 60.718 13.903C60.718 11.862 61.601 10.207 63.199 10.207C64.797 10.207 65.68 11.862 65.68 13.903C65.68 15.944 64.796 17.599 63.199 17.599Z"/>
+            <path d="M74 3.966H70.714V20.068H74V3.966Z"/>
+          </svg>
         </span>
-        <p>Shared money, made simple. One account designed for more people, more control, a purpose all its own.</p>
+        <p class="tag">The shared financial account for every shared life.</p>
       </div>
-      <div class="foot-col">
-        <h4>Company</h4>
-        <a href="#">Blog</a>
-        <a href="#">Careers</a>
-        <a href="mailto:hello@poolmoney.com">Contact us</a>
-        <a href="#ways">Use cases</a>
-      </div>
-      <div class="foot-col">
-        <h4>Legal</h4>
-        <a href="#">Terms of Service</a>
-        <a href="#">Cardholder Terms</a>
-        <a href="#">Privacy Policy</a>
-        <a href="#">Privacy Notice</a>
-      </div>
-      <div class="foot-col">
-        <h4>Social</h4>
-        <a href="#">@ourpools</a>
-        <a href="#">Instagram</a>
-        <a href="#">X / Twitter</a>
-        <a href="#">LinkedIn</a>
-      </div>
+      <nav aria-label="Legal">
+        <h5>Legal</h5>
+        <ul>
+          <li><a href="#top">Legal</a></li>
+          <li><a href="#top">Terms of Service</a></li>
+          <li><a href="#top">Cardholder Terms</a></li>
+          <li><a href="#top">Privacy Policy</a></li>
+          <li><a href="#top">Privacy Notice</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Company">
+        <h5>Company</h5>
+        <ul>
+          <li><a href="#top">Blog</a></li>
+          <li><a href="#top">Careers</a></li>
+          <li><a href="#top">Contact Us</a></li>
+          <li><a href="#top">@ourpools</a></li>
+        </ul>
+      </nav>
     </div>
-    <div class="foot-bot">
-      <p class="legal"><strong>© 2026 Pool Financial, Inc.</strong> &nbsp;Pool is a financial technology company, not a bank. Banking services provided by Partner Bank, N.A., Member FDIC. Deposits insured up to $250,000. The Pool debit card is issued pursuant to a license from a global payments network.</p>
-      <div class="socials">
-        <a href="#" aria-label="pool on X">
-          <svg width="17" height="17" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M2.5 2.5h3.4l4 5.3 4.4-5.3h1.6l-5.2 6.3 5.6 7.2h-3.4l-4.3-5.7-4.7 5.7H2.3l5.5-6.7L2.5 2.5Z" fill="currentColor"/></svg>
-        </a>
-        <a href="#" aria-label="pool on Instagram">
-          <svg width="17" height="17" viewBox="0 0 18 18" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="13" height="13" rx="4" stroke="currentColor" stroke-width="1.4"/><circle cx="9" cy="9" r="3.1" stroke="currentColor" stroke-width="1.4"/><circle cx="12.7" cy="5.3" r="1" fill="currentColor"/></svg>
-        </a>
-        <a href="#" aria-label="pool on LinkedIn">
-          <svg width="17" height="17" viewBox="0 0 18 18" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="13" height="13" rx="2.6" stroke="currentColor" stroke-width="1.4"/><path d="M5.5 7.6v4.4M5.5 5.6v.02M8.2 12V7.6m0 1.4c0-.9.7-1.5 1.7-1.5s1.6.7 1.6 1.9V12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-        </a>
+
+    <div class="foot-legal">
+      <div class="row">
+        <span class="copy">©2026 Pool United, Inc.</span>
+        <a class="btn btn-ghost" href="#top">Create My Pool</a>
       </div>
+      <p>* Pool is a financial technology company, not a bank. All banking services provided by First Internet Bank, Member FDIC. FDIC insurance is provided by First Internet Bank, Member FDIC, and applies only to deposits held at First Internet Bank. Pool is not itself an FDIC-insured institution. FDIC &lsquo;pass-through&rsquo; insurance applies to deposits only if regulatory requirements are satisfied, including proper recordkeeping of customer ownership.</p>
+      <p>Deposits are insured up to $250,000 per depositor, per ownership category, provided requirements for pass-through FDIC insurance coverage are met. Pool deposits are held at First Internet Bank in a manner designed to qualify for FDIC &lsquo;pass-through&rsquo; insurance. FDIC deposit insurance only applies in the event of the failure of the FDIC insured bank. Federal law requires Pool to verify your identity before opening an account.</p>
+      <p>** The Pool Visa&reg; Debit Card is issued by First Internet Bank, pursuant to a license from Visa U.S.A. Inc.</p>
     </div>
   </div>
+  <div class="wordmark" aria-hidden="true">Together We&rsquo;re Rich</div>
 </footer>
 
-<!-- mobile sticky CTA (thumb zone + safe-area) -->
-<div class="sticky-cta">
-  <a class="btn btn-cta" href="#join">Create my pool
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M3.5 9h11m0 0L10 4.5M14.5 9 10 13.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
-  </a>
+<!-- mobile sticky CTA — thumb zone -->
+<div class="m-cta">
+  <a class="btn btn-fill" href="#top">Create My Pool</a>
 </div>
 
 </body>

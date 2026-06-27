@@ -3,666 +3,797 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Refresh 2025 — Squarespace's Spring Product Release</title>
-<!-- benchmark #9: squarespace.com/refresh (Refresh 2025). 題材 = 年次プロダクトリリースを誌面化したブランド/編集キャンペーン。
-     native 様式 = 雑誌の誌面 (masthead → 表紙コラージュ → 目次/リード → 章扉 → 図版プレート → 製品ディスパッチ目録 → 奥付/CTA)。
-     汎用ランディング骨格(eyebrow+大見出し+2ボタン+右図版+等分3カラム+中央引用)は使わない。
-     全実セクションを掲載: Hero / 4ハイライト / Ch.I Design differently(Blueprint AI・Finish Layer) /
-     Ch.II Scale your business(Beacon AI・Domains・Offer Services・Financial Solutions・Donations・Sell at Scale・Marketing Tools・Acuity・Bio Sites) / Conversion / Footer。
-     bespoke 暗パレット: 暖インク #14110F + cream #F2ECE0 + 1アクセント clay #E2714B。書体: Fraunces(誌面ディスプレイ・セリフ)+Inter(什器サンス)。
-     コントラスト(対 #14110F): cream≈16:1 / muted≈8.6:1 / quiet≈5:1 / accent≈6:1。light paper上: ink≈16:1 / ink-muted≈6.4:1 / accent-deep≈4.56:1。 -->
+<title>Squarespace Refresh 2025: Built to Stand Out, Ready to Scale — Squarespace</title>
+<meta name="description" content="Explore Squarespace's biggest product releases of 2025 and preview what's coming next, including new features and updates.">
+<meta name="theme-color" content="#ffffff">
+<!-- benchmark #9 — squarespace.com/refresh (Refresh 2025).
+     GROUND = LIGHT. Real page meta theme-color is "white"; sections are predominantly light (--theme-light),
+       with a few inverted bands where the source alternates (hero / chapter openers / closing CTA). Built light, not all-dark.
+     TYPEFACE = clean grotesque sans for the WHOLE hierarchy. Real page preloads only CLARKSON (a proprietary grotesque) —
+       NO serif is loaded. Substituted with Hanken Grotesk (single family, weights 400–800). No editorial serif.
+     PALETTE = austere monochrome (the real Squarespace brand): warm near-black ink on white + one warm-neutral alt band.
+       Zero saturated accent (color-system carve-out: "ゼロアクセント可"); CTAs are solid ink, links are underlined ink.
+       Contrast verified on ACTUAL bg: ink #1A1A1A≈17:1 / muted #525252≈7.8:1(white) 6.9:1(warm) / quiet #6B6B6B≈5.3:1(white) 4.7:1(warm);
+       dark band #141414: ink #F7F6F3≈17:1 / muted #B5B5B5≈9:1 / quiet #8F8F8F≈5.7:1. All ≥4.5:1 body / ≥3:1 UI.
+     STRUCTURE from the題材 (genre A: brand/editorial product-release index — NO Systems Thinking lens):
+       masthead(full nav) → promo utility → hero("Built to stand out, ready to scale") → Highlights index(11) →
+       Chapter I "Design differently"(Blueprint AI, Finish Layer) → Chapter II "Scale your business"(Beacon AI, Domains,
+       Offer Services, Financial Solutions, Donations, Sell at Scale, Marketing Tools, Acuity, Bio Sites) → closing CTA → footer sitemap.
+       The 60 named features per product are handled as a numbered INDEX/CATALOGUE (heading + 語釈 + status tag), NOT equal 3-col cards.
+     Copy is verbatim from the source; products without a subtitle get none authored. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    /* dark editorial ground */
-    --ink:#14110F; --ink-2:#1C1813; --ink-3:#231E18;
-    --cream:#F2ECE0; --cream-muted:#B9AE9C; --cream-quiet:#8C8273;
-    --line-d:#322A22; --line-d-strong:#4A4036;
-    /* light "printed page" ground */
-    --paper:#F2ECE0; --paper-2:#E8DFCF;
-    --ink-muted:#5C5346; --ink-quiet:#857B6C;
-    --line-l:#D8CFBE; --line-l-strong:#C6BBA8;
-    /* one accent — warm clay */
-    --accent:#E2714B; --accent-ink:#C95C38; --accent-deep:#B5481F; --on-accent:#14110F;
-
-    --serif:"Fraunces",Georgia,"Times New Roman",serif;
-    --sans:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+    --sans:"Hanken Grotesk",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
     --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:20px;--s6:24px;--s8:32px;--s10:40px;--s12:48px;--s16:64px;--s20:80px;--s24:96px;
-    --edge:clamp(20px, 5vw, 64px);
-    --maxw:1280px;
+    --r-img:10px;--r-btn:6px;--r-tag:4px;
+    --edge:clamp(20px,5vw,64px);
+    --maxw:1240px;
+    /* default (light) band tokens — overridden per .band-* */
+    --bg:#ffffff;--ink:#1A1A1A;--muted:#525252;--quiet:#6B6B6B;
+    --line:#E5E3DE;--line-2:#D2CFC8;--plate:#F3F1EC;
+    --btn-bg:#1A1A1A;--btn-fg:#ffffff;--btn-bg-h:#383838;--focus:#1A1A1A;
   }
   *{box-sizing:border-box}
   html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+  html.js [data-reveal]{opacity:0;transform:translateY(14px)}
   body{
-    margin:0;background:var(--ink);color:var(--cream);
-    font-family:var(--sans);font-size:16px;line-height:1.6;
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:var(--sans);font-size:17px;line-height:1.6;font-weight:400;
     -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    overflow-x:hidden;
   }
   a{color:inherit;text-decoration:none}
-  img{display:block;max-width:100%}
-  :focus-visible{outline:2px solid var(--accent);outline-offset:3px}
-  .wrap{max-width:var(--maxw);margin:0 auto;padding-left:var(--edge);padding-right:var(--edge)}
-  h1,h2,h3,h4{margin:0}
+  img{display:block;max-width:100%;height:auto}
+  h1,h2,h3,h4{margin:0;font-weight:700;line-height:1.05;letter-spacing:-0.02em}
+  p{margin:0}
+  ul,dl{margin:0;padding:0}
+  li{list-style:none}
+  :focus-visible{outline:2px solid var(--focus);outline-offset:3px;border-radius:2px}
+  ::selection{background:#1A1A1A;color:#fff}
 
-  .skip{position:absolute;left:-9999px;top:0;background:var(--accent);color:var(--on-accent);
-        padding:10px 18px;font-weight:600;font-size:14px;z-index:50;border-radius:2px}
+  /* ---- band theming ---- */
+  .band-paper,.band-paper2,.band-night{background:var(--bg);color:var(--ink)}
+  .band-paper{--bg:#ffffff;--ink:#1A1A1A;--muted:#525252;--quiet:#6B6B6B;--line:#E5E3DE;--line-2:#D2CFC8;--plate:#F3F1EC;--btn-bg:#1A1A1A;--btn-fg:#ffffff;--btn-bg-h:#383838;--focus:#1A1A1A}
+  .band-paper2{--bg:#F3F1EC;--ink:#1A1A1A;--muted:#525252;--quiet:#6B6B6B;--line:#E2DED6;--line-2:#CFC9BE;--plate:#EAE6DD;--btn-bg:#1A1A1A;--btn-fg:#ffffff;--btn-bg-h:#383838;--focus:#1A1A1A}
+  .band-night{--bg:#141414;--ink:#F7F6F3;--muted:#B5B5B5;--quiet:#8F8F8F;--line:rgba(255,255,255,.16);--line-2:rgba(255,255,255,.30);--plate:#222220;--btn-bg:#F7F6F3;--btn-fg:#141414;--btn-bg-h:#E2E0DB;--focus:#F7F6F3}
+
+  .wrap{max-width:var(--maxw);margin:0 auto;
+        padding-left:max(var(--edge),env(safe-area-inset-left));
+        padding-right:max(var(--edge),env(safe-area-inset-right))}
+
+  .skip{position:absolute;left:-9999px;top:0;background:#1A1A1A;color:#fff;
+        padding:12px 20px;font-weight:600;font-size:14px;z-index:120;border-radius:4px}
   .skip:focus{left:16px;top:16px}
 
-  /* ---------- masthead ---------- */
-  .masthead{border-bottom:1px solid var(--line-d);position:relative;z-index:5}
-  .promo{display:flex;justify-content:center;gap:10px;align-items:center;
-         background:var(--ink-2);border-bottom:1px solid var(--line-d);
-         padding:9px var(--edge);font-size:13px;color:var(--cream-muted);text-align:center}
-  .promo b{color:var(--accent);font-weight:600}
-  .folio{display:flex;justify-content:space-between;align-items:center;
-         border-bottom:1px solid var(--line-d);
-         font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--cream-quiet)}
-  .folio span{padding:9px 0}
-  .nav-in{display:flex;align-items:center;gap:var(--s8);padding:18px 0}
-  .mark{font-family:var(--serif);font-weight:500;font-size:24px;letter-spacing:-.01em;font-style:italic;
-        display:inline-flex;align-items:center;min-height:44px}
-  .mark b{font-style:normal;font-weight:600}
-  .nav-links{display:flex;gap:var(--s2);margin:0 auto;list-style:none;padding:0}
-  .nav-links a{display:inline-flex;align-items:center;min-height:44px;padding:0 12px;
-               color:var(--cream-muted);font-size:14px;font-weight:500;letter-spacing:.01em}
-  .nav-links a:hover{color:var(--cream)}
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--sans);
-       font-weight:600;font-size:14px;letter-spacing:.01em;cursor:pointer;border:0;border-radius:2px;min-height:44px}
-  .btn svg{transition:transform .25s ease}
-  .btn:hover svg{transform:translateX(3px)}
-  .btn-cta{padding:13px 22px;background:var(--accent);color:var(--on-accent)}
-  .btn-cta:hover{background:var(--accent-ink)}
-  .btn-ghost{padding:13px 22px;background:transparent;color:var(--cream);border:1px solid var(--line-d-strong)}
-  .btn-ghost:hover{border-color:var(--cream-muted)}
+  /* ---- shared type ---- */
+  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .lead{font-size:clamp(17px,2vw,20px);line-height:1.55;color:var(--muted);max-width:60ch}
+  .reg{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--quiet);
+       font-variant-numeric:tabular-nums}
 
-  /* ---------- cover / collage hero ---------- */
-  .cover{padding:var(--s12) 0 var(--s16);overflow:hidden}
-  .kicker{display:flex;align-items:center;gap:10px;
-          font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--cream-muted);
-          margin:0 0 var(--s8)}
-  .kicker .pin{width:8px;height:8px;border-radius:50%;background:var(--accent);flex:none}
+  /* ---- buttons / links ---- */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
+       min-height:48px;padding:13px 24px;border-radius:var(--r-btn);
+       font-size:16px;font-weight:600;letter-spacing:-0.01em;border:1px solid transparent;cursor:pointer;
+       background:var(--btn-bg);color:var(--btn-fg);transition:background-color .18s ease}
+  .btn>span{transform:translateY(-1px)}
+  .btn:hover{background:var(--btn-bg-h)}
+  .btn-ghost{background:transparent;color:var(--ink);border-color:var(--line-2)}
+  .btn-ghost:hover{background:transparent;border-color:var(--ink)}
+  .link-arrow{display:inline-flex;align-items:center;gap:8px;min-height:44px;
+              font-size:16px;font-weight:600;color:var(--ink);
+              border-bottom:0;width:max-content}
+  .link-arrow .u{border-bottom:1.5px solid var(--ink);padding-bottom:2px;transition:border-color .15s ease}
+  .link-arrow:hover .u{border-color:transparent}
+  .link-arrow svg{transition:transform .18s ease}
+  .link-arrow:hover svg{transform:translateX(3px)}
+  .ico{width:18px;height:18px;flex:none}
 
-  .cover-collage{position:relative;height:clamp(540px,68vh,720px)}
-  .deck{position:absolute;inset:0}
-  .ph{position:absolute;overflow:hidden;background:var(--ink-2);border:1px solid var(--line-d)}
-  .ph img{width:100%;height:100%;object-fit:cover;
-          filter:grayscale(.12) saturate(.92) contrast(1.03) brightness(.97)}
-  .ph::after{content:"";position:absolute;inset:0;background:rgba(20,17,15,.14);pointer-events:none}
-  .ph-back{right:2%;top:5%;width:36%;height:86%;z-index:1}
-  .ph-chip{right:26%;top:8%;width:15%;aspect-ratio:1/1;z-index:3;
-           box-shadow:0 18px 44px -30px rgba(0,0,0,.85)}
-  .ph-front{left:12%;bottom:0;width:28%;height:45%;z-index:3;
-            box-shadow:0 24px 60px -34px rgba(0,0,0,.85)}
+  /* ---- status tag ---- */
+  .tag{display:inline-flex;align-items:center;min-height:24px;padding:3px 9px;border-radius:var(--r-tag);
+       font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+       color:var(--muted);border:1px solid var(--line-2);background:transparent;white-space:nowrap;
+       font-variant-numeric:tabular-nums}
 
-  .cover-title{position:absolute;left:0;top:50%;transform:translateY(-52%);z-index:2;
-               font-family:var(--serif);font-style:italic;font-weight:500;
-               font-size:clamp(76px,15vw,196px);line-height:.84;letter-spacing:-.025em;color:var(--cream)}
-  .cover-title .yr{display:block;font-style:normal;font-weight:600;color:var(--accent);
-                   font-size:clamp(22px,3.4vw,38px);letter-spacing:.04em;line-height:1;
-                   margin-top:var(--s5);padding-left:.1em}
-  .vh{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
-      clip:rect(0 0 0 0);white-space:nowrap;border:0}
+  /* ================= PROMO + MASTHEAD ================= */
+  .promo{background:#1A1A1A;color:#F7F6F3;font-size:13.5px}
+  .promo .wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px 14px;
+               padding-top:2px;padding-bottom:2px;text-align:center}
+  .promo code{font-family:inherit;font-weight:700;letter-spacing:.06em;
+              border:1px solid rgba(255,255,255,.32);border-radius:4px;padding:2px 8px}
+  .promo a{display:inline-flex;align-items:center;min-height:44px;text-decoration:underline;text-underline-offset:3px;color:#CFCBC2}
+  .promo a:hover{color:#fff}
 
-  .coverline{position:absolute;z-index:4;font-size:13px;line-height:1.5;color:var(--cream-muted)}
-  .coverline .lab{display:block;font-size:11px;letter-spacing:.18em;text-transform:uppercase;
-                  color:var(--cream-quiet);margin-bottom:6px}
-  .cl-issue{left:0;top:0}
-  .cl-inside{left:44%;bottom:4%;max-width:210px}
-  .stamp{position:absolute;left:30%;bottom:30%;z-index:4;width:84px;height:84px;border-radius:50%;
-         background:var(--ink);border:1px solid var(--accent);color:var(--accent);
-         display:grid;place-items:center;text-align:center;
-         font-size:10px;letter-spacing:.12em;text-transform:uppercase;line-height:1.45}
+  header.site{position:sticky;top:0;z-index:100;background:#ffffff;border-bottom:1px solid #E5E3DE}
+  .bar{display:flex;align-items:center;gap:var(--s6);height:64px}
+  .brand{display:inline-flex;align-items:center;height:48px;font-size:20px;font-weight:700;letter-spacing:-0.03em;color:#1A1A1A}
+  nav.primary{display:flex;align-items:center;gap:2px;margin-left:8px}
+  nav.primary a{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border-radius:6px;
+                font-size:15.5px;font-weight:500;color:#2A2A2A}
+  nav.primary a:hover{background:#F3F1EC}
+  .actions{margin-left:auto;display:flex;align-items:center;gap:8px}
+  .actions a.login{display:inline-flex;align-items:center;min-height:44px;padding:0 12px;border-radius:6px;font-size:15.5px;font-weight:500;color:#2A2A2A}
+  .actions a.login:hover{background:#F3F1EC}
+  .actions .btn{min-height:44px;padding:10px 20px;font-size:15px}
+  .nav-toggle{display:none;align-items:center;justify-content:center;width:48px;height:48px;margin-left:auto;
+              border:1px solid #D2CFC8;border-radius:8px;background:#fff;cursor:pointer;color:#1A1A1A}
 
-  .cover-foot{display:flex;justify-content:space-between;align-items:flex-end;gap:var(--s8);
-              flex-wrap:wrap;margin-top:var(--s10);padding-top:var(--s5);
-              border-top:1px solid var(--line-d)}
-  .cover-foot .lead-in{max-width:52ch;font-size:18px;color:var(--cream-muted)}
-  .cover-foot .lead-in b{color:var(--cream);font-weight:500}
-  /* the two chapter jumps — the page's real "Design differently / Scale your business" links */
-  .chapter-jumps{display:flex;gap:var(--s6);flex-wrap:wrap}
-  .cjump{display:flex;align-items:center;gap:14px;min-height:48px;padding:10px 18px 10px 16px;
-         border:1px solid var(--line-d-strong);border-radius:2px;color:var(--cream)}
-  .cjump:hover{border-color:var(--accent);background:var(--ink-2)}
-  .cjump .rn{font-family:var(--serif);font-style:italic;font-weight:500;font-size:24px;color:var(--accent);flex:none}
-  .cjump .lab{display:block;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--cream-quiet)}
-  .cjump .ti{font-size:15px;font-weight:500}
-
-  /* ---------- contents / editorial lede (light printed page) ---------- */
-  .lede{background:var(--paper);color:var(--ink)}
-  .lede-grid{display:grid;grid-template-columns:minmax(0,210px) minmax(0,1fr);gap:var(--s16);
-             padding:var(--s24) 0 var(--s12);align-items:start}
-  .sidehead{position:sticky;top:var(--s8)}
-  .sidehead .eyebrow{font-family:var(--serif);font-style:italic;font-weight:500;font-size:22px;
-                     color:var(--ink);margin:0 0 var(--s4)}
-  .sidehead dl{margin:var(--s5) 0 0;border-top:1px solid var(--line-l-strong);padding-top:var(--s4)}
-  .sidehead dt{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-quiet);margin-top:var(--s4)}
-  .sidehead dd{margin:2px 0 0;font-size:14px;color:var(--ink-muted)}
-  .lede-body{max-width:36em}
-  .lede-body p{font-family:var(--serif);font-weight:400;font-size:clamp(20px,2.3vw,27px);
-               line-height:1.5;letter-spacing:-.005em;color:var(--ink);margin:0 0 var(--s6)}
-  .lede-body p.std{font-family:var(--sans);font-size:17px;line-height:1.7;color:var(--ink-muted);letter-spacing:0}
-  .lede-body p.first::first-letter{
-    font-family:var(--serif);font-weight:600;font-style:normal;float:left;
-    font-size:5.4em;line-height:.74;padding:6px 14px 0 0;color:var(--accent-deep)}
-  .byline{margin-top:var(--s6);padding-top:var(--s4);border-top:1px solid var(--line-l);
-          font-size:13px;letter-spacing:.04em;color:var(--ink-quiet)}
-  .byline b{color:var(--ink-muted);font-weight:600}
-
-  /* headline highlight cards (the page's 4 intro features) */
-  .headlines{background:var(--paper);color:var(--ink);border-top:1px solid var(--line-l)}
-  .headlines-in{padding:var(--s10) 0 var(--s24)}
-  .head-rule{display:flex;justify-content:space-between;align-items:baseline;gap:var(--s4);
-             border-bottom:1px solid var(--line-l-strong);padding-bottom:var(--s4);margin-bottom:var(--s8)}
-  .head-rule h2{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-quiet);font-weight:600}
-  .head-rule .of{font-family:var(--serif);font-style:italic;color:var(--ink-muted);font-size:15px}
-  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s8) var(--s6)}
-  .card{display:flex;flex-direction:column;gap:var(--s3);padding-top:var(--s4);border-top:2px solid var(--ink)}
-  .card .cno{font-family:var(--serif);font-style:italic;font-weight:500;font-size:15px;color:var(--accent-deep)}
-  .card h3{font-family:var(--serif);font-weight:500;font-size:22px;line-height:1.12;letter-spacing:-.01em;color:var(--ink)}
-  .card p{font-size:14.5px;line-height:1.55;color:var(--ink-muted);margin:0}
-
-  /* ---------- chapter cover ---------- */
-  .chapter{padding:var(--s24) 0 var(--s10);border-top:1px solid var(--line-d)}
-  .chapter-in{display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--s12);align-items:end}
-  .ch-num{font-family:var(--serif);font-style:italic;font-weight:500;color:var(--accent);
-          font-size:clamp(80px,12vw,170px);line-height:.8;letter-spacing:-.02em}
-  .ch-meta .lab{display:block;font-size:12px;letter-spacing:.18em;text-transform:uppercase;
-                color:var(--cream-quiet);margin-bottom:var(--s4)}
-  .ch-meta h2{font-family:var(--serif);font-weight:500;font-style:italic;
-              font-size:clamp(40px,6.6vw,84px);line-height:.96;letter-spacing:-.02em;color:var(--cream)}
-  .ch-meta .stand{margin-top:var(--s5);max-width:46ch;font-size:18px;line-height:1.55;color:var(--cream-muted)}
-
-  /* ---------- image plate (lead feature) ---------- */
-  .plate{padding:var(--s12) 0}
-  .plate-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s12);align-items:center}
-  .plate--flip .plate-figure{order:2}
-  .plate-figure{position:relative}
-  .plate-figure .frame{overflow:hidden;background:var(--ink-2);border:1px solid var(--line-d);position:relative;aspect-ratio:4/3}
-  .plate-figure img{width:100%;height:100%;object-fit:cover;
-                    filter:grayscale(.1) saturate(.94) contrast(1.03) brightness(.97);transition:transform .5s ease}
-  .plate-figure .frame::after{content:"";position:absolute;inset:0;background:rgba(20,17,15,.12);pointer-events:none}
-  .plate-figure:hover img{transform:scale(1.03)}
-  .plate-figure figcaption{display:flex;gap:10px;margin-top:var(--s3);font-size:13px;line-height:1.5;color:var(--cream-muted)}
-  .plate-figure .fno{color:var(--accent);font-weight:600;font-variant-numeric:tabular-nums;flex:none}
-  .plate-figure figcaption b{color:var(--cream);font-weight:500}
-  .plate-kicker{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin:0 0 var(--s4)}
-  .plate-body h3{font-family:var(--serif);font-weight:500;font-size:clamp(30px,4vw,46px);
-                 line-height:1.02;letter-spacing:-.02em;color:var(--cream)}
-  .plate-body .stand{margin:var(--s4) 0 var(--s8);max-width:42ch;font-size:17px;color:var(--cream-muted);line-height:1.55}
-  .features{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:var(--s6) var(--s8);
-            border-top:1px solid var(--line-d);padding-top:var(--s6)}
-  .features li{display:flex;flex-direction:column;gap:5px}
-  .features h4{font-size:15px;font-weight:600;color:var(--cream);letter-spacing:.005em;
-               display:flex;gap:8px;align-items:baseline}
-  .features h4 .fmark{color:var(--accent);font-family:var(--serif);font-style:italic;font-size:14px;flex:none}
-  .features p{margin:0;font-size:13.5px;line-height:1.5;color:var(--cream-muted)}
-
-  /* ---------- dispatch catalogue (remaining themes) ---------- */
-  .catalogue{padding:var(--s12) 0 var(--s20)}
-  .cat-head{display:flex;justify-content:space-between;align-items:flex-end;gap:var(--s6);flex-wrap:wrap;
-            border-bottom:1px solid var(--line-d);padding-bottom:var(--s5);margin-bottom:var(--s10)}
-  .cat-head h3{font-family:var(--serif);font-weight:500;font-style:italic;font-size:clamp(26px,3.4vw,40px);
-               letter-spacing:-.02em;color:var(--cream)}
-  .cat-head .note{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--cream-quiet);
-                  text-align:right;max-width:30ch;line-height:1.6}
-  .entries{display:grid;grid-template-columns:1fr 1fr;gap:var(--s12) var(--s16)}
-  .entry{border-top:2px solid var(--line-d-strong);padding-top:var(--s5)}
-  .entry-head{display:flex;align-items:baseline;gap:12px;margin-bottom:var(--s2)}
-  .entry-head .eno{font-family:var(--serif);font-style:italic;font-weight:500;font-size:18px;color:var(--accent);
-                   font-variant-numeric:tabular-nums;flex:none}
-  .entry-head h4{font-family:var(--serif);font-weight:500;font-size:26px;letter-spacing:-.01em;color:var(--cream)}
-  .entry .stand{font-size:14.5px;color:var(--cream-muted);line-height:1.55;margin:0 0 var(--s4);max-width:46ch}
-  .taglist{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:7px}
-  .taglist li{font-size:13px;color:var(--cream);background:var(--ink-2);border:1px solid var(--line-d);
-              border-radius:3px;padding:5px 11px;line-height:1.3}
-
-  /* ---------- conversion / closing ---------- */
-  .convert{border-top:1px solid var(--line-d);padding:var(--s24) 0;text-align:center}
-  .convert .lab{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--cream-quiet);margin:0 0 var(--s6)}
-  .convert h2{font-family:var(--serif);font-weight:500;font-style:italic;
-              font-size:clamp(40px,7vw,92px);line-height:.96;letter-spacing:-.025em;color:var(--cream);
-              max-width:16ch;margin:0 auto}
-  .convert .act{display:flex;flex-direction:column;align-items:center;gap:var(--s4);margin-top:var(--s10)}
-  .convert .btn-cta{padding:16px 30px;font-size:16px}
-  .convert .fine{font-size:14px;color:var(--cream-muted)}
-
-  /* ---------- colophon / footer ---------- */
-  footer{background:var(--ink-2);border-top:1px solid var(--line-d);
-         padding:var(--s16) 0 max(var(--s10), env(safe-area-inset-bottom))}
-  .colo-top{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:var(--s8);
-            padding-bottom:var(--s12);border-bottom:1px solid var(--line-d)}
-  .colo-brand .mark{font-size:30px}
-  .colo-brand p{margin:var(--s4) 0 0;color:var(--cream-muted);font-size:14px;max-width:32ch;line-height:1.6}
-  .colo-col h3{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--cream-quiet);
-               margin:0 0 var(--s2);font-weight:600}
-  .colo-col ul{list-style:none;margin:0;padding:0}
-  .colo-col a{display:inline-flex;align-items:center;min-height:44px;color:var(--cream-muted);font-size:14px}
-  .colo-col a:hover{color:var(--cream)}
-  .colo-bottom{display:flex;justify-content:space-between;align-items:center;gap:var(--s4);
-               flex-wrap:wrap;padding-top:var(--s6);font-size:13px;color:var(--cream-quiet)}
-  .colo-bottom .set{font-family:var(--serif);font-style:italic}
-
-  .lede a:focus-visible,.lede :focus-visible,.headlines :focus-visible{outline-color:var(--accent-deep)}
-
-  /* ---------- responsive ---------- */
-  @media (max-width:1040px){
-    .cards{grid-template-columns:1fr 1fr;gap:var(--s10) var(--s8)}
-  }
+  /* mobile menu panel */
+  #site-menu{display:none}
   @media (max-width:980px){
-    .lede-grid{grid-template-columns:1fr;gap:var(--s10);padding:var(--s20) 0 var(--s10)}
-    .sidehead{position:static}
-    .plate-grid{grid-template-columns:1fr;gap:var(--s8)}
-    .plate--flip .plate-figure{order:0}
-    .entries{grid-template-columns:1fr;gap:var(--s10)}
-    .chapter-in{grid-template-columns:1fr;gap:var(--s6);align-items:start}
-    .colo-top{grid-template-columns:1fr 1fr;gap:var(--s10)}
-    .colo-brand{grid-column:1 / -1}
+    nav.primary,.actions{display:none}
+    .nav-toggle{display:inline-flex}
+    html:not(.js) .nav-toggle{display:none}
+    /* no-JS: menu always reachable; JS collapses it */
+    html:not(.js) #site-menu{display:block}
+    #site-menu.is-open{display:block}
+    #site-menu{position:fixed;inset:0;top:0;z-index:110;background:#fff;overflow-y:auto;
+               padding:var(--s6) var(--edge);
+               padding-bottom:calc(var(--s12) + env(safe-area-inset-bottom))}
+    #site-menu .mhead{display:flex;align-items:center;justify-content:space-between;height:64px}
+    html:not(.js) #site-menu .mhead{display:none}
+    #site-menu nav{display:flex;flex-direction:column;margin-top:var(--s4);border-top:1px solid #E5E3DE}
+    #site-menu nav a{display:flex;align-items:center;min-height:56px;border-bottom:1px solid #E5E3DE;
+                     font-size:20px;font-weight:600;color:#1A1A1A}
+    #site-menu .macts{display:flex;flex-direction:column;gap:12px;margin-top:var(--s6)}
+    #site-menu .macts .btn{width:100%}
+    #site-menu .macts a.login{display:inline-flex;align-items:center;justify-content:center;min-height:48px;
+                              border:1px solid #D2CFC8;border-radius:6px;font-weight:600}
   }
-  @media (max-width:760px){
-    .promo{font-size:12px}
-    .folio span:nth-child(2){display:none}
-    .nav-links{display:none}
-    .cover-collage{height:auto}
-    .cover-title{position:static;transform:none;margin:0 0 var(--s8);font-size:clamp(64px,19vw,118px)}
-    .deck{position:relative;inset:auto;height:clamp(340px,80vw,420px);margin-bottom:var(--s6)}
-    .ph-back{right:0;top:0;width:60%;height:90%}
-    .ph-chip{right:auto;left:48%;top:4%;width:30%}
-    .ph-front{left:0;bottom:0;width:50%;height:42%}
-    .stamp{display:none}
-    .coverline{position:static;max-width:none}
-    .cl-issue{margin-bottom:var(--s4)}
-    .cl-inside{margin-bottom:var(--s4)}
-    .cards{grid-template-columns:1fr}
-    .features{grid-template-columns:1fr}
+
+  /* ================= HERO ================= */
+  .hero{position:relative;overflow:hidden}
+  .hero .media{position:absolute;inset:0}
+  .hero .media img{width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.02)}
+  .hero .media::after{content:"";position:absolute;inset:0;
+    background:linear-gradient(180deg,rgba(15,15,15,.55) 0%,rgba(15,15,15,.62) 45%,rgba(15,15,15,.78) 100%)}
+  .hero .wrap{position:relative;z-index:1;
+              padding-top:clamp(96px,16vh,180px);padding-bottom:clamp(64px,11vh,128px);
+              min-height:clamp(520px,82vh,760px);display:flex;flex-direction:column;justify-content:flex-end}
+  .hero h1{font-size:clamp(42px,8vw,86px);font-weight:800;letter-spacing:-0.035em;line-height:0.98;
+           max-width:16ch;text-wrap:balance}
+  .hero .eyebrow{color:#D9D5CC;margin-bottom:var(--s5)}
+  .hero .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:var(--s8)}
+  .hero .watch{display:inline-flex;align-items:center;gap:12px;min-height:48px;padding:10px 8px;
+               font-size:16px;font-weight:600;color:#F7F6F3}
+  .hero .watch .disc{width:48px;height:48px;border-radius:999px;border:1.5px solid rgba(255,255,255,.7);
+                     display:inline-flex;align-items:center;justify-content:center}
+  .hero .watch:hover .disc{border-color:#fff;background:rgba(255,255,255,.08)}
+  /* triangle nudged toward apex (centroid correction) + overshoot disc */
+  .hero .watch .tri{margin-left:3px}
+
+  /* ================= SECTION SCAFFOLD ================= */
+  section{padding-top:clamp(64px,9vw,112px);padding-bottom:clamp(64px,9vw,112px)}
+  .sec-head{max-width:var(--maxw);margin:0 auto;display:flex;flex-direction:column;gap:var(--s4);
+            padding-bottom:var(--s10)}
+  .sec-head h2{font-size:clamp(30px,5vw,56px);font-weight:700;letter-spacing:-0.03em;max-width:18ch}
+
+  /* ---- Highlights index ---- */
+  .hl-list{max-width:var(--maxw);margin:0 auto;border-top:1px solid var(--line)}
+  .hl{display:grid;grid-template-columns:64px 1fr auto;align-items:center;gap:var(--s5);
+      padding:var(--s6) 4px;border-bottom:1px solid var(--line);min-height:84px;transition:background-color .15s ease}
+  .hl:hover{background:var(--plate)}
+  .hl .n{font-size:14px;font-weight:600;color:var(--quiet);font-variant-numeric:tabular-nums}
+  .hl .t{display:flex;flex-direction:column;gap:3px}
+  .hl .t strong{font-size:clamp(19px,2.4vw,26px);font-weight:700;letter-spacing:-0.02em;line-height:1.1}
+  .hl .t span{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--quiet)}
+  .hl .go{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;color:var(--ink)}
+  .hl:hover .go svg{transform:translateX(3px)}
+  .hl .go svg{transition:transform .18s ease}
+
+  /* ---- Chapter opener ---- */
+  .chapter .wrap{display:grid;grid-template-columns:1fr;gap:var(--s5);
+                 padding-top:clamp(72px,11vw,140px);padding-bottom:clamp(72px,11vw,140px)}
+  .chapter .reg{color:var(--quiet)}
+  .chapter h2{font-size:clamp(40px,9vw,104px);font-weight:800;letter-spacing:-0.04em;line-height:0.95;max-width:14ch}
+  .chapter .lead{color:var(--muted)}
+
+  /* ---- Product block (head + feature catalogue) ---- */
+  .product .wrap{display:grid;grid-template-columns:minmax(0,4.6fr) minmax(0,7fr);gap:clamp(32px,5vw,72px);align-items:start}
+  .product .head{position:sticky;top:96px;display:flex;flex-direction:column;gap:var(--s5)}
+  .product .head .reg{color:var(--quiet)}
+  .product .head h3{font-size:clamp(26px,3.4vw,40px);font-weight:700;letter-spacing:-0.025em;line-height:1.04;max-width:15ch}
+  .product .head .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .product .plate{border-radius:var(--r-img);overflow:hidden;border:1px solid var(--line);background:var(--plate);
+                  aspect-ratio:4/3}
+  .product .plate img{width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.02)}
+
+  .catalogue{counter-reset:feat;border-top:1px solid var(--line-2)}
+  .cat{display:grid;grid-template-columns:46px 1fr;gap:var(--s4);
+       padding:var(--s5) 0;border-bottom:1px solid var(--line)}
+  .cat::before{counter-increment:feat;content:counter(feat,decimal-leading-zero);
+               font-size:13px;font-weight:600;color:var(--quiet);font-variant-numeric:tabular-nums;padding-top:3px}
+  .cat .ft{display:flex;flex-direction:column;gap:6px}
+  .cat .ln{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px}
+  .cat .name{font-size:18px;font-weight:600;letter-spacing:-0.01em;color:var(--ink)}
+  .cat .desc{font-size:15px;line-height:1.5;color:var(--muted);max-width:62ch}
+
+  /* ---- closing CTA ---- */
+  .closer .wrap{display:flex;flex-direction:column;align-items:center;text-align:center;gap:var(--s5)}
+  .closer h2{font-size:clamp(34px,6vw,72px);font-weight:800;letter-spacing:-0.035em;line-height:1.0;max-width:16ch}
+  .closer .fine{font-size:14px;color:var(--quiet)}
+  .closer .brandline{font-size:13px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--quiet);margin-top:var(--s4)}
+
+  /* ================= FOOTER ================= */
+  footer.site{background:#F3F1EC;color:#1A1A1A;border-top:1px solid #E2DED6;
+              padding-bottom:calc(var(--s10) + env(safe-area-inset-bottom))}
+  footer.site .wrap{padding-top:clamp(56px,7vw,88px)}
+  .fcols{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--s10) var(--s8)}
+  .fcol h4{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6B6B6B;margin-bottom:6px}
+  .fcol ul{display:flex;flex-direction:column}
+  .fcol a{display:inline-flex;align-items:center;min-height:44px;font-size:15px;color:#2A2A2A}
+  .fcol a:hover{color:#1A1A1A;text-decoration:underline;text-underline-offset:3px}
+  .fmeta{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s4) var(--s6);
+         margin-top:var(--s12);padding-top:var(--s6);border-top:1px solid #E2DED6}
+  .social{display:flex;gap:4px}
+  .social a{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:6px;color:#2A2A2A}
+  .social a:hover{background:#E8E4DB}
+  .selects{display:flex;flex-wrap:wrap;gap:10px;margin-left:auto}
+  .selwrap{position:relative;display:inline-flex;align-items:center}
+  .selwrap select{appearance:none;-webkit-appearance:none;min-height:44px;padding:0 38px 0 14px;
+                  border:1px solid #D2CFC8;border-radius:6px;background:#fff;color:#1A1A1A;
+                  font-family:inherit;font-size:14px;font-weight:500;cursor:pointer}
+  .selwrap svg{position:absolute;right:12px;pointer-events:none;color:#6B6B6B}
+  .trust{display:flex;flex-wrap:wrap;gap:8px 24px;margin-top:var(--s6);font-size:13px;color:#6B6B6B}
+  .trust span{display:inline-flex;align-items:center;gap:8px}
+  .legal{margin-top:var(--s6);padding-top:var(--s6);border-top:1px solid #E2DED6;
+          display:flex;flex-wrap:wrap;align-items:center;gap:2px 18px;font-size:13.5px;color:#6B6B6B}
+  .legal .cpy{margin-right:8px}
+  .legal a{display:inline-flex;align-items:center;min-height:44px;color:#4A4A4A}
+  .legal a:hover{color:#1A1A1A;text-decoration:underline;text-underline-offset:3px}
+
+  /* ================= RESPONSIVE ================= */
+  @media (max-width:920px){
+    .product .wrap{grid-template-columns:1fr;gap:var(--s8)}
+    .product .head{position:static}
+    .fcols{grid-template-columns:repeat(2,minmax(0,1fr))}
   }
+  @media (max-width:560px){
+    body{font-size:16px}
+    .hl{grid-template-columns:44px 1fr 44px;gap:var(--s4)}
+    .cat{grid-template-columns:38px 1fr;gap:var(--s3)}
+    .fcols{grid-template-columns:1fr}
+    .selects{margin-left:0;width:100%}
+  }
+
   @media (prefers-reduced-motion:reduce){
     html{scroll-behavior:auto}
-    *{transition:none !important;animation:none !important}
-    .plate-figure:hover img{transform:none}
+    *{transition:none!important;animation:none!important}
+    html.js [data-reveal]{opacity:1!important;transform:none!important}
   }
 </style>
 </head>
 <body>
-<a class="skip" href="#contents">Skip to contents</a>
+<a class="skip" href="#main">Skip to Main Content</a>
 
-<header class="masthead">
-  <p class="promo">Spring offer — <b>Take 20% off</b> any new website plan. Enter code at checkout.</p>
+<!-- ============ PROMO UTILITY ============ -->
+<div class="promo" role="region" aria-label="Promo banner">
   <div class="wrap">
-    <div class="folio">
-      <span>Spring / 2025</span>
-      <span>The Product Release</span>
-      <span>Squarespace</span>
+    <span>Use code at checkout:</span>
+    <code>REFRESH</code>
+    <a href="#">Offer terms</a>
+  </div>
+</div>
+
+<!-- ============ MASTHEAD ============ -->
+<header class="site">
+  <div class="wrap">
+    <div class="bar">
+      <a class="brand" href="#" aria-label="Squarespace homepage">Squarespace</a>
+      <nav class="primary" aria-label="Main menu">
+        <a href="#">Products</a>
+        <a href="#">Solutions</a>
+        <a href="#">Resources</a>
+        <a href="#">Pricing</a>
+      </nav>
+      <div class="actions">
+        <a class="login" href="#">Log In</a>
+        <a class="btn" href="#"><span>Get started</span></a>
+      </div>
+      <button class="nav-toggle" type="button" id="navToggle" aria-controls="site-menu" aria-expanded="false" aria-label="Open navigation menu">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
     </div>
-    <div class="nav-in">
-      <a class="mark" href="#cover" aria-label="Refresh 2025 — home"><b>Refresh</b>&nbsp;2025</a>
-      <ul class="nav-links">
-        <li><a href="#chapter-1">Design differently</a></li>
-        <li><a href="#chapter-2">Scale your business</a></li>
-        <li><a href="#index">The Index</a></li>
-      </ul>
-      <a class="btn btn-cta" href="#start">
-        Get started
-        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-          <path d="M3 8h9m0 0L8.5 4.5M12 8l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </a>
+  </div>
+  <!-- mobile / no-js menu -->
+  <div id="site-menu" aria-label="Navigation menu">
+    <div class="mhead">
+      <span class="brand">Squarespace</span>
+      <button class="nav-toggle" type="button" id="navClose" aria-controls="site-menu" aria-expanded="true" aria-label="Close navigation menu" style="display:inline-flex">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <nav aria-label="Mobile main menu">
+      <a href="#">Products</a>
+      <a href="#">Solutions</a>
+      <a href="#">Resources</a>
+      <a href="#">Pricing</a>
+    </nav>
+    <div class="macts">
+      <a class="btn" href="#"><span>Get started</span></a>
+      <a class="login" href="#">Log In</a>
     </div>
   </div>
 </header>
 
 <main id="main">
-  <!-- ===== COVER ===== -->
-  <section class="cover" id="cover" aria-labelledby="cover-h1">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero band-night" aria-label="Refresh 2025">
+    <div class="media">
+      <img src="https://picsum.photos/seed/sqsp-refresh-hero/1680/1000" width="1680" height="1000"
+           alt="" aria-hidden="true" fetchpriority="high" decoding="async">
+    </div>
     <div class="wrap">
-      <p class="kicker"><span class="pin" aria-hidden="true"></span>The 2025 Product Release · Spring Edition</p>
-
-      <div class="cover-collage">
-        <h1 class="cover-title" id="cover-h1">Refresh<span class="yr">2025</span><span class="vh"> — Squarespace's Spring product release</span></h1>
-
-        <div class="deck">
-          <figure class="ph ph-back">
-            <img src="https://picsum.photos/seed/refresh-studio-22/760/1040" width="760" height="1040"
-                 alt="A designer at a sunlit desk reviewing layouts on a large screen — the season's hero portrait." fetchpriority="high" decoding="async">
-          </figure>
-          <figure class="ph ph-chip">
-            <img src="https://picsum.photos/seed/refresh-swatch-7/560/560" width="560" height="560"
-                 alt="A grid of brand colour swatches drying on paper, standing in for the new AI styling palette." decoding="async">
-          </figure>
-          <figure class="ph ph-front">
-            <img src="https://picsum.photos/seed/refresh-device-14/880/640" width="880" height="640"
-                 alt="A phone and laptop side by side showing a freshly built storefront, photographed on a worktable." decoding="async">
-          </figure>
-          <span class="stamp" aria-hidden="true">New<br>This<br>Season</span>
-        </div>
-
-        <p class="coverline cl-issue">
-          <span class="lab">The Release</span>
-          Everything new,<br>built to ship.
-        </p>
-        <p class="coverline cl-inside">
-          <span class="lab">Inside</span>
-          Blueprint AI, the Finish Layer, Beacon AI, and the tools to sell at scale.
-        </p>
-      </div>
-
-      <div class="cover-foot">
-        <p class="lead-in"><b>Built to stand out, ready to scale.</b> Two chapters of new features — one for how your site looks, one for how your business runs.</p>
-        <nav class="chapter-jumps" aria-label="Jump to a chapter">
-          <a class="cjump" href="#chapter-1"><span class="rn" aria-hidden="true">I</span><span><span class="lab">Chapter One</span><span class="ti">Design differently</span></span></a>
-          <a class="cjump" href="#chapter-2"><span class="rn" aria-hidden="true">II</span><span><span class="lab">Chapter Two</span><span class="ti">Scale your business</span></span></a>
-        </nav>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== CONTENTS / EDITOR'S LETTER ===== -->
-  <section class="lede" id="contents" aria-labelledby="lede-eyebrow">
-    <div class="wrap lede-grid">
-      <aside class="sidehead">
-        <p class="eyebrow" id="lede-eyebrow">In&nbsp;this&nbsp;release</p>
-        <dl>
-          <dt>Edition</dt><dd>Spring 2025</dd>
-          <dt>Chapters</dt><dd>Two</dd>
-          <dt>New features</dt><dd>40+</dd>
-        </dl>
-      </aside>
-
-      <div class="lede-body">
-        <p class="first">Refresh is the season Squarespace ships everything new at once — and this year it lands in two parts. First, the way a site is designed: Blueprint AI to start one from a conversation, and a new Finish Layer of pro-grade controls to make it move.</p>
-        <p>Then, the way a business runs on it: Beacon AI as an always-on partner, smarter domains, services and invoicing, financial tools, and a wider reach for selling at scale.</p>
-        <p class="std">Read it the way you would a magazine — start with the four headlines below, then turn to the chapter that fits the work in front of you. Every feature here is real, named, and shipping this season.</p>
-        <p class="byline">A product release by <b>Squarespace</b> · Spring 2025 · Built to stand out, ready to scale</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== THE FOUR HEADLINES (intro highlight cards) ===== -->
-  <section class="headlines" aria-labelledby="headlines-h">
-    <div class="wrap headlines-in">
-      <div class="head-rule">
-        <h2 id="headlines-h">The headlines</h2>
-        <span class="of">Four things to know first</span>
-      </div>
-      <div class="cards">
-        <article class="card">
-          <span class="cno" aria-hidden="true">01</span>
-          <h3>Design Faster with Blueprint&nbsp;AI</h3>
-          <p>New ways to start a website, with content curated just for you. Start building via chat or generate a set of adaptive templates.</p>
-        </article>
-        <article class="card">
-          <span class="cno" aria-hidden="true">02</span>
-          <h3>Finish Layer</h3>
-          <p>Transform your website design into an immersive experience with professional-grade customization and editing controls.</p>
-        </article>
-        <article class="card">
-          <span class="cno" aria-hidden="true">03</span>
-          <h3>Squarespace Beacon&nbsp;AI</h3>
-          <p>Set up and manage operations faster with your new business partner, built to automate routine tasks and drive growth.</p>
-        </article>
-        <article class="card">
-          <span class="cno" aria-hidden="true">04</span>
-          <h3>AIO — SEO for the AI&nbsp;era</h3>
-          <p>Get discovered across traditional and AI search with AI optimization that provides intuitive audits and clear visual insights.</p>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== CHAPTER I — DESIGN DIFFERENTLY ===== -->
-  <section class="chapter" id="chapter-1" aria-labelledby="ch1-h">
-    <div class="wrap chapter-in">
-      <p class="ch-num" aria-hidden="true">I</p>
-      <div class="ch-meta">
-        <span class="lab">Chapter One</span>
-        <h2 id="ch1-h">Design differently</h2>
-        <p class="stand">Pro-grade website design tools, intuitive enough for anyone to use. Take your online aesthetic to a whole new level.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Plate 01 — Blueprint AI -->
-  <section class="plate" aria-labelledby="p1-h">
-    <div class="wrap">
-      <div class="plate-grid">
-        <figure class="plate-figure">
-          <div class="frame">
-            <img src="https://picsum.photos/seed/blueprint-ai-201/1200/900" width="1200" height="900"
-                 alt="A laptop on a studio table showing a website being generated from a chat prompt — the Blueprint AI flow." loading="lazy" decoding="async">
-          </div>
-          <figcaption><span class="fno">Fig.&nbsp;I.01</span><span><b>Start from a conversation.</b> Blueprint AI generates a personalized design from a few prompts.</span></figcaption>
-        </figure>
-        <div class="plate-body">
-          <p class="plate-kicker">Chapter I · Plate 01</p>
-          <h3 id="p1-h">Design faster with Blueprint&nbsp;AI</h3>
-          <p class="stand">New ways to start a website, with content curated just for you — build via chat, or generate a set of adaptive templates.</p>
-          <ul class="features">
-            <li><h4><span class="fmark" aria-hidden="true">—</span>Blueprint templates</h4><p>Choose from designer-made templates pre-filled with curated AI content and styling aligned with your brand.</p></li>
-            <li><h4><span class="fmark" aria-hidden="true">—</span>Chat within Blueprint AI</h4><p>Build through a simple, conversational flow that generates a personalized design with brand-specific content and layouts.</p></li>
-            <li><h4><span class="fmark" aria-hidden="true">—</span>Squarespace GPT</h4><p>Build a site directly in ChatGPT through a guided flow that adapts content to your brand.</p></li>
-            <li><h4><span class="fmark" aria-hidden="true">—</span>AI image backgrounds</h4><p>AI-generated image backgrounds made for text overlay, curated for a cohesive, professional look.</p></li>
-            <li><h4><span class="fmark" aria-hidden="true">—</span>AI video backgrounds</h4><p>Add AI-generated video backgrounds to keep visitors engaged and add variety to your page design.</p></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Plate 02 — Finish Layer -->
-  <section class="plate plate--flip" aria-labelledby="p2-h">
-    <div class="wrap">
-      <div class="plate-grid">
-        <figure class="plate-figure">
-          <div class="frame">
-            <img src="https://picsum.photos/seed/finish-layer-202/1200/900" width="1200" height="900"
-                 alt="A close study of a screen mid-edit, blocks being animated and transformed — the Finish Layer controls." loading="lazy" decoding="async">
-          </div>
-          <figcaption><span class="fno">Fig.&nbsp;I.02</span><span><b>Make it move.</b> The Finish Layer adds animation, transforms and responsive control to every block.</span></figcaption>
-        </figure>
-        <div class="plate-body">
-          <p class="plate-kicker">Chapter I · Plate 02</p>
-          <h3 id="p2-h">Finish Layer</h3>
-          <p class="stand">Transform your website design into an immersive experience with professional-grade customization and editing controls.</p>
-          <ul class="features">
-            <li><h4><span class="fmark" aria-hidden="true">—</span>Block animations</h4><p>Drive stronger engagement with interactive, highly customizable animation treatments.</p></li>
-            <li><h4><span class="fmark" aria-hidden="true">—</span>Block transforms</h4><p>Add depth and personality with next-generation display and placement flexibility.</p></li>
-            <li><h4><span class="fmark" aria-hidden="true">—</span>Responsive editing</h4><p>Flexible new editing logic that further optimizes your design for mobile breakpoints.</p></li>
-            <li><h4><span class="fmark" aria-hidden="true">—</span>Font uploads</h4><p>Import external font files to fine-tune styling and maintain brand consistency.</p></li>
-            <li><h4><span class="fmark" aria-hidden="true">—</span>Block hiding</h4><p>Show or hide individual blocks per breakpoint for cleaner responsive layouts.</p></li>
-            <li><h4><span class="fmark" aria-hidden="true">—</span>Stacks</h4><p>Group and arrange blocks together so complex sections stay easy to manage.</p></li>
-            <li><h4><span class="fmark" aria-hidden="true">—</span>Mobile overrides</h4><p>Adjust spacing and layout on mobile without touching the desktop view.</p></li>
-            <li><h4><span class="fmark" aria-hidden="true">—</span>Account-wide saved sections</h4><p>Save and reuse sections across every site in your account.</p></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== CHAPTER II — SCALE YOUR BUSINESS ===== -->
-  <section class="chapter" id="chapter-2" aria-labelledby="ch2-h">
-    <div class="wrap chapter-in">
-      <p class="ch-num" aria-hidden="true">II</p>
-      <div class="ch-meta">
-        <span class="lab">Chapter Two</span>
-        <h2 id="ch2-h">Scale your business</h2>
-        <p class="stand">Set up and manage operations faster with your new business partner, built to automate routine tasks and drive growth.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Plate 03 — Beacon AI -->
-  <section class="plate" aria-labelledby="p3-h">
-    <div class="wrap">
-      <div class="plate-grid">
-        <figure class="plate-figure">
-          <div class="frame">
-            <img src="https://picsum.photos/seed/beacon-ai-203/1200/900" width="1200" height="900"
-                 alt="A dashboard glowing on a monitor in a quiet office at dusk — Beacon AI surfacing the day's tasks." loading="lazy" decoding="async">
-          </div>
-          <figcaption><span class="fno">Fig.&nbsp;II.01</span><span><b>An always-on partner.</b> Beacon AI scans, composes and surfaces what needs doing next.</span></figcaption>
-        </figure>
-        <div class="plate-body">
-          <p class="plate-kicker">Chapter II · Plate 01</p>
-          <h3 id="p3-h">Grow faster with Squarespace Beacon&nbsp;AI</h3>
-          <p class="stand">A business partner built to automate routine tasks, optimize for AI search, and keep your operation moving.</p>
-          <ul class="features">
-            <li><h4><span class="fmark" aria-hidden="true">—</span>Squarespace Beacon AI</h4><p>Your new business partner — automating routine work and pointing you toward growth.</p></li>
-            <li><h4><span class="fmark" aria-hidden="true">—</span>AIO Scanner</h4><p>Scan page titles, descriptions and image alt text, then get optimized copy in one click.</p></li>
-            <li><h4><span class="fmark" aria-hidden="true">—</span>AI Site Scanner</h4><p>Track how your site shows up in AI-driven search and get insights to boost visibility.</p></li>
-            <li><h4><span class="fmark" aria-hidden="true">—</span>AI Product Composer</h4><p>Generate product descriptions and details that match your brand voice.</p></li>
-            <li><h4><span class="fmark" aria-hidden="true">—</span>AI Discount Composer</h4><p>Spin up promotions and discount copy in seconds.</p></li>
-            <li><h4><span class="fmark" aria-hidden="true">—</span>AI FAQ Composer</h4><p>Turn common questions into ready-to-publish FAQ content.</p></li>
-            <li><h4><span class="fmark" aria-hidden="true">—</span>Home dashboard</h4><p>A single home for the metrics and actions that matter most.</p></li>
-            <li><h4><span class="fmark" aria-hidden="true">—</span>Notifications</h4><p>Stay on top of orders, payments and activity as they happen.</p></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Dispatch catalogue — remaining Chapter II themes (none skipped) -->
-  <section class="catalogue" aria-labelledby="cat-h">
-    <div class="wrap">
-      <div class="cat-head">
-        <h3 id="cat-h">The rest of the release</h3>
-        <p class="note">Seven more areas shipping this season — domains, services, payments and reach</p>
-      </div>
-      <div class="entries">
-        <article class="entry" aria-labelledby="e1-h">
-          <div class="entry-head"><span class="eno" aria-hidden="true">02</span><h4 id="e1-h">Squarespace Domains</h4></div>
-          <p class="stand">Smarter naming, stronger security, and a wider set of endings to launch on.</p>
-          <ul class="taglist">
-            <li>Premium domains</li><li>AI-powered naming tools</li><li>Expanded suite of TLDs</li>
-            <li>Activity log</li><li>Two-factor authentication</li><li>Customizable parking pages</li>
-            <li>Domains ownership transfer</li><li>Website reseller API</li>
-          </ul>
-        </article>
-
-        <article class="entry" aria-labelledby="e2-h">
-          <div class="entry-head"><span class="eno" aria-hidden="true">03</span><h4 id="e2-h">Offer Services</h4></div>
-          <p class="stand">From selling experiences to getting paid — invoicing built for service businesses.</p>
-          <ul class="taglist">
-            <li>Sell events and experiences</li><li>Improved product listings</li><li>Orders auto-export</li>
-            <li>Form follow-up questions</li><li>Recurring invoices</li><li>Scheduled invoices</li>
-            <li>Invoicing in the Squarespace app</li><li>International invoicing</li><li>Mark invoices as paid</li>
-          </ul>
-        </article>
-
-        <article class="entry" aria-labelledby="e3-h">
-          <div class="entry-head"><span class="eno" aria-hidden="true">04</span><h4 id="e3-h">Financial Solutions</h4></div>
-          <p class="stand">Balance, Capital, faster payouts and payments in more of the world.</p>
-          <ul class="taglist">
-            <li>Squarespace Balance</li><li>Squarespace Capital</li><li>Instant payouts</li><li>Pay links</li>
-            <li>Payments in Australia &amp; New Zealand</li><li>Payments in more of Europe</li>
-            <li>New alternative payment methods</li><li>Tap to Pay in the mobile app</li>
-          </ul>
-        </article>
-
-        <article class="entry" aria-labelledby="e4-h">
-          <div class="entry-head"><span class="eno" aria-hidden="true">05</span><h4 id="e4-h">Donations</h4></div>
-          <p class="stand">Help supporters give more, and make giving effortless in person.</p>
-          <ul class="taglist">
-            <li>Cover the fees</li><li>QR codes</li>
-          </ul>
-        </article>
-
-        <article class="entry" aria-labelledby="e5-h">
-          <div class="entry-head"><span class="eno" aria-hidden="true">06</span><h4 id="e5-h">Sell at Scale</h4></div>
-          <p class="stand">Tax, shipping and extensions for stores with serious volume.</p>
-          <ul class="taglist">
-            <li>Automated tax</li><li>Search and filter orders by product</li><li>Carrier calculated shipping</li>
-            <li>Multicurrency extension by TinyCurrency</li><li>Restaurant ordering extension by Allday</li>
-          </ul>
-        </article>
-
-        <article class="entry" aria-labelledby="e6-h">
-          <div class="entry-head"><span class="eno" aria-hidden="true">07</span><h4 id="e6-h">Marketing Tools</h4></div>
-          <p class="stand">Automate campaigns and follow-ups, and reach customers where they search.</p>
-          <ul class="taglist">
-            <li>Acuity Scheduling integration</li><li>AI generated campaigns</li><li>Form response automation</li>
-            <li>Invoice paid automation</li><li>Local SEO extension by SEOSpace</li>
-          </ul>
-        </article>
-
-        <article class="entry" aria-labelledby="e7-h">
-          <div class="entry-head"><span class="eno" aria-hidden="true">08</span><h4 id="e7-h">Acuity Scheduling</h4></div>
-          <p class="stand">A refreshed style editor and point of sale for booking businesses.</p>
-          <ul class="taglist">
-            <li>Style editor</li><li>Point of sale (POS)</li>
-          </ul>
-        </article>
-
-        <article class="entry" aria-labelledby="e8-h">
-          <div class="entry-head"><span class="eno" aria-hidden="true">09</span><h4 id="e8-h">Bio Sites</h4></div>
-          <p class="stand">Sell, book and stay in touch — straight from a single link.</p>
-          <ul class="taglist">
-            <li>Digital downloads</li><li>1:1 appointments</li><li>Bio Sites email automations</li>
-          </ul>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== CONVERSION ===== -->
-  <section class="convert" id="start" aria-labelledby="convert-h">
-    <div class="wrap">
-      <p class="lab">The whole release, free to try</p>
-      <h2 id="convert-h">Start your free website trial today</h2>
-      <div class="act">
-        <a class="btn btn-cta" href="#start">
-          Get started
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <path d="M3 8h9m0 0L8.5 4.5M12 8l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+      <p class="eyebrow">Refresh 2025</p>
+      <h1>Built to stand out, ready to scale</h1>
+      <div class="cta">
+        <a class="btn" href="#"><span>Get started</span></a>
+        <a class="watch" href="#" aria-label="Watch Video">
+          <span class="disc" aria-hidden="true">
+            <svg class="tri" width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M4 2.5l9 5.5-9 5.5z"/></svg>
+          </span>
+          Watch Video
         </a>
-        <p class="fine">No credit card required. Cancel anytime.</p>
       </div>
     </div>
   </section>
+
+  <!-- ============ HIGHLIGHTS INDEX ============ -->
+  <section class="band-paper" aria-labelledby="hl-h">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Refresh 2025</p>
+        <h2 id="hl-h">Highlights</h2>
+      </div>
+    </div>
+    <div class="wrap">
+      <ul class="hl-list" data-reveal>
+        <li><a class="hl" href="#blueprint-ai"><span class="n">01</span><span class="t"><strong>Design faster with Blueprint AI</strong><span>Design differently</span></span><span class="go" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a></li>
+        <li><a class="hl" href="#finish-layer"><span class="n">02</span><span class="t"><strong>Finish Layer</strong><span>Design differently</span></span><span class="go" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a></li>
+        <li><a class="hl" href="#beacon-ai"><span class="n">03</span><span class="t"><strong>Grow faster with Beacon AI</strong><span>Scale your business</span></span><span class="go" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a></li>
+        <li><a class="hl" href="#domains"><span class="n">04</span><span class="t"><strong>Squarespace Domains</strong><span>Scale your business</span></span><span class="go" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a></li>
+        <li><a class="hl" href="#offer-services"><span class="n">05</span><span class="t"><strong>Offer Services</strong><span>Scale your business</span></span><span class="go" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a></li>
+        <li><a class="hl" href="#financial-solutions"><span class="n">06</span><span class="t"><strong>Financial Solutions</strong><span>Scale your business</span></span><span class="go" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a></li>
+        <li><a class="hl" href="#donations"><span class="n">07</span><span class="t"><strong>Donations</strong><span>Scale your business</span></span><span class="go" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a></li>
+        <li><a class="hl" href="#sell-at-scale"><span class="n">08</span><span class="t"><strong>Sell at Scale</strong><span>Scale your business</span></span><span class="go" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a></li>
+        <li><a class="hl" href="#marketing-tools"><span class="n">09</span><span class="t"><strong>Marketing Tools</strong><span>Scale your business</span></span><span class="go" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a></li>
+        <li><a class="hl" href="#acuity"><span class="n">10</span><span class="t"><strong>Acuity Scheduling</strong><span>Scale your business</span></span><span class="go" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a></li>
+        <li><a class="hl" href="#bio-sites"><span class="n">11</span><span class="t"><strong>Bio Sites</strong><span>Scale your business</span></span><span class="go" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ CHAPTER I ============ -->
+  <section class="chapter band-night" aria-labelledby="ch1">
+    <div class="wrap">
+      <p class="reg">Chapter I</p>
+      <h2 id="ch1">Design differently</h2>
+    </div>
+  </section>
+
+  <!-- 01 Blueprint AI -->
+  <section class="product band-paper" id="blueprint-ai" aria-labelledby="p1">
+    <div class="wrap">
+      <div class="head" data-reveal>
+        <p class="reg">01 — Design differently</p>
+        <h3 id="p1">Design faster with Blueprint AI</h3>
+        <a class="link-arrow" href="#"><span class="u">Get started</span><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <figure class="plate"><img loading="lazy" src="https://picsum.photos/seed/sqsp-blueprint/800/600" width="800" height="600" alt="Blueprint AI website layout, generated from a few prompts."></figure>
+      </div>
+      <ul class="catalogue">
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Blueprint templates</span><span class="tag">Coming soon</span></div></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Chat within Blueprint AI</span></div></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Squarespace GPT</span></div></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">AI image backgrounds</span></div></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">AI video backgrounds</span><span class="tag">Coming soon</span></div></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 02 Finish Layer -->
+  <section class="product band-paper2" id="finish-layer" aria-labelledby="p2">
+    <div class="wrap">
+      <div class="head" data-reveal>
+        <p class="reg">02 — Design differently</p>
+        <h3 id="p2">Finish Layer</h3>
+        <div class="tags"><span class="tag">Coming soon</span></div>
+        <a class="link-arrow" href="#"><span class="u">Explore pro</span><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <figure class="plate"><img loading="lazy" src="https://picsum.photos/seed/sqsp-finish/800/600" width="800" height="600" alt="The Finish Layer editor showing block animations and responsive controls."></figure>
+      </div>
+      <ul class="catalogue">
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Block animations</span><span class="tag">Coming soon</span></div></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Block transforms</span></div></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Responsive editing</span></div></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Block hiding</span><span class="tag">Coming soon</span></div></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Mobile overrides</span><span class="tag">Coming soon</span></div></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Account-wide saved sections</span><span class="tag">Coming soon</span></div></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Font uploads</span></div></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ CHAPTER II ============ -->
+  <section class="chapter band-night" aria-labelledby="ch2">
+    <div class="wrap">
+      <p class="reg">Chapter II</p>
+      <h2 id="ch2">Scale your business</h2>
+    </div>
+  </section>
+
+  <!-- 03 Beacon AI -->
+  <section class="product band-paper" id="beacon-ai" aria-labelledby="p3">
+    <div class="wrap">
+      <div class="head" data-reveal>
+        <p class="reg">03 — Scale your business</p>
+        <h3 id="p3">Grow faster with Squarespace Beacon AI</h3>
+        <div class="tags"><span class="tag">Coming soon</span></div>
+        <a class="link-arrow" href="#"><span class="u">Explore Beacon AI</span><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <figure class="plate"><img loading="lazy" src="https://picsum.photos/seed/sqsp-beacon/800/600" width="800" height="600" alt="The Beacon AI dashboard surfacing site scans, alerts and tailored suggestions."></figure>
+      </div>
+      <ul class="catalogue">
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">AIO Scanner</span><span class="tag">Coming soon</span></div></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">SEO Scanner</span><span class="tag">Coming soon</span></div></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">AI Site Scanner</span></div><p class="desc">Scan your site to catch issues before they impact visitors, from broken links to SEO gaps.</p></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">AI Product Composer</span></div></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">AI Discount Composer</span><span class="tag">Coming soon</span></div><p class="desc">Get smart, tailored discount suggestions to help boost your sales and attract customers.</p></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">AI FAQ Composer</span></div></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Home dashboard</span></div></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Notifications</span></div><p class="desc">Receive tailored real-time alerts to help you efficiently manage your business.</p></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 04 Domains -->
+  <section class="product band-paper2" id="domains" aria-labelledby="p4">
+    <div class="wrap">
+      <div class="head" data-reveal>
+        <p class="reg">04 — Scale your business</p>
+        <h3 id="p4">Squarespace Domains</h3>
+        <a class="link-arrow" href="#"><span class="u">Explore domains</span><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <figure class="plate"><img loading="lazy" src="https://picsum.photos/seed/sqsp-domains/800/600" width="800" height="600" alt="The Squarespace Domains management panel with activity log and parking pages."></figure>
+      </div>
+      <ul class="catalogue">
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Premium domains</span></div></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Activity log</span></div></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Added two-factor authentication</span></div></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Customizable parking pages</span></div></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">AI-powered naming tools</span></div></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Expanded suite of TLDs</span></div></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Domains ownership transfer</span></div></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Website reseller API</span><span class="tag">Coming soon</span><span class="tag">US Only</span></div><p class="desc">Sell Squarespace websites and domains directly on your platform with our industry-leading reseller API.</p></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 05 Offer Services -->
+  <section class="product band-paper" id="offer-services" aria-labelledby="p5">
+    <div class="wrap">
+      <div class="head" data-reveal>
+        <p class="reg">05 — Scale your business</p>
+        <h3 id="p5">Offer Services</h3>
+        <a class="link-arrow" href="#"><span class="u">Explore services</span><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <figure class="plate"><img loading="lazy" src="https://picsum.photos/seed/sqsp-services/800/600" width="800" height="600" alt="A professional invoice and scheduling workflow in the Squarespace dashboard."></figure>
+      </div>
+      <ul class="catalogue">
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Sell events and experiences</span></div><p class="desc">Promote and sell camps, retreats, and group trips with tools to attract more clients and grow your business.</p></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Improved product listings</span><span class="tag">Coming soon</span></div></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Orders auto-export</span></div><p class="desc">Automatically export order details to Zapier and Google Sheets to simplify your workflows and stay organized.</p></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Form follow-up questions</span></div><p class="desc">Gather important details up front to reduce back-and-forth and keep projects moving smoothly.</p></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Recurring invoices</span></div><p class="desc">Automatically bill repeat clients on a schedule, so you never miss a payment and get paid on time, every time.</p></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Scheduled invoices</span></div><p class="desc">Create invoices in advance and schedule them to send at the perfect time for you and your clients.</p></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Invoicing in the Squarespace app</span></div><p class="desc">Send professional, on-brand invoices from your phone so you can get paid faster and manage billing on the go.</p></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">International invoicing</span><span class="tag">Coming soon</span></div><p class="desc">Customizable form fields and additional tax and shipping details ensure you have business compliant invoicing.</p></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Mark invoices as paid</span><span class="tag">Coming soon</span></div><p class="desc">Stay organized and track all payments in one place by marking invoices as paid in a unified dashboard.</p></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 06 Financial Solutions -->
+  <section class="product band-paper2" id="financial-solutions" aria-labelledby="p6">
+    <div class="wrap">
+      <div class="head" data-reveal>
+        <p class="reg">06 — Scale your business</p>
+        <h3 id="p6">Financial Solutions</h3>
+        <div class="tags"><span class="tag">US Only</span></div>
+        <a class="link-arrow" href="#"><span class="u">Learn more</span><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <figure class="plate"><img loading="lazy" src="https://picsum.photos/seed/sqsp-financial/800/600" width="800" height="600" alt="A Squarespace Balance financial account with spending cards and payouts."></figure>
+      </div>
+      <ul class="catalogue">
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Squarespace Balance</span></div><p class="desc">Your all-in-one financial account for same-day earnings, rewards, and business spending cards.</p></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Squarespace Capital</span></div></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Instant payouts</span><span class="tag">Coming soon</span></div></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Pay links</span></div></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Squarespace Payments in Australia and New Zealand</span></div><p class="desc">Manage your payments and payouts with Squarespace Payments, now available in Australia and New Zealand.</p></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Squarespace Payments in more of Europe</span></div></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">New alternative payment methods</span></div><p class="desc">Offer your customers more ways to pay with Google Pay. SEPA and iDEAL coming soon.</p></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Tap to Pay in the mobile app</span><span class="tag">Coming soon</span></div></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 07 Donations -->
+  <section class="product band-paper" id="donations" aria-labelledby="p7">
+    <div class="wrap">
+      <div class="head" data-reveal>
+        <p class="reg">07 — Scale your business</p>
+        <h3 id="p7">Donations</h3>
+        <a class="link-arrow" href="#"><span class="u">Explore donations</span><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <figure class="plate"><img loading="lazy" src="https://picsum.photos/seed/sqsp-donations/800/600" width="800" height="600" alt="A donation page with QR codes for in-person and mail contributions."></figure>
+      </div>
+      <ul class="catalogue">
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Cover the fees</span></div></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">QR codes</span></div><p class="desc">Easily accept in-person and mail donations by generating QR codes for donation pages.</p></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 08 Sell at Scale -->
+  <section class="product band-paper2" id="sell-at-scale" aria-labelledby="p8">
+    <div class="wrap">
+      <div class="head" data-reveal>
+        <p class="reg">08 — Scale your business</p>
+        <h3 id="p8">Sell at Scale</h3>
+        <a class="link-arrow" href="#"><span class="u">Explore more</span><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <figure class="plate"><img loading="lazy" src="https://picsum.photos/seed/sqsp-scale/800/600" width="800" height="600" alt="A commerce dashboard with automated tax, shipping and multicurrency extensions."></figure>
+      </div>
+      <ul class="catalogue">
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Automated tax</span></div></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Search and filter orders by product</span></div></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Carrier calculated shipping</span></div></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Multicurrency extension by TinyCurrency</span></div><p class="desc">Present clear prices in a customer's local currency and let them switch for seamless international sales.</p></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Restaurant ordering extension by Allday</span><span class="tag">US Only</span></div></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 09 Marketing Tools -->
+  <section class="product band-paper" id="marketing-tools" aria-labelledby="p9">
+    <div class="wrap">
+      <div class="head" data-reveal>
+        <p class="reg">09 — Scale your business</p>
+        <h3 id="p9">Marketing Tools</h3>
+        <a class="link-arrow" href="#"><span class="u">Explore marketing tools</span><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <figure class="plate"><img loading="lazy" src="https://picsum.photos/seed/sqsp-marketing/800/600" width="800" height="600" alt="An email campaign composer generating subject lines and automations."></figure>
+      </div>
+      <ul class="catalogue">
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Acuity Scheduling integration</span></div></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">AI generated campaigns</span></div><p class="desc">Instantly generate conversion-optimized subject lines and email copy tailored to your business.</p></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Form response automation</span></div><p class="desc">Create more opportunities to connect with automatic responses to form submissions on your website.</p></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Invoice paid automation</span><span class="tag">Coming soon</span></div><p class="desc">Auto-respond with a personalized, on-brand email when someone pays an invoice on your website.</p></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Local SEO extension by SEOSpace</span><span class="tag">Coming soon</span></div><p class="desc">Attract more local customers with a new SEO tool to boost visibility on Google Maps.</p></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 10 Acuity Scheduling -->
+  <section class="product band-paper2" id="acuity" aria-labelledby="p10">
+    <div class="wrap">
+      <div class="head" data-reveal>
+        <p class="reg">10 — Scale your business</p>
+        <h3 id="p10">Acuity Scheduling</h3>
+        <div class="tags"><span class="tag">US Only</span></div>
+        <a class="link-arrow" href="#"><span class="u">Explore Acuity</span><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <figure class="plate"><img loading="lazy" src="https://picsum.photos/seed/sqsp-acuity/800/600" width="800" height="600" alt="An Acuity scheduling page styled to match a website's brand."></figure>
+      </div>
+      <ul class="catalogue">
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Style editor</span></div><p class="desc">Instantly apply your website styles to your scheduling page for a cohesive brand experience.</p></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 11 Bio Sites -->
+  <section class="product band-paper" id="bio-sites" aria-labelledby="p11">
+    <div class="wrap">
+      <div class="head" data-reveal>
+        <p class="reg">11 — Scale your business</p>
+        <h3 id="p11">Bio Sites</h3>
+        <a class="link-arrow" href="#"><span class="u">Explore Bio Sites</span><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <figure class="plate"><img loading="lazy" src="https://picsum.photos/seed/sqsp-biosites/800/600" width="800" height="600" alt="A Bio Site link-in-bio page selling digital downloads."></figure>
+      </div>
+      <ul class="catalogue">
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Digital downloads</span></div><p class="desc">List guides, sheets, and more directly on your Bio Site to scale passive income from digital content.</p></div></li>
+        <li class="cat"><div class="ft"><div class="ln"><span class="name">Bio Sites email automations</span></div><p class="desc">Drive repeat sales and streamline engagement with on-brand emails triggered by sales on your Bio Site.</p></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ CLOSING CTA ============ -->
+  <section class="closer band-night" aria-labelledby="cta-h">
+    <div class="wrap">
+      <h2 id="cta-h">Start your free website trial today</h2>
+      <a class="btn" href="#"><span>Get started</span></a>
+      <p class="fine">No credit card required. Cancel anytime.</p>
+      <p class="brandline">A website makes it real</p>
+    </div>
+  </section>
+
 </main>
 
-<!-- ===== COLOPHON / FOOTER ===== -->
-<footer id="index" aria-labelledby="colo-h">
+<!-- ============ FOOTER ============ -->
+<footer class="site">
   <div class="wrap">
-    <h2 class="vh" id="colo-h">The index</h2>
-    <div class="colo-top">
-      <div class="colo-brand">
-        <a class="mark" href="#cover" aria-label="Refresh 2025 — home"><b>Refresh</b>&nbsp;2025</a>
-        <p>Squarespace's Spring product release. Built to stand out, ready to scale.</p>
+    <div class="fcols">
+      <div class="fcol">
+        <h4>Products</h4>
+        <ul>
+          <li><a href="#">Website Templates</a></li>
+          <li><a href="#">Websites</a></li>
+          <li><a href="#">Domains</a></li>
+          <li><a href="#">AI Website Builder</a></li>
+          <li><a href="#">Design Intelligence</a></li>
+          <li><a href="#">Online Stores</a></li>
+          <li><a href="#">Services</a></li>
+          <li><a href="#">Invoicing</a></li>
+          <li><a href="#">Scheduling</a></li>
+          <li><a href="#">Donations</a></li>
+          <li><a href="#">Payments</a></li>
+          <li><a href="#">Marketing Tools</a></li>
+          <li><a href="#">Professional Email</a></li>
+          <li><a href="#">Premium</a></li>
+          <li><a href="#">Feature List</a></li>
+          <li><a href="#">Product Updates</a></li>
+          <li><a href="#">Pricing</a></li>
+        </ul>
       </div>
-      <nav class="colo-col" aria-label="Chapter One">
-        <h3>Design differently</h3>
+      <div class="fcol">
+        <h4>Solutions</h4>
         <ul>
-          <li><a href="#p1-h">Blueprint AI</a></li>
-          <li><a href="#p2-h">Finish Layer</a></li>
-          <li><a href="#headlines-h">AIO</a></li>
+          <li><a href="#">Creative Services</a></li>
+          <li><a href="#">Professional Services</a></li>
+          <li><a href="#">Home Services</a></li>
+          <li><a href="#">Personal</a></li>
         </ul>
-      </nav>
-      <nav class="colo-col" aria-label="Chapter Two">
-        <h3>Scale your business</h3>
+        <h4 style="margin-top:32px">From Squarespace</h4>
         <ul>
-          <li><a href="#p3-h">Beacon AI</a></li>
-          <li><a href="#e1-h">Domains</a></li>
-          <li><a href="#e3-h">Financial Solutions</a></li>
-          <li><a href="#e5-h">Sell at Scale</a></li>
+          <li><a href="#">Acuity Scheduling</a></li>
+          <li><a href="#">Bio Sites</a></li>
+          <li><a href="#">Email Campaigns</a></li>
+          <li><a href="#">Squarespace for Pros</a></li>
         </ul>
-      </nav>
-      <nav class="colo-col" aria-label="Squarespace">
-        <h3>Squarespace</h3>
+        <h4 style="margin-top:32px">Programs</h4>
         <ul>
-          <li><a href="#start">Start a trial</a></li>
-          <li><a href="#contents">Pricing</a></li>
-          <li><a href="#cover">Templates</a></li>
+          <li><a href="#">Affiliates</a></li>
+          <li><a href="#">Students</a></li>
         </ul>
-      </nav>
+      </div>
+      <div class="fcol">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="#">Customer Examples</a></li>
+          <li><a href="#">Squarespace Collection</a></li>
+          <li><a href="#">Extensions</a></li>
+          <li><a href="#">Squarespace Blog</a></li>
+          <li><a href="#">Free Tools</a></li>
+          <li><a href="#">Business Name Generator</a></li>
+          <li><a href="#">Logo Maker</a></li>
+        </ul>
+      </div>
+      <div class="fcol">
+        <h4>Support</h4>
+        <ul>
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Webinars</a></li>
+          <li><a href="#">Hire an Expert</a></li>
+          <li><a href="#">Developer Blog</a></li>
+          <li><a href="#">Developer Platform</a></li>
+          <li><a href="#">System Status</a></li>
+        </ul>
+        <h4 style="margin-top:32px">Company</h4>
+        <ul>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Our Brand</a></li>
+          <li><a href="#">Accessibility</a></li>
+          <li><a href="#">Newsroom</a></li>
+          <li><a href="#">Contact Us</a></li>
+        </ul>
+      </div>
     </div>
-    <div class="colo-bottom">
-      <span>© 2025 Squarespace, Inc. — Refresh 2025</span>
-      <span class="set">Set in Fraunces &amp; Inter</span>
-      <span>Privacy · Terms</span>
+
+    <div class="fmeta">
+      <div class="social" aria-label="Squarespace on social media">
+        <a href="#" aria-label="Instagram"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1" fill="currentColor" stroke="none"/></svg></a>
+        <a href="#" aria-label="Youtube"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="M10 9.5l5 2.5-5 2.5z" fill="currentColor" stroke="none"/></svg></a>
+        <a href="#" aria-label="Linkedin"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M7 10v7M7 7v.01M11 17v-4a2 2 0 0 1 4 0v4M11 17v-7" stroke-linecap="round"/></svg></a>
+        <a href="#" aria-label="Facebook"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M14 8h2V5h-2a3 3 0 0 0-3 3v2H9v3h2v6h3v-6h2l1-3h-3V8a1 1 0 0 1 1-1z" stroke-linejoin="round"/></svg></a>
+      </div>
+      <div class="selects">
+        <span class="selwrap">
+          <label for="lang" style="position:absolute;left:-9999px">Select language:</label>
+          <select id="lang">
+            <option>English</option>
+            <option>Deutsch</option>
+            <option>Español</option>
+            <option>Français</option>
+            <option>Italiano</option>
+            <option>日本語</option>
+            <option>Português</option>
+            <option>한국어</option>
+          </select>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </span>
+        <span class="selwrap">
+          <label for="cur" style="position:absolute;left:-9999px">Select currency:</label>
+          <select id="cur">
+            <option>USD $</option>
+            <option>EUR €</option>
+            <option>GBP £</option>
+            <option>AUD $</option>
+            <option>CAD $</option>
+          </select>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </span>
+      </div>
+    </div>
+
+    <div class="trust">
+      <span>
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M12 3l8 4v5c0 4.5-3.2 7.5-8 9-4.8-1.5-8-4.5-8-9V7z" stroke-linejoin="round"/></svg>
+        We are an ICANN accredited registrar.
+      </span>
+      <span>
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3" stroke-linecap="round"/></svg>
+        Data traffic protected by SSL encryption
+      </span>
+    </div>
+
+    <div class="legal">
+      <span class="cpy">© 2003–2026 Squarespace, Inc.</span>
+      <a href="#">Terms</a>
+      <a href="#">Privacy</a>
+      <a href="#">Data Privacy</a>
+      <a href="#">EU Legal</a>
+      <a href="#">SCTA Disclosure</a>
+      <a href="#">Specific Privacy Notice</a>
+      <a href="#">Security Measures</a>
+      <a href="#">Accessibility</a>
+      <a href="#">Sitemap</a>
+      <a href="#">Cookie Preferences</a>
     </div>
   </div>
 </footer>
+
+<script>
+  (function(){
+    var root = document.documentElement;
+    root.classList.add('js');
+
+    // mobile nav disclosure
+    var menu = document.getElementById('site-menu');
+    var open = document.getElementById('navToggle');
+    var close = document.getElementById('navClose');
+    var lastFocus = null;
+    function setOpen(o){
+      menu.classList.toggle('is-open', o);
+      open.setAttribute('aria-expanded', o ? 'true' : 'false');
+      document.body.style.overflow = o ? 'hidden' : '';
+      if(o){ lastFocus = document.activeElement; close.focus(); }
+      else if(lastFocus){ lastFocus.focus(); }
+    }
+    open && open.addEventListener('click', function(){ setOpen(true); });
+    close && close.addEventListener('click', function(){ setOpen(false); });
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape' && menu.classList.contains('is-open')) setOpen(false);
+    });
+    // close after choosing a destination
+    menu.querySelectorAll('a').forEach(function(a){ a.addEventListener('click', function(){ setOpen(false); }); });
+
+    // scroll reveal (respects reduced-motion)
+    var rm = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var items = Array.prototype.slice.call(document.querySelectorAll('[data-reveal]'));
+    function show(el){ el.style.transition = 'opacity .5s ease, transform .5s ease'; el.style.opacity = '1'; el.style.transform = 'none'; }
+    if(rm.matches || !('IntersectionObserver' in window)){
+      items.forEach(show);
+    } else {
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(en){ if(en.isIntersecting){ show(en.target); io.unobserve(en.target); } });
+      }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+      items.forEach(function(el){ io.observe(el); });
+    }
+  })();
+</script>
 </body>
 </html>

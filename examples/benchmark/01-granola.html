@@ -1,663 +1,1072 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Granola — The AI notepad for back-to-back meetings</title>
-<meta name="description" content="Granola takes your raw meeting notes and makes them better. Notes, actions and memory — without a meeting bot. For macOS, Windows and iPhone.">
-<!-- benchmark #1: granola.ai full-length rebuild.
-     題材=AI会議ノート → native な様式は「会議ノート文書 + before/during/after フロー」。テンプレ骨格でなく題材から構造。
-     ブランド: 暖紙地 / 編集セリフ(Fraunces) / オリーブ緑1アクセント / ライム1セクション地。実ページ11ブロックを全長で再現。 -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta name="description" content="Notes, actions and memory. Without a meeting bot. Granola is the AI notepad for people in back-to-back meetings." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Hanken+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 <style>
-  :root{
-    /* bespoke warm-paper palette (題材から導く / 純白純黒を避ける) */
-    --paper:#F4F0E6; --paper-2:#ECE6D7; --paper-3:#F8F5EE; --card:#FCFAF4;
-    --ink:#23211A; --ink-soft:#46422F; --muted:#5C5847; --quiet:#8A8676;
-    --line:#E2DBC9; --line-strong:#CFC6AE;
-    /* accent: olive (primary 1色) + brand secondary lime (1 section bg) */
-    --olive:#5B6F00; --olive-ink:#49590A; --olive-sunk:#EAEAD3; --on-olive:#FBFAF1;
-    --lime:#B2C248; --lime-ink:#2C3306;
-    /* dark warm sections */
-    --dark:#23211A; --dark-2:#2C2A20; --dark-line:#403D30; --on-dark:#ECE6D7; --on-dark-muted:#ABA48D;
-    /* semantic (深く静か) */
-    --success:#2F6B3D; --warning:#8A5A00; --danger:#A8362C; --info:#2348C6;
-    --serif:"Fraunces",Georgia,"Times New Roman",serif;
-    --sans:"Hanken Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
-    --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:20px;--s6:24px;--s8:32px;--s10:40px;--s12:48px;--s16:64px;--s20:80px;--s24:96px;
-  }
-  *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
-  a{color:inherit;text-decoration:none}
-  img{display:block;max-width:100%}
-  h1,h2,h3{margin:0}
-  :focus-visible{outline:2px solid var(--olive);outline-offset:3px;border-radius:4px}
-  .wrap{max-width:1180px;margin:0 auto;padding:0 var(--s10)}
-  .narrow{max-width:760px}
-  .serif{font-family:var(--serif)}
+  /* ============================================================
+     GRANOLA — bespoke palette derived from the subject (sampled
+     from the real site, not from a mood):
+       ground : warm near-white paper  #FCFCF8   (real)
+       ink    : warm near-black        #1E1E1E / #666666 muted (real)
+       accent : olive                  #5B6F00   (real CTA — one UI signal)
+       sub    : lime                   #B2C248   (real — one section ground only)
+       dark   : warm near-black        #292929   (real dark sections)
+       mac    : traffic lights #FF736A #FEBC2E #19C332 (real, content cues)
+     type:
+       Fraunces      — high-contrast editorial serif (free analog of Quadrant)
+       Hanken Grotesk— humanist grotesque (free analog of Melange)
+     ============================================================ */
+  :root {
+    --paper:        #FCFCF8;
+    --paper-2:      #F7F4ED;
+    --surface:      #FFFFFF;
+    --ink:          #1E1E1E;
+    --ink-2:        #3A3A36;
+    --muted:        #666666;   /* 5.4:1 on paper — secondary/body */
+    --quiet:        #6E6E68;   /* 4.8:1 on paper — tertiary labels */
+    --line:         #E6E2D6;
+    --line-strong:  #D6D1C2;
 
-  /* ---------- type scale (限定段) ---------- */
-  .display{font-family:var(--serif);font-weight:400;font-size:clamp(44px,7vw,86px);line-height:.95;letter-spacing:-.025em}
-  .h2{font-family:var(--serif);font-weight:400;font-size:clamp(32px,4.4vw,52px);line-height:1.04;letter-spacing:-.02em}
-  .h3{font-family:var(--serif);font-weight:500;font-size:23px;line-height:1.2;letter-spacing:-.01em}
-  .kicker{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-  .lede{font-size:21px;line-height:1.45;color:var(--ink-soft)}
-  .muted{color:var(--muted)}
+    --accent:       #5B6F00;
+    --accent-ink:   #485800;   /* 7.4:1 on paper */
+    --accent-sunk:  #EDF0DD;
+    --on-accent:    #FCFCF8;   /* 5.3:1 on accent */
+
+    --lime:         #B2C248;
+    --lime-deep:    #97A736;
+    --ink-on-lime:  #1E1E1E;
+    --lime-text:    #3C4413;   /* dark olive — body on lime */
+
+    --dark:         #292929;
+    --dark-2:       #323230;
+    --dark-raised:  #3A3A37;
+    --dark-line:    rgba(255,255,255,.10);
+    --dark-line-2:  rgba(255,255,255,.16);
+    --dark-ink:     #FCFCF8;
+    --dark-muted:   rgba(252,252,248,.68);  /* ~7.3:1 on dark */
+    --dark-quiet:   rgba(252,252,248,.56);  /* ~5.5:1 on dark */
+
+    --tl-red:    #FF736A;
+    --tl-yellow: #FEBC2E;
+    --tl-green:  #19C332;
+
+    --success: #197A4B;
+    --warning: #9A6300;
+    --danger:  #B5302A;
+
+    --r-0: 18px;
+    --r-1: 12px;
+    --r-2: 8px;
+    --r-3: 4px;
+
+    --measure: 38em;
+    --maxw: 1200px;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Hanken Grotesk", system-ui, -apple-system, sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: "Fraunces", Georgia, "Times New Roman", serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    color: var(--ink);
+    margin: 0;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  p { margin: 0; }
+  a { color: inherit; }
+  img { display: block; max-width: 100%; }
+  button { font: inherit; }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+  .on-dark :focus-visible,
+  .on-lime :focus-visible { outline-color: currentColor; }
+
+  ::selection { background: var(--accent-sunk); color: var(--accent-ink); }
+
+  .skip {
+    position: absolute; left: 12px; top: -60px; z-index: 200;
+    background: var(--accent); color: var(--on-accent);
+    padding: 10px 16px; border-radius: 8px; text-decoration: none; font-weight: 600;
+    transition: top .15s ease;
+  }
+  .skip:focus { top: 12px; }
+
+  /* ---------- layout helpers ---------- */
+  .wrap { width: 100%; max-width: var(--maxw); margin-inline: auto; padding-inline: 24px; }
+  .section { padding-block: 96px; }
+  @media (max-width: 720px){ .section { padding-block: 64px; } }
+
+  .eyebrow {
+    font-family: "Hanken Grotesk", sans-serif;
+    font-size: 13px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--muted); margin: 0;
+  }
+  .lead { color: var(--muted); font-size: 19px; line-height: 1.55; max-width: var(--measure); }
+  .small { font-size: 14px; color: var(--muted); }
 
   /* ---------- buttons ---------- */
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);font-family:var(--sans);font-weight:600;font-size:16px;cursor:pointer;border:1px solid transparent;border-radius:999px;min-height:48px;transition:background .15s ease,border-color .15s ease,color .15s ease}
-  .btn svg{transform:translateY(0)}
-  .btn-cta{padding:12px 24px;background:var(--olive);color:var(--on-olive)}
-  .btn-cta:hover{background:var(--olive-ink)}
-  .btn-ghost{padding:12px 24px;background:transparent;border-color:var(--line-strong);color:var(--ink)}
-  .btn-ghost:hover{background:var(--paper-2);border-color:var(--ink-soft)}
-  .btn-sm{min-height:44px;padding:8px 16px;font-size:15px}
-  .btn-lg{min-height:56px;padding:16px 32px;font-size:18px}
-  .on-dark .btn-ghost{border-color:var(--dark-line);color:var(--on-dark)}
-  .on-dark .btn-ghost:hover{background:var(--dark-2);border-color:var(--on-dark-muted)}
-
-  /* ---------- header / nav ---------- */
-  header{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--paper) 86%,transparent);backdrop-filter:saturate(1.2) blur(10px);border-bottom:1px solid var(--line)}
-  .nav{display:flex;align-items:center;gap:var(--s8);min-height:68px}
-  .brand{display:inline-flex;align-items:center;gap:10px;font-family:var(--serif);font-weight:500;font-size:23px;letter-spacing:-.02em;color:var(--ink)}
-  .brand .mk{width:22px;height:22px;border-radius:50%;background:var(--olive);display:inline-block;position:relative;flex:none}
-  .brand .mk::after{content:"";position:absolute;inset:6px;border-radius:50%;background:var(--paper)}
-  .nav-links{display:flex;gap:var(--s6);margin-inline:auto}
-  .nav-links a{font-size:15.5px;font-weight:500;color:var(--ink-soft);padding:6px 2px}
-  .nav-links a:hover{color:var(--ink)}
-  .nav-cta{display:flex;align-items:center;gap:var(--s3)}
-  .nav-signin{font-size:15.5px;font-weight:600;color:var(--ink-soft)}
-  .nav-signin:hover{color:var(--ink)}
-
-  /* ---------- section rhythm ---------- */
-  section{padding:var(--s20) 0}
-  .sec-head{max-width:720px}
-  .sec-head .h2{margin-bottom:var(--s5)}
-  .sec-head p{font-size:19px;color:var(--muted);margin:0}
-
-  /* ---------- product "note window" mock (題材の native 様式) ---------- */
-  .win{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 1px 2px rgba(35,33,26,.05),0 18px 48px -32px rgba(35,33,26,.35);overflow:hidden}
-  .win-bar{display:flex;align-items:center;gap:var(--s2);padding:12px var(--s5);border-bottom:1px solid var(--line);background:var(--paper-3)}
-  .win-bar i{width:11px;height:11px;border-radius:50%;display:block}
-  .win-bar i:nth-child(1){background:#D98B6A}.win-bar i:nth-child(2){background:#D6B24E}.win-bar i:nth-child(3){background:#8FA85A}
-  .win-bar .ttl{margin-left:10px;font-size:13.5px;color:var(--muted);font-weight:500}
-  .win-body{padding:var(--s6) var(--s8) var(--s8)}
-  .win h3{font-family:var(--serif);font-weight:500;font-size:27px;letter-spacing:-.01em;margin-bottom:var(--s4)}
-  .chips{display:flex;flex-wrap:wrap;gap:var(--s2);margin-bottom:var(--s6)}
-  .chip{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);border:1px solid var(--line-strong);border-radius:999px;padding:4px 12px}
-  .chip b{color:var(--ink-soft);font-weight:600}
-  .note{list-style:none;margin:0;padding:0;font-size:15.5px;line-height:1.85;color:var(--ink-soft)}
-  .note li{display:flex;gap:10px;padding:3px 0}
-  .note li::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;background:var(--olive);margin-top:11px}
-  .note .todo::before{width:13px;height:13px;border-radius:4px;background:transparent;border:1.6px solid var(--line-strong);margin-top:5px}
-  .note .done::before{width:13px;height:13px;border-radius:4px;background:var(--olive);border:1.6px solid var(--olive);margin-top:5px}
-  .enh{display:inline-flex;align-items:center;gap:8px;margin-top:var(--s5);font-size:13.5px;color:var(--olive-ink);font-weight:600}
-  .enh .cur{display:inline-block;width:1.5px;height:15px;background:var(--olive);animation:blink 1.1s steps(1) infinite}
-  @keyframes blink{50%{opacity:0}}
-
-  /* hero */
-  .hero{padding:var(--s20) 0 var(--s16);text-align:center}
-  .hero .display{margin:0 auto var(--s6);max-width:14ch}
-  .hero .lede{margin:0 auto var(--s8);max-width:30ch}
-  .hero-cta{display:flex;flex-direction:column;align-items:center;gap:var(--s3)}
-  .avail{display:inline-flex;align-items:center;gap:8px;color:var(--muted);font-size:14.5px}
-  .hero-stage{position:relative;margin:var(--s16) auto 0;max-width:980px}
-  .hero-art{position:absolute;inset:-6% -4% auto -4%;height:62%;border-radius:16px;background:
-      radial-gradient(120% 120% at 20% 0%,rgba(178,194,72,.34),transparent 60%),
-      radial-gradient(120% 120% at 95% 20%,rgba(91,111,0,.20),transparent 55%),
-      var(--paper-2);
-    z-index:0}
-  .hero-win{position:relative;z-index:1}
-  .pip{position:absolute;right:-14px;bottom:-14px;z-index:2;width:148px;border-radius:10px;overflow:hidden;border:3px solid var(--card);box-shadow:0 12px 34px -18px rgba(35,33,26,.5)}
-  .pip .face{height:96px;display:grid;place-items:center;background:#6E7A4A}
-  .pip .face.b{background:#8C7558}
-  .pip .face svg{opacity:.6}
-  .pip .pbar{height:32px;background:#26241B;display:flex;align-items:center;justify-content:center;gap:9px}
-  .pip .pbar span{width:8px;height:8px;border-radius:50%;background:#55523F}
-  .pip .pbar span.rec{background:#C25545}
-
-  /* logos / dark "for the doers" */
-  .doers{background:var(--dark);color:var(--on-dark)}
-  .doers .lab{font-family:var(--serif);font-size:clamp(26px,3vw,34px);font-weight:400;letter-spacing:-.01em}
-  .doers .trust{color:var(--on-dark-muted);font-size:15px;letter-spacing:.04em;margin:var(--s2) 0 var(--s12)}
-  .logos{display:grid;grid-template-columns:repeat(6,1fr);gap:var(--s8) var(--s6);align-items:center}
-  .logos span{font-weight:600;font-size:20px;color:var(--on-dark);opacity:.78;text-align:center;letter-spacing:-.01em}
-  .logos .lt{font-family:var(--serif);font-weight:500}
-
-  /* §1 effortless: product + 3 stacked features (not equal grid) */
-  .split{display:grid;grid-template-columns:1.05fr .95fr;gap:var(--s16);align-items:center}
-  .feat-list{display:flex;flex-direction:column;gap:var(--s8)}
-  .feat{display:grid;grid-template-columns:auto 1fr;gap:var(--s4);align-items:start}
-  .feat .ic{width:44px;height:44px;border-radius:10px;background:var(--olive-sunk);display:grid;place-items:center;color:var(--olive-ink);flex:none}
-  /* §1 feat .ic sits on paper (no rounded parent) → 10px ok; cell .ic is nested in a 10px card → 6px keeps R_inner<R_outer */
-  .feat h3{margin-bottom:6px}
-  .feat p{margin:0;font-size:16px;color:var(--muted)}
-
-  /* §3 big statement */
-  .statement{text-align:center}
-  .statement .h2{max-width:18ch;margin:0 auto}
-  .statement .h2 em{font-style:italic;color:var(--olive-ink)}
-
-  /* §4 before/in/after flow */
-  .flow{display:flex;flex-direction:column;gap:var(--s16);margin-top:var(--s16)}
-  .phase{display:grid;grid-template-columns:.9fr 1.1fr;gap:var(--s12);align-items:center}
-  .phase:nth-child(even){grid-template-columns:1.1fr .9fr}
-  .phase:nth-child(even) .phase-copy{order:2}
-  .phase-step{display:inline-flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:var(--olive-ink);letter-spacing:.02em;margin-bottom:var(--s4)}
-  .phase-step .n{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--olive);display:grid;place-items:center;font-size:13px}
-  .phase-copy h3{font-family:var(--serif);font-weight:400;font-size:clamp(26px,3.2vw,36px);line-height:1.08;letter-spacing:-.02em;margin-bottom:var(--s4)}
-  .phase-copy p{margin:0;font-size:18px;color:var(--muted);max-width:42ch}
-
-  /* §5 perfect memory — lime */
-  .memory{background:var(--lime);color:var(--lime-ink)}
-  .memory .h2,.memory .sec-head p{color:var(--lime-ink)}
-  .chatwin{max-width:680px;margin:var(--s12) auto 0;background:var(--card);border:1px solid rgba(44,51,6,.16);border-radius:16px;box-shadow:0 22px 60px -34px rgba(44,51,6,.5);overflow:hidden}
-  .chat-body{padding:var(--s8)}
-  .bubble{max-width:78%;padding:12px 16px;border-radius:10px;font-size:16px;line-height:1.55;margin-bottom:var(--s4)}
-  .bubble.you{margin-left:auto;background:var(--olive);color:var(--on-olive);border-bottom-right-radius:4px}
-  .bubble.ai{background:var(--paper-2);color:var(--ink-soft);border-bottom-left-radius:4px}
-  .bubble.ai b{color:var(--ink)}
-  .cites{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-  .cite{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);background:var(--paper-3);border:1px solid var(--line);border-radius:999px;padding:4px 10px}
-  .chat-input{display:flex;align-items:center;gap:10px;border-top:1px solid var(--line);padding:12px var(--s6);color:var(--muted);font-size:15px}
-  .chat-input .field{flex:1}
-  .chat-input .send{width:38px;height:38px;border-radius:10px;background:var(--olive);display:grid;place-items:center;color:var(--on-olive);flex:none}
-
-  /* §6 testimonials — dark */
-  .voices{background:var(--dark);color:var(--on-dark)}
-  .voices .h2{color:var(--on-dark)}
-  .quotes{display:grid;grid-template-columns:1.4fr 1fr;gap:var(--s6);margin-top:var(--s12)}
-  .quote{background:var(--dark-2);border:1px solid var(--dark-line);border-radius:10px;padding:var(--s8) var(--s8) var(--s6)}
-  .quote.lead{grid-row:span 2;display:flex;flex-direction:column;justify-content:space-between}
-  .quote blockquote{margin:0 0 var(--s6);font-family:var(--serif);font-weight:400;font-size:clamp(22px,2.4vw,30px);line-height:1.22;letter-spacing:-.01em;color:var(--on-dark)}
-  .quote.small blockquote{font-family:var(--sans);font-size:17px;line-height:1.5;font-weight:500}
-  .cite-by{display:flex;align-items:center;gap:12px}
-  .cite-by img{width:42px;height:42px;border-radius:50%;object-fit:cover;border:1px solid var(--dark-line)}
-  .cite-by .nm{font-size:15px;font-weight:600;color:var(--on-dark)}
-  .cite-by .ro{font-size:13.5px;color:var(--on-dark-muted)}
-
-  /* §7 works everywhere — feature grid */
-  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s5);margin-top:var(--s12)}
-  .cell{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:var(--s6) var(--s6) var(--s8)}
-  .cell .ic{width:42px;height:42px;border-radius:6px;background:var(--olive-sunk);display:grid;place-items:center;color:var(--olive-ink);margin-bottom:var(--s5)}
-  .cell h3{font-size:18px;font-family:var(--sans);font-weight:600;letter-spacing:-.01em;margin-bottom:6px}
-  .cell p{margin:0;font-size:15px;color:var(--muted)}
-
-  /* §8 MCP connector */
-  .anywhere{background:var(--paper-3)}
-  .conn{display:grid;grid-template-columns:1fr 1fr;gap:var(--s16);align-items:center}
-  .conn-panel{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 18px 48px -34px rgba(35,33,26,.35);padding:var(--s8)}
-  .conn-hub{display:flex;align-items:center;gap:12px;padding-bottom:var(--s5);margin-bottom:var(--s5);border-bottom:1px solid var(--line)}
-  .conn-hub .mk{width:38px;height:38px;border-radius:10px;background:var(--olive);display:grid;place-items:center;color:var(--on-olive);flex:none;font-family:var(--serif);font-weight:600;font-size:18px}
-  .conn-hub .t{font-weight:600;font-size:16px}
-  .conn-hub .s{font-size:13.5px;color:var(--muted)}
-  .conn-row{display:flex;align-items:center;gap:12px;padding:11px 0;font-size:15.5px;color:var(--ink-soft)}
-  .conn-row .lg{width:34px;height:34px;border-radius:6px;border:1px solid var(--line);background:var(--paper-3);display:grid;place-items:center;font-weight:600;font-size:13px;color:var(--ink-soft);flex:none}
-  .conn-row .ok{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--success)}
-
-  /* §9 final cta */
-  .final{text-align:center}
-  .final .display{max-width:16ch;margin:0 auto var(--s6);font-size:clamp(40px,6vw,72px)}
-  .final p{font-size:19px;color:var(--muted);margin:0 auto var(--s8);max-width:44ch}
-  .final-cta{display:flex;flex-wrap:wrap;gap:var(--s3);justify-content:center}
-
-  /* footer */
-  footer{background:var(--dark);color:var(--on-dark-muted);padding:var(--s20) 0 calc(var(--s12) + env(safe-area-inset-bottom))}
-  .foot-top{display:grid;grid-template-columns:1.6fr repeat(4,1fr);gap:var(--s8);padding-bottom:var(--s12);border-bottom:1px solid var(--dark-line)}
-  .foot-brand .brand{color:var(--on-dark)}
-  .foot-brand .mk::after{background:var(--dark)}
-  .foot-brand p{margin:var(--s4) 0 0;font-size:14.5px;max-width:30ch;color:var(--on-dark-muted)}
-  .foot-col h4{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--on-dark);margin:0 0 var(--s4)}
-  .foot-col a{display:block;font-size:15px;color:var(--on-dark-muted);padding:9px 0}
-  .foot-col a:hover{color:var(--on-dark)}
-  .foot-bottom{display:flex;flex-wrap:wrap;justify-content:space-between;gap:var(--s4);padding-top:var(--s8);font-size:14px}
-  .foot-bottom .soc{display:flex;gap:var(--s4)}
-  .foot-bottom .soc a{color:var(--on-dark-muted)}
-  .foot-bottom .soc a:hover{color:var(--on-dark)}
-
-  /* mobile sticky download (thumb zone + safe-area) */
-  .mbar{display:none}
-
-  /* dark-section focus visibility */
-  .on-dark :focus-visible,.memory :focus-visible{outline-color:#D7E27A}
-
-  @media(max-width:920px){
-    .split,.conn{grid-template-columns:1fr;gap:var(--s10)}
-    .phase,.phase:nth-child(even){grid-template-columns:1fr;gap:var(--s6)}
-    .phase:nth-child(even) .phase-copy{order:0}
-    .quotes{grid-template-columns:1fr}
-    .quote.lead{grid-row:auto}
-    .grid3{grid-template-columns:repeat(2,1fr)}
-    .logos{grid-template-columns:repeat(3,1fr);gap:var(--s10) var(--s6)}
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: "Hanken Grotesk", sans-serif;
+    font-size: 16px; font-weight: 600;
+    text-decoration: none;
+    padding: 11px 22px;
+    border-radius: 999px;            /* real Granola CTA is a pill */
+    border: 1px solid transparent;
+    cursor: pointer;
+    min-height: 48px;
+    transition: background-color .15s ease, color .15s ease, border-color .15s ease;
   }
-  @media(max-width:640px){
-    .wrap{padding:0 var(--s5)}
-    body{font-size:16px}
-    section{padding:var(--s16) 0}
-    .nav-links,.nav-signin{display:none}
-    .grid3,.logos{grid-template-columns:1fr 1fr}
-    .win-body{padding:var(--s5) var(--s5) var(--s6)}
-    .hero{padding:var(--s12) 0 var(--s10)}
-    .hero-stage{margin-top:var(--s10)}
-    .foot-top{grid-template-columns:1fr 1fr}
-    .foot-brand{grid-column:1 / -1}
-    /* sticky mobile CTA in thumb zone */
-    .mbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:60;gap:var(--s3);
-      padding:12px var(--s5) calc(12px + env(safe-area-inset-bottom));
-      background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(10px);border-top:1px solid var(--line)}
-    .mbar .btn{flex:1}
-    body{padding-bottom:84px}
+  .btn-primary { background: var(--accent); color: var(--on-accent); }
+  .btn-primary:hover { background: var(--accent-ink); }
+  .btn-ghost { background: transparent; color: var(--ink); border-color: var(--line-strong); }
+  .btn-ghost:hover { background: var(--paper-2); border-color: var(--ink); }
+  .on-dark .btn-ghost { color: var(--dark-ink); border-color: var(--dark-line-2); }
+  .on-dark .btn-ghost:hover { background: var(--dark-raised); border-color: var(--dark-ink); }
+  .btn .arr { transition: transform .15s ease; }
+  .btn:hover .arr { transform: translateX(2px); }
+
+  /* ---------- nav ---------- */
+  .nav {
+    position: sticky; top: 0; z-index: 50;
+    background: color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid transparent;
+    transition: border-color .2s ease, background-color .2s ease;
   }
-  @media (prefers-reduced-motion:reduce){
-    html{scroll-behavior:auto}
-    .enh .cur{animation:none}
-    *{transition:none!important}
+  .nav.scrolled { border-bottom-color: var(--line); }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 64px; }
+  .brand { display: inline-flex; align-items: center; gap: 9px; text-decoration: none; color: var(--ink); min-width: 0; }
+  .brand-mark { width: 22px; height: 22px; flex: none; }
+  .brand-name { font-family: "Fraunces", serif; font-size: 23px; font-weight: 500; letter-spacing: -0.02em; }
+  .nav-links { display: flex; align-items: center; gap: 4px; min-width: 0; }
+  .nav-link {
+    font-size: 15px; font-weight: 500; color: var(--ink-2); text-decoration: none;
+    padding: 8px 12px; border-radius: 8px;
+  }
+  .nav-link:hover { background: var(--paper-2); color: var(--ink); }
+  .nav-cta { margin-left: 6px; }
+
+  .nav-toggle {
+    display: none;
+    align-items: center; justify-content: center;
+    width: 48px; height: 48px; margin-right: -10px;
+    background: transparent; border: none; border-radius: 10px;
+    color: var(--ink); cursor: pointer;
+  }
+  .nav-toggle:hover { background: var(--paper-2); }
+  .nav-toggle .x { display: none; }
+  .nav-toggle[aria-expanded="true"] .x { display: block; }
+  .nav-toggle[aria-expanded="true"] .bars { display: none; }
+
+  .mobile-menu {
+    display: none;
+    position: absolute; left: 0; right: 0; top: 100%;
+    background: var(--paper);
+    border-bottom: 1px solid var(--line);
+    box-shadow: 0 10px 26px -18px rgba(30,30,30,.34);
+    padding: 8px 0 16px;
+  }
+  .mobile-menu.open { display: block; }
+  .mobile-menu a.m-link {
+    display: flex; align-items: center; min-height: 48px;
+    padding: 12px 24px; font-size: 17px; font-weight: 500;
+    color: var(--ink-2); text-decoration: none;
+  }
+  .mobile-menu a.m-link:hover { background: var(--paper-2); color: var(--ink); }
+  .mobile-menu .m-cta { margin: 12px 24px 0; }
+  .mobile-menu .m-cta .btn { width: 100%; justify-content: center; }
+
+  @media (max-width: 820px){
+    .nav-links { display: none; }
+    .nav-toggle { display: inline-flex; }
+    .brand-name { font-size: 21px; }
+  }
+
+  /* ---------- HERO ---------- */
+  .hero { padding-top: 64px; padding-bottom: 0; text-align: center; }
+  .hero h1 {
+    font-size: clamp(42px, 8vw, 90px);
+    line-height: 0.94;
+    letter-spacing: -0.025em;
+    max-width: 13ch;
+    margin-inline: auto;
+  }
+  .hero-sub {
+    margin: 24px auto 0;
+    font-size: clamp(18px, 2.4vw, 22px);
+    line-height: 1.4; color: var(--ink-2);
+    max-width: 30ch;
+  }
+  .hero-sub b { font-weight: 600; color: var(--ink); }
+  .hero-cta { margin-top: 32px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .hero-avail { font-size: 14px; color: var(--muted); display: inline-flex; align-items: center; gap: 7px; }
+
+  .hero-stage {
+    margin-top: 56px;
+    background: var(--paper-2);
+    padding: 56px 24px 0;
+    border-top: 1px solid var(--line);
+  }
+  .hero-stage .note { margin-inline: auto; max-width: 1000px; }
+
+  /* ---------- product window (signature artifact) ---------- */
+  .note {
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-0);
+    box-shadow: 0 1px 2px rgba(30,30,30,.04), 0 12px 28px -18px rgba(30,30,30,.22);
+    overflow: hidden; position: relative;
+  }
+  .note-bar {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line);
+    background: var(--paper);
+  }
+  .tl { display: flex; gap: 8px; flex: none; }
+  .tl span { width: 12px; height: 12px; border-radius: 50%; display: block; }
+  .tl .r { background: var(--tl-red); }
+  .tl .y { background: var(--tl-yellow); }
+  .tl .g { background: var(--tl-green); }
+  .note-title { font-size: 13px; font-weight: 600; color: var(--muted); letter-spacing: .01em; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rec {
+    margin-left: auto; flex: none;
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 600; color: var(--danger);
+    background: #FBEAE8; border: 1px solid #ECC2BE;
+    padding: 3px 10px; border-radius: 999px;
+  }
+  .rec .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--danger); animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{ opacity:1 } 50%{ opacity:.35 } }
+
+  .note-body { display: grid; grid-template-columns: 200px 1fr; min-width: 0; }
+  @media (max-width: 680px){ .note-body { grid-template-columns: 1fr; } }
+  .note-side { border-right: 1px solid var(--line); padding: 14px 12px; background: var(--paper); min-width: 0; }
+  @media (max-width: 680px){ .note-side { display: none; } }
+  .side-label { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--quiet); padding: 4px 8px; }
+  .side-item { display: flex; align-items: center; gap: 9px; padding: 8px 9px; border-radius: 8px; font-size: 13.5px; color: var(--muted); min-width: 0; }
+  .side-item .ic { width: 14px; height: 14px; flex: none; color: var(--quiet); }
+  .side-item span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .side-item.active { background: var(--accent-sunk); color: var(--accent-ink); font-weight: 600; }
+  .side-item.active .ic { color: var(--accent); }
+
+  .note-main { padding: 22px 26px 26px; min-width: 0; }
+  .note-main h4 { font-size: 25px; line-height: 1.1; letter-spacing: -0.02em; }
+  .note-meta { display: flex; align-items: center; gap: 14px; margin-top: 12px; flex-wrap: wrap; }
+  .attendees { display: flex; }
+  .attendees img { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--surface); margin-left: -7px; background: var(--paper-2); }
+  .attendees img:first-child { margin-left: 0; }
+  .meta-txt { font-size: 13px; color: var(--muted); }
+  .enh {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 600; color: var(--accent-ink);
+    background: var(--accent-sunk); border: 1px solid #D9E0BD;
+    padding: 4px 11px; border-radius: 999px;
+  }
+  .enh .ic { width: 13px; height: 13px; }
+
+  .note-sec { margin-top: 22px; }
+  .note-sec h5 { font-family: "Hanken Grotesk", sans-serif; font-size: 12px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--quiet); margin: 0 0 10px; }
+  .note-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .note-list li { display: flex; gap: 10px; font-size: 15px; line-height: 1.45; color: var(--ink-2); min-width: 0; }
+  .note-list li .bullet { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-top: 8px; flex: none; }
+  .note-list li b { font-weight: 600; color: var(--ink); }
+
+  .todo { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .todo li { display: flex; align-items: flex-start; gap: 10px; font-size: 15px; color: var(--ink-2); min-width: 0; }
+  .todo .box { width: 17px; height: 17px; border: 1.5px solid var(--line-strong); border-radius: 5px; flex: none; margin-top: 2px; display: grid; place-items: center; color: var(--surface); }
+  .todo .box.done { background: var(--accent); border-color: var(--accent); }
+  .todo .box.done svg { width: 11px; height: 11px; }
+  .todo .who { font-weight: 600; color: var(--ink); }
+  .todo li.done span.t { color: var(--quiet); text-decoration: line-through; }
+
+  .pip {
+    position: absolute; right: 18px; bottom: 18px;
+    width: 132px; height: 84px; border-radius: 10px; overflow: hidden;
+    border: 1px solid var(--line-strong);
+    box-shadow: 0 8px 22px -14px rgba(30,30,30,.4);
+    background: var(--dark);
+  }
+  .pip img { width: 100%; height: 100%; object-fit: cover; }
+  .pip .pip-tag { position: absolute; left: 7px; top: 7px; display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700; letter-spacing: .04em; color: #fff; background: rgba(0,0,0,.55); padding: 2px 7px; border-radius: 999px; }
+  .pip .pip-tag .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--tl-red); }
+  @media (max-width: 520px){ .pip { width: 104px; height: 66px; right: 12px; bottom: 12px; } }
+
+  /* ---------- section heads ---------- */
+  .sec-head { max-width: 760px; }
+  .sec-head h2 { font-size: clamp(32px, 5vw, 56px); line-height: 1.0; letter-spacing: -0.025em; }
+  .sec-head p { margin-top: 18px; }
+
+  /* ---------- §1 effortless ---------- */
+  .split { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 56px; align-items: center; }
+  @media (max-width: 900px){ .split { grid-template-columns: 1fr; gap: 36px; } }
+  .feat-stack { display: grid; gap: 4px; min-width: 0; }
+  .feat-row { display: flex; gap: 16px; padding: 20px 4px; border-top: 1px solid var(--line); min-width: 0; }
+  .feat-row:first-child { border-top: none; }
+  .feat-ic { width: 38px; height: 38px; border-radius: 10px; background: var(--accent-sunk); color: var(--accent-ink); display: grid; place-items: center; flex: none; }
+  .feat-ic svg { width: 20px; height: 20px; }
+  .feat-row h3 { font-size: 21px; line-height: 1.15; }
+  .feat-row p { margin-top: 6px; font-size: 15.5px; color: var(--muted); line-height: 1.5; min-width: 0; }
+
+  /* ---------- §2 doers (dark, logo wall) ---------- */
+  .on-dark { background: var(--dark); color: var(--dark-ink); }
+  .on-dark h1, .on-dark h2, .on-dark h3, .on-dark h4 { color: var(--dark-ink); }
+  .on-dark .lead, .on-dark .small { color: var(--dark-muted); }
+  .doers-cap { text-align: center; color: var(--dark-muted); font-size: 14px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; margin: 0; }
+  .doers-title { text-align: center; font-size: clamp(60px, 12vw, 156px); line-height: .9; letter-spacing: -0.03em; white-space: nowrap; margin-top: 10px; }
+  .logo-wall {
+    display: grid; grid-template-columns: repeat(6, 1fr);
+    border: 1px solid var(--dark-line); border-radius: 14px; overflow: hidden;
+    margin-top: 56px;
+  }
+  @media (max-width: 880px){ .logo-wall { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 480px){ .logo-wall { grid-template-columns: repeat(2, 1fr); } }
+  .logo-cell {
+    display: grid; place-items: center; min-height: 92px; padding: 16px;
+    border-right: 1px solid var(--dark-line); border-bottom: 1px solid var(--dark-line);
+    min-width: 0;
+  }
+  /* uniform monochrome logo-lockup: mark glyph + wordmark, tone-unified */
+  .lockup { display: inline-flex; align-items: center; gap: 9px; color: var(--dark-ink); opacity: .8; min-width: 0; }
+  .lockup .mk { width: 24px; height: 24px; flex: none; }
+  .lockup .mk svg { width: 24px; height: 24px; display: block; }
+  .lockup .wd { font-family: "Hanken Grotesk", sans-serif; font-size: 18px; font-weight: 600; letter-spacing: -.01em; white-space: nowrap; }
+  @media (max-width: 480px){ .lockup .wd { font-size: 16px; } }
+
+  /* ---------- §3 statement ---------- */
+  .statement { text-align: center; }
+  .statement h2 { font-size: clamp(34px, 5.6vw, 68px); line-height: 1.02; letter-spacing: -0.025em; max-width: 18ch; margin-inline: auto; }
+  .statement .accent { color: var(--accent); font-style: italic; }
+
+  /* ---------- §4 before/in/after scrollspy ---------- */
+  .phases { display: grid; grid-template-columns: 280px 1fr; gap: 56px; align-items: start; }
+  @media (max-width: 900px){ .phases { grid-template-columns: 1fr; gap: 32px; } }
+  .phase-nav { position: sticky; top: 96px; display: grid; gap: 6px; min-width: 0; }
+  @media (max-width: 900px){ .phase-nav { position: static; grid-auto-flow: column; overflow-x: auto; gap: 8px; } }
+  .phase-tab {
+    text-align: left; background: transparent; border: none; cursor: pointer;
+    font-family: "Hanken Grotesk", sans-serif;
+    padding: 14px 16px; border-radius: 12px; border-left: 3px solid var(--line);
+    color: var(--muted); min-width: 0; white-space: nowrap;
+  }
+  .phase-tab .ph-k { font-size: 12px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--quiet); display: block; }
+  .phase-tab .ph-t { font-family: "Fraunces", serif; font-size: 21px; color: var(--ink-2); display: block; margin-top: 2px; }
+  .phase-tab[aria-current="true"] { background: var(--paper-2); border-left-color: var(--accent); }
+  .phase-tab[aria-current="true"] .ph-k { color: var(--accent); }
+  .phase-tab[aria-current="true"] .ph-t { color: var(--ink); }
+  .phase-tab:hover { background: var(--paper-2); }
+
+  .phase-list { display: grid; gap: 80px; min-width: 0; }
+  .phase { scroll-margin-top: 96px; min-width: 0; }
+  .phase h3 { font-size: clamp(28px, 4vw, 40px); line-height: 1.05; }
+  .phase .lead { margin-top: 14px; margin-bottom: 26px; }
+
+  .brief { background: var(--surface); border: 1px solid var(--line-strong); border-radius: 14px; padding: 22px 24px; min-width: 0; }
+  .brief-top { display: flex; align-items: center; gap: 10px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+  .brief-top .enh { margin-left: auto; }
+  .brief h4 { font-family: "Hanken Grotesk", sans-serif; font-size: 15px; font-weight: 700; color: var(--ink); }
+  .brief-grid { display: grid; grid-template-columns: 120px 1fr; gap: 10px 18px; margin-top: 16px; font-size: 14.5px; min-width: 0; }
+  .brief-grid dt { color: var(--quiet); font-weight: 600; }
+  .brief-grid dd { margin: 0; color: var(--ink-2); min-width: 0; }
+
+  /* ---------- §5 perfect memory (lime) ---------- */
+  .on-lime { background: var(--lime); color: var(--ink-on-lime); }
+  .on-lime h2, .on-lime h3 { color: var(--ink-on-lime); }
+  .memory-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+  @media (max-width: 900px){ .memory-grid { grid-template-columns: 1fr; gap: 36px; } }
+  .memory-grid h2 { font-size: clamp(48px, 8vw, 104px); line-height: .92; letter-spacing: -0.03em; }
+  .memory-grid .lead { color: var(--lime-text); font-size: 19px; margin-top: 20px; }
+  .chat { background: var(--surface); border: 1px solid var(--lime-deep); border-radius: 16px; overflow: hidden; min-width: 0; box-shadow: 0 14px 36px -22px rgba(50,60,10,.5); }
+  .chat-head { display: flex; align-items: center; gap: 9px; padding: 13px 18px; border-bottom: 1px solid var(--line); }
+  .chat-head .gmark { width: 18px; height: 18px; color: var(--accent); }
+  .chat-head strong { font-size: 14px; font-weight: 600; }
+  .chat-body { padding: 18px; display: grid; gap: 14px; }
+  .bub { max-width: 86%; padding: 12px 16px; border-radius: 14px; font-size: 15px; line-height: 1.5; min-width: 0; }
+  .bub.me { justify-self: end; background: var(--accent); color: var(--on-accent); border-bottom-right-radius: 4px; }
+  .bub.ai { justify-self: start; background: var(--paper-2); color: var(--ink-2); border: 1px solid var(--line); border-bottom-left-radius: 4px; }
+  .bub.ai b { color: var(--ink); font-weight: 600; }
+  .bub.ai .cite { display: inline-flex; align-items: center; gap: 5px; margin-top: 8px; font-size: 12px; color: var(--accent-ink); font-weight: 600; }
+  .chat-input { display: flex; align-items: center; gap: 10px; margin: 4px 18px 18px; padding: 11px 14px; border: 1px solid var(--line-strong); border-radius: 12px; color: var(--quiet); font-size: 14px; }
+  .chat-input .send { margin-left: auto; width: 30px; height: 30px; border-radius: 8px; background: var(--accent); color: var(--on-accent); display: grid; place-items: center; flex: none; }
+
+  /* ---------- §6 testimonials (dark) ---------- */
+  .busy-title { text-align: center; font-size: clamp(34px, 5.4vw, 64px); line-height: 1.04; max-width: 22ch; margin-inline: auto; }
+  .tgrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 48px; }
+  @media (max-width: 760px){ .tgrid { grid-template-columns: 1fr; } }
+  .tcard { border: 1px solid var(--dark-line); border-radius: 16px; padding: 28px 30px; background: var(--dark-2); min-width: 0; }
+  .tcard.wide { grid-column: 1 / -1; }
+  @media (max-width: 760px){ .tcard.wide { grid-column: auto; } }
+  .tcard blockquote { margin: 0; font-family: "Fraunces", serif; font-weight: 400; font-size: 23px; line-height: 1.32; letter-spacing: -0.01em; color: var(--dark-ink); }
+  .tcard.wide blockquote { font-size: clamp(26px, 3.4vw, 34px); line-height: 1.26; }
+  .tcard figcaption { margin-top: 22px; display: flex; align-items: center; gap: 12px; }
+  .tcard figcaption img { width: 42px; height: 42px; border-radius: 50%; flex: none; filter: grayscale(.2); background: var(--dark-raised); }
+  .tcard .who { font-size: 15px; font-weight: 600; color: var(--dark-ink); }
+  .tcard .role { font-size: 13.5px; color: var(--dark-muted); }
+
+  /* ---------- §7 feature grid (5 — kept odd) ---------- */
+  .fgrid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+  @media (max-width: 920px){ .fgrid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 560px){ .fgrid { grid-template-columns: 1fr; } }
+  .fcell { background: var(--paper); padding: 30px 28px; min-width: 0; }
+  .fcell.span3 { grid-column: span 3; }
+  .fcell.span2 { grid-column: span 2; }
+  @media (max-width: 920px){ .fcell.span3, .fcell.span2 { grid-column: auto; } }
+  .fcell .fi { width: 40px; height: 40px; border-radius: 10px; background: var(--accent-sunk); color: var(--accent-ink); display: grid; place-items: center; margin-bottom: 18px; }
+  .fcell .fi svg { width: 21px; height: 21px; }
+  .fcell h3 { font-size: 24px; line-height: 1.08; }
+  .fcell p { margin-top: 10px; font-size: 15.5px; color: var(--muted); line-height: 1.5; }
+
+  /* ---------- §8 MCP connector ---------- */
+  .mcp { background: var(--paper-2); }
+  .mcp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+  @media (max-width: 900px){ .mcp-grid { grid-template-columns: 1fr; gap: 36px; } }
+  .mcp .eyebrow { color: var(--accent-ink); }
+  .mcp h2 { font-size: clamp(30px, 4.4vw, 48px); line-height: 1.05; }
+  .conn-card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 22px 22px 24px; min-width: 0; }
+  .conn-source { display: flex; align-items: center; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+  .conn-source .gmark { width: 34px; height: 34px; border-radius: 9px; background: var(--accent); display: grid; place-items: center; flex: none; }
+  .conn-source .gmark svg { width: 20px; height: 20px; }
+  .conn-source .nm { font-weight: 600; color: var(--ink); }
+  .conn-source .nm small { display: block; font-weight: 400; font-size: 13px; color: var(--muted); }
+  .conn-source .live { margin-left: auto; flex: none; display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--success); }
+  .conn-source .live .d { width: 7px; height: 7px; border-radius: 50%; background: var(--success); }
+  .conn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 16px; }
+  @media (max-width: 460px){ .conn-grid { grid-template-columns: 1fr; } }
+  .chip { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 11px; background: var(--paper); min-width: 0; }
+  .chip .ci { width: 26px; height: 26px; flex: none; border: 1px solid var(--line-strong); border-radius: 7px; display: grid; place-items: center; color: var(--ink-2); }
+  .chip .ci svg { width: 15px; height: 15px; }
+  .chip .cn { font-size: 14px; font-weight: 600; color: var(--ink); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .chip .ck { margin-left: auto; flex: none; color: var(--success); width: 15px; height: 15px; }
+
+  /* ---------- §9 final CTA ---------- */
+  .final { text-align: center; }
+  .final h2 { font-size: clamp(40px, 6.5vw, 88px); line-height: .98; letter-spacing: -0.025em; max-width: 16ch; margin-inline: auto; }
+  .final .lead { margin: 22px auto 0; text-align: center; }
+  .final-cta { margin-top: 34px; display: inline-flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
+  .final-note { margin-top: 18px; font-size: 14px; color: var(--muted); }
+
+  /* ---------- footer ---------- */
+  .footer { background: var(--dark); color: var(--dark-ink); padding-block: 72px 40px; }
+  .foot-top { display: grid; grid-template-columns: 1.5fr repeat(4, 1fr); gap: 40px 24px; }
+  @media (max-width: 860px){ .foot-top { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 520px){ .foot-top { grid-template-columns: 1fr; } }
+  .foot-brand .brand-name { color: var(--dark-ink); }
+  .foot-brand p { margin-top: 14px; color: var(--dark-muted); font-size: 14.5px; max-width: 30ch; }
+  .foot-social { display: flex; gap: 8px; margin-top: 18px; }
+  .foot-social a { width: 36px; height: 36px; display: grid; place-items: center; border: 1px solid var(--dark-line); border-radius: 9px; color: var(--dark-muted); }
+  .foot-social a:hover { color: var(--dark-ink); border-color: var(--dark-line-2); }
+  .foot-social svg { width: 17px; height: 17px; }
+  .foot-col h4 { font-family: "Hanken Grotesk", sans-serif; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--dark-quiet); margin: 0 0 14px; }
+  .foot-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  .foot-col a { display: inline-block; padding: 6px 0; font-size: 14.5px; color: var(--dark-muted); text-decoration: none; min-height: 24px; }
+  .foot-col a:hover { color: var(--dark-ink); }
+  .foot-bottom { margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--dark-line); display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; }
+  .foot-bottom .legal { display: flex; flex-wrap: wrap; gap: 18px; }
+  .foot-bottom a { color: var(--dark-muted); text-decoration: none; font-size: 13.5px; }
+  .foot-bottom a:hover { color: var(--dark-ink); }
+  .foot-bottom .cc { color: var(--dark-quiet); font-size: 13.5px; display: inline-flex; align-items: center; gap: 6px; }
+  .foot-bottom .cc svg { width: 13px; height: 13px; color: var(--lime); }
+
+  /* ---------- mobile sticky CTA (thumb zone) ---------- */
+  .mcta {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
+    display: none;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    background: color-mix(in srgb, var(--paper) 92%, transparent);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid var(--line);
+  }
+  .mcta .btn { width: 100%; justify-content: center; }
+  @media (max-width: 760px){ .mcta { display: block; } body { padding-bottom: 84px; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+    .rec .dot { animation: none; }
   }
 </style>
 </head>
 <body>
 
-<a class="btn" href="#main" style="position:absolute;left:-9999px;top:0;background:var(--olive);color:var(--on-olive);z-index:200" onfocus="this.style.left='16px';this.style.top='16px'" onblur="this.style.left='-9999px'">Skip to content</a>
+<a class="skip" href="#top">Skip to content</a>
 
-<header>
-  <nav class="wrap nav" aria-label="Primary">
-    <a class="brand" href="#" aria-label="Granola home"><span class="mk" aria-hidden="true"></span>Granola</a>
-    <div class="nav-links">
-      <a href="#effortless">Product</a>
-      <a href="#memory">Memory</a>
-      <a href="#everywhere">Features</a>
-      <a href="#voices">Customers</a>
-      <a href="#pricing">Pricing</a>
-    </div>
-    <div class="nav-cta">
-      <a class="nav-signin" href="#">Sign in</a>
-      <a class="btn btn-cta btn-sm" href="#pricing">Download
-        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 3v8m0 0 3-3m-3 3L5 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </a>
-    </div>
-  </nav>
+<!-- ============ NAV ============ -->
+<header class="nav" id="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="#top" aria-label="Granola — home">
+      <svg class="brand-mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <rect x="2" y="2" width="20" height="20" rx="6" fill="#5B6F00"/>
+        <path d="M7 13.5c1.2 2.2 3 3.3 5 3.3s3.8-1.1 5-3.3" stroke="#FCFCF8" stroke-width="1.7" stroke-linecap="round"/>
+        <circle cx="9" cy="9.2" r="1.3" fill="#FCFCF8"/>
+        <circle cx="15" cy="9.2" r="1.3" fill="#FCFCF8"/>
+      </svg>
+      <span class="brand-name">Granola</span>
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a class="nav-link" href="#features">Features</a>
+      <a class="nav-link" href="#mcp">Enterprise</a>
+      <a class="nav-link" href="#pricing">Pricing</a>
+      <a class="nav-link" href="#blog">Blog</a>
+      <a class="nav-link" href="#careers">Careers</a>
+      <a class="btn btn-primary nav-cta" href="#download">Download for free</a>
+    </nav>
+    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="mobileMenu" aria-label="Menu">
+      <svg class="bars" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <svg class="x" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a class="m-link" href="#features">Features</a>
+    <a class="m-link" href="#mcp">Enterprise</a>
+    <a class="m-link" href="#pricing">Pricing</a>
+    <a class="m-link" href="#blog">Blog</a>
+    <a class="m-link" href="#careers">Careers</a>
+    <div class="m-cta"><a class="btn btn-primary" href="#download">Download for free</a></div>
+  </div>
 </header>
 
-<main id="main">
+<main id="top">
 
-  <!-- §0 HERO -->
-  <section class="hero wrap" aria-labelledby="hero-h">
-    <h1 class="display" id="hero-h">The AI notepad for back-to-back meetings</h1>
-    <p class="lede">Notes, actions and memory. Without a meeting bot.</p>
-    <div class="hero-cta">
-      <a class="btn btn-cta btn-lg" href="#pricing">Download for free
-        <svg width="17" height="17" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 3v8m0 0 3-3m-3 3L5 8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </a>
-      <span class="avail">
-        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.3" stroke="currentColor" stroke-width="1.3"/><path d="M8 5v3.1l2 1.3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-        Available for macOS, Windows and iPhone
-      </span>
+  <!-- ============ §0 HERO ============ -->
+  <section class="hero" aria-labelledby="hero-h">
+    <div class="wrap">
+      <h1 id="hero-h">The AI notepad for back-to-back meetings</h1>
+      <p class="hero-sub"><b>Notes, actions and memory.</b> Without a meeting bot.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#download" id="download">
+          Download for free
+          <svg class="arr" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1v10M8 11l-4-4M8 11l4-4M2 15h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <span class="hero-avail">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M5.5 14h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          Available for macOS, Windows, iPhone
+        </span>
+      </div>
     </div>
 
     <div class="hero-stage">
-      <div class="hero-art" aria-hidden="true"></div>
-      <div class="win hero-win" role="img" aria-label="A Granola note for the meeting ‘Q3 GTM sync’, with hand-typed notes being enhanced into a clean summary.">
-        <div class="win-bar"><i></i><i></i><i></i><span class="ttl">Q3 GTM sync — Notes</span></div>
-        <div class="win-body">
-          <h3>Q3 GTM sync</h3>
-          <div class="chips">
-            <span class="chip"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="2.5" y="3.5" width="11" height="10.5" rx="1.6" stroke="currentColor" stroke-width="1.2"/><path d="M2.5 6.6h11M5.8 2v2.4M10.2 2v2.4" stroke="currentColor" stroke-width="1.2"/></svg>Today, 10:00</span>
-            <span class="chip"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="6" cy="6.5" r="2.4" stroke="currentColor" stroke-width="1.2"/><path d="M2 13c.7-2 2.2-3 4-3s3.3 1 4 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg><b>4</b>&nbsp;people</span>
-            <span class="chip">Zoom</span>
-          </div>
-          <ul class="note">
-            <li class="done">Confirm ICP alignment with revised pricing tiers</li>
-            <li>Deal stalled at procurement — sales to send security pack</li>
-            <li class="todo">Owner: Priya to share Q3 dashboard before Thursday</li>
-            <li class="todo">Open question: do we gate the export feature?</li>
-          </ul>
-          <span class="enh">
-            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1.5l1.4 3.6L13 6.5 9.4 7.9 8 11.5 6.6 7.9 3 6.5l3.6-1.4L8 1.5Z" fill="currentColor"/></svg>
-            Enhancing your notes<span class="cur" aria-hidden="true"></span>
-          </span>
+      <figure class="note" role="img" aria-label="The Granola app showing notes from a meeting called Q3 GTM sync: an AI-enhanced summary with action items, plus a small recording video in the corner.">
+        <div class="note-bar">
+          <span class="tl" aria-hidden="true"><span class="r"></span><span class="y"></span><span class="g"></span></span>
+          <span class="note-title">Q3 GTM sync · Granola</span>
+          <span class="rec"><span class="dot"></span>Recording</span>
         </div>
-      </div>
-      <div class="pip" aria-hidden="true">
-        <div class="face"><svg width="34" height="34" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="3.4" fill="#fff"/><path d="M5 19c1.2-3.2 4-4.6 7-4.6s5.8 1.4 7 4.6" fill="#fff"/></svg></div>
-        <div class="face b"><svg width="34" height="34" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="3.4" fill="#fff"/><path d="M5 19c1.2-3.2 4-4.6 7-4.6s5.8 1.4 7 4.6" fill="#fff"/></svg></div>
-        <div class="pbar"><span></span><span></span><span class="rec"></span></div>
-      </div>
-    </div>
-  </section>
+        <div class="note-body">
+          <aside class="note-side" aria-hidden="true">
+            <div class="side-label">Today</div>
+            <div class="side-item active"><svg class="ic" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M5 8h6M5 11h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span>Q3 GTM sync</span></div>
+            <div class="side-item"><svg class="ic" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.4"/></svg><span>Design system rollout</span></div>
+            <div class="side-item"><svg class="ic" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.4"/></svg><span>Onboarding improvements</span></div>
+            <div class="side-label" style="margin-top:8px">Yesterday</div>
+            <div class="side-item"><svg class="ic" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.4"/></svg><span>Q3 roadmap check-in</span></div>
+          </aside>
+          <div class="note-main">
+            <h4>Q3 GTM sync</h4>
+            <div class="note-meta">
+              <span class="attendees" aria-hidden="true">
+                <img src="https://picsum.photos/seed/granola-maya/52/52" width="26" height="26" alt="" />
+                <img src="https://picsum.photos/seed/granola-leo/52/52" width="26" height="26" alt="" />
+                <img src="https://picsum.photos/seed/granola-sam/52/52" width="26" height="26" alt="" />
+              </span>
+              <span class="meta-txt">3 attendees · Jun 26, 9:30</span>
+              <span class="enh"><svg class="ic" viewBox="0 0 16 16" fill="none"><path d="M8 1.5l1.6 3.6L13.5 6.7 10.8 9.4 11.5 13 8 11.2 4.5 13l.7-3.6L2.5 6.7l3.9-1.6L8 1.5z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>Enhanced notes</span>
+            </div>
 
-  <!-- §1 EFFORTLESS -->
-  <section id="effortless" class="wrap" aria-labelledby="eff-h">
-    <div class="sec-head">
-      <h2 class="h2" id="eff-h">Effortless notes, enhanced instantly.</h2>
-      <p>Jot down a few rough lines. The moment your call ends, Granola turns them into notes you'll actually want to re-read.</p>
-    </div>
+            <div class="note-sec">
+              <h5>Summary</h5>
+              <ul class="note-list">
+                <li><span class="bullet" aria-hidden="true"></span><span><b>ICP alignment confirmed</b> — narrow the Q3 focus to mid-market finance and ops buyers; SMB deprioritised for the quarter.</span></li>
+                <li><span class="bullet" aria-hidden="true"></span><span><b>Deal stalls — sales input</b> — Jack flagged deals stalling at business-case stage; Marketing to build a template.</span></li>
+                <li><span class="bullet" aria-hidden="true"></span><span><b>Q3 messaging rollout</b> — Sales and CS not yet briefed; a lunch-and-learn session agreed.</span></li>
+              </ul>
+            </div>
 
-    <div class="split" style="margin-top:var(--s16)">
-      <div class="win" role="img" aria-label="A Granola note being enhanced: sparse typed lines on the left become a structured summary with action items.">
-        <div class="win-bar"><i></i><i></i><i></i><span class="ttl">Design review — enhanced</span></div>
-        <div class="win-body">
-          <h3>Design review</h3>
-          <div class="chips"><span class="chip">Summary</span><span class="chip">Actions</span><span class="chip">Transcript</span></div>
-          <ul class="note">
-            <li>New onboarding cuts setup to three steps; ship behind a flag.</li>
-            <li>Empty states still feel cold — add a sample workspace.</li>
-            <li class="todo">Action: Mateo to spec the sample workspace by Fri.</li>
-            <li class="done">Decision: drop the welcome modal entirely.</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="feat-list">
-        <div class="feat">
-          <span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3Z" stroke="currentColor" stroke-width="1.6"/><path d="M6 11a6 6 0 0 0 12 0M12 17v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
-          <div>
-            <h3 class="h3">No bot in your meeting</h3>
-            <p>Granola listens through your computer's audio, so nothing awkward joins the call. Your guests never see it.</p>
-          </div>
-        </div>
-        <div class="feat">
-          <span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.2-2.9 7.4-7 8.6-4.1-1.2-7-4.4-7-8.6V6l7-3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.2 12l1.9 1.9 3.7-3.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <div>
-            <h3 class="h3">Private by default</h3>
-            <p>Your notes are yours. Transcripts stay on your device unless you decide to share them.</p>
-          </div>
-        </div>
-        <div class="feat">
-          <span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="14" height="11" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M17 9l4-2v8l-4-2" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span>
-          <div>
-            <h3 class="h3">Works where you already meet</h3>
-            <p>Zoom, Google Meet, Microsoft Teams, Slack huddles — if you can hear it, Granola can take notes.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- §2 FOR THE DOERS -->
-  <section class="doers on-dark" aria-labelledby="doers-h">
-    <div class="wrap" style="text-align:center">
-      <p class="lab serif" id="doers-h">For the doers.</p>
-      <p class="trust">Trusted by teams we admire</p>
-      <div class="logos" role="list" aria-label="Customer logos">
-        <span class="lt" role="listitem">Mercury</span>
-        <span role="listitem">Cursor</span>
-        <span class="lt" role="listitem">Bumble</span>
-        <span role="listitem">Index&nbsp;Ventures</span>
-        <span role="listitem">Vanta</span>
-        <span class="lt" role="listitem">Linear</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- §3 STATEMENT -->
-  <section class="statement wrap" aria-labelledby="stmt-h">
-    <h2 class="h2" id="stmt-h">Granola helps you <em>before</em>, <em>during</em> and <em>after</em> your meetings.</h2>
-  </section>
-
-  <!-- §4 START PREPARED — before / in / after flow -->
-  <section class="wrap" aria-labelledby="flow-h">
-    <div class="sec-head">
-      <h2 class="h2" id="flow-h">Start your meeting prepared</h2>
-      <p>Granola stays with you across the whole meeting — not just the recording.</p>
-    </div>
-
-    <div class="flow">
-      <div class="phase">
-        <div class="phase-copy">
-          <span class="phase-step"><span class="n">1</span>Before the meeting</span>
-          <h3>Walk in with context, not a blank page.</h3>
-          <p>Granola pulls in your notes from the last time you met, so you remember what was promised and where you left off.</p>
-        </div>
-        <div class="win" role="img" aria-label="Granola showing notes from the previous meeting with the same person, surfaced before the call.">
-          <div class="win-bar"><i></i><i></i><i></i><span class="ttl">Prep · 1:1 with Priya</span></div>
-          <div class="win-body">
-            <h3 style="font-size:22px">Last time you met</h3>
-            <ul class="note">
-              <li>Priya raised hiring timeline risk for Q3.</li>
-              <li class="done">You agreed to unblock the design contractor.</li>
-              <li class="todo">Follow up: status of the analytics rollout.</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div class="phase">
-        <div class="phase-copy">
-          <span class="phase-step"><span class="n">2</span>In the meeting</span>
-          <h3>Stay present. Granola catches the rest.</h3>
-          <p>Type the occasional thought when it matters. Granola fills in everything you'd otherwise miss — no scrambling, no half-heard quotes.</p>
-        </div>
-        <div class="win" role="img" aria-label="A live note being taken during a meeting, with a quiet recording indicator.">
-          <div class="win-bar"><i></i><i></i><i></i><span class="ttl">Recording · 12:04</span></div>
-          <div class="win-body">
-            <h3 style="font-size:22px">Roadmap sync</h3>
-            <ul class="note">
-              <li>Ship search first — it unblocks the memory story.</li>
-              <li class="todo">Decide cut line for the launch.</li>
-            </ul>
-            <span class="enh"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="4" fill="#C25545"/></svg>Listening<span class="cur" aria-hidden="true"></span></span>
-          </div>
-        </div>
-      </div>
-
-      <div class="phase">
-        <div class="phase-copy">
-          <span class="phase-step"><span class="n">3</span>After the meeting</span>
-          <h3>Leave with a summary and a to-do list.</h3>
-          <p>Seconds after you hang up, you have a clean summary, every action item with an owner, and a transcript you can ask questions of.</p>
-        </div>
-        <div class="win" role="img" aria-label="A finished meeting summary with action items and owners.">
-          <div class="win-bar"><i></i><i></i><i></i><span class="ttl">Roadmap sync — summary</span></div>
-          <div class="win-body">
-            <h3 style="font-size:22px">Summary &amp; actions</h3>
-            <ul class="note">
-              <li class="done">Decided: search ships before memory.</li>
-              <li class="todo">Owner: Dani drafts the launch cut line — Mon.</li>
-              <li class="todo">Owner: Sam books the design review — this week.</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- §5 PERFECT MEMORY — lime -->
-  <section id="memory" class="memory" aria-labelledby="mem-h">
-    <div class="wrap" style="text-align:center">
-      <div class="sec-head" style="margin:0 auto">
-        <h2 class="h2" id="mem-h">Perfect meeting memory</h2>
-        <p>Every meeting you've ever had, searchable. Ask Granola anything and it answers from your own notes.</p>
-      </div>
-
-      <div class="chatwin" style="text-align:left" role="img" aria-label="Granola Chat answering ‘What feedback have I gotten in my 1:1s this month?’ by citing four meetings.">
-        <div class="win-bar"><i></i><i></i><i></i><span class="ttl">Granola Chat</span></div>
-        <div class="chat-body">
-          <div class="bubble you">What feedback have I gotten in my 1:1s this month?</div>
-          <div class="bubble ai">
-            Across four 1:1s this month, a few themes came up: your team wants <b>earlier visibility into roadmap changes</b>, two people asked for <b>more direct feedback</b>, and Priya flagged that <b>review cycles feel slow</b>.
-            <div class="cites">
-              <span class="cite"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="3" y="2.5" width="10" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/></svg>1:1 · Priya</span>
-              <span class="cite">1:1 · Mateo</span>
-              <span class="cite">1:1 · Dani</span>
-              <span class="cite">1:1 · Sam</span>
+            <div class="note-sec">
+              <h5>Next steps</h5>
+              <ul class="todo">
+                <li class="done"><span class="box done" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none"><path d="M2.5 6.2l2.3 2.3 4.7-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="t"><span class="who">Tanya</span> — update ICP doc and pause paid campaigns</span></li>
+                <li><span class="box" aria-hidden="true"></span><span class="t"><span class="who">Rob</span> — scope business-case template by Tuesday</span></li>
+                <li><span class="box" aria-hidden="true"></span><span class="t"><span class="who">Jack</span> — collate CS proof points by Tuesday</span></li>
+              </ul>
             </div>
           </div>
         </div>
-        <div class="chat-input">
-          <span class="field">Ask about any meeting…</span>
-          <span class="send" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h9m0 0L8.5 4.5M12 8l-3.5 3.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <div class="pip" aria-hidden="true">
+          <img src="https://picsum.photos/seed/granola-call/264/168" width="132" height="84" alt="" />
+          <span class="pip-tag"><span class="dot"></span>REC</span>
+        </div>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ §1 EFFORTLESS ============ -->
+  <section class="section" id="features" aria-labelledby="eff-h">
+    <div class="wrap split">
+      <figure class="note" role="img" aria-label="Granola turning a few typed words into clean, enhanced notes automatically while a meeting is recorded.">
+        <div class="note-bar">
+          <span class="tl" aria-hidden="true"><span class="r"></span><span class="y"></span><span class="g"></span></span>
+          <span class="note-title">Design system rollout</span>
+          <span class="enh" style="margin-left:auto"><svg class="ic" viewBox="0 0 16 16" fill="none"><path d="M8 1.5l1.6 3.6L13.5 6.7 10.8 9.4 11.5 13 8 11.2 4.5 13l.7-3.6L2.5 6.7l3.9-1.6L8 1.5z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>Enhancing notes…</span>
+        </div>
+        <div class="note-body">
+          <div class="note-main" style="grid-column:1 / -1">
+            <div class="note-sec" style="margin-top:0">
+              <h5>My notes</h5>
+              <ul class="note-list">
+                <li><span class="bullet" aria-hidden="true" style="background:var(--quiet)"></span><span style="color:var(--muted)">tokens shipping?? maya says staging next wk — figma source of truth</span></li>
+              </ul>
+            </div>
+            <div class="note-sec">
+              <h5>Enhanced</h5>
+              <ul class="note-list">
+                <li><span class="bullet" aria-hidden="true"></span><span><b>Design tokens</b> ship to staging next week; Figma remains the single source of truth.</span></li>
+                <li><span class="bullet" aria-hidden="true"></span><span>Components migrate page-by-page so nothing regresses in production.</span></li>
+                <li><span class="bullet" aria-hidden="true"></span><span><b>Owner:</b> Maya. Review checkpoint added to the next standup.</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </figure>
+
+      <div style="min-width:0">
+        <div class="sec-head" style="margin-bottom:22px">
+          <h2 id="eff-h">Effortless notes, enhanced instantly.</h2>
+        </div>
+        <div class="feat-stack">
+          <div class="feat-row">
+            <div class="feat-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Z" stroke="currentColor" stroke-width="1.6"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+            <div style="min-width:0"><h3>Uses your computer audio</h3><p>So it doesn’t invite a bot. Granola listens through your machine — no extra guest in the call.</p></div>
+          </div>
+          <div class="feat-row">
+            <div class="feat-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.6"/></svg></div>
+            <div style="min-width:0"><h3>Private by default</h3><p>Easy to share if you choose. Your notes stay yours until you decide to send them.</p></div>
+          </div>
+          <div class="feat-row">
+            <div class="feat-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+            <div style="min-width:0"><h3>Works with Zoom, Google Meet &amp; Teams</h3><p>And every other meeting app — huddles, in-person, on-the-go.</p></div>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- §6 VOICES — dark -->
-  <section id="voices" class="voices on-dark" aria-labelledby="voi-h">
+  <!-- ============ §2 FOR THE DOERS (dark, logo wall ×12) ============ -->
+  <section class="section on-dark" aria-labelledby="doers-h">
     <div class="wrap">
-      <div class="sec-head">
-        <h2 class="h2" id="voi-h">Helping busy people through busy days</h2>
+      <p class="doers-cap">Trusted by teams we admire</p>
+      <h2 class="doers-title" id="doers-h">For the doers</h2>
+      <div class="logo-wall" role="list" aria-label="Teams that use Granola">
+        <div class="logo-cell" role="listitem"><span class="lockup"><span class="mk"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 19V11M12 19V5M19 19V14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></span><span class="wd">PostHog</span></span></div>
+        <div class="logo-cell" role="listitem"><span class="lockup"><span class="mk"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 8a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v3a4 4 0 0 1-4 4h-5l-5 4v-4a4 4 0 0 1-2-3V8z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span><span class="wd">Intercom</span></span></div>
+        <div class="logo-cell" role="listitem"><span class="lockup"><span class="mk"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4l8 15H4l8-15z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span><span class="wd">Vercel</span></span></div>
+        <div class="logo-cell" role="listitem"><span class="lockup"><span class="mk"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M3 10h18" stroke="currentColor" stroke-width="1.6"/></svg></span><span class="wd">Brex</span></span></div>
+        <div class="logo-cell" role="listitem"><span class="lockup"><span class="mk"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 18L20 6M20 6h-7M20 6v7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="wd">Ramp</span></span></div>
+        <div class="logo-cell" role="listitem"><span class="lockup"><span class="mk"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="4" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.6"/><rect x="13" y="4" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.6"/><rect x="5" y="14" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.6"/></svg></span><span class="wd">Replit</span></span></div>
+        <div class="logo-cell" role="listitem"><span class="lockup"><span class="mk"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="3.6" stroke="currentColor" stroke-width="1.6"/><ellipse cx="12" cy="12" rx="9" ry="3.6" stroke="currentColor" stroke-width="1.6" transform="rotate(-32 12 12)"/></svg></span><span class="wd">Mercury</span></span></div>
+        <div class="logo-cell" role="listitem"><span class="lockup"><span class="mk"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 4l13 6-5 2-2 5-6-13z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span><span class="wd">Cursor</span></span></div>
+        <div class="logo-cell" role="listitem"><span class="lockup"><span class="mk"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l7 4v8l-7 4-7-4V7l7-4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span><span class="wd">Bumble</span></span></div>
+        <div class="logo-cell" role="listitem"><span class="lockup"><span class="mk"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 5v14M12 5v14M18 5v14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span><span class="wd">Index&nbsp;Ventures</span></span></div>
+        <div class="logo-cell" role="listitem"><span class="lockup"><span class="mk"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l7 3v5c0 5-3.5 8-7 9-3.5-1-7-4-7-9V6l7-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span><span class="wd">Vanta</span></span></div>
+        <div class="logo-cell" role="listitem"><span class="lockup"><span class="mk"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 14L14 4M9 20L20 9M4 20L20 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span><span class="wd">Linear</span></span></div>
       </div>
-      <div class="quotes">
-        <figure class="quote lead">
-          <blockquote>"I tried Granola before a back-to-back day of interviews. It just clicked instantly — I was present in every conversation and still walked out with perfect notes."</blockquote>
-          <figcaption class="cite-by">
-            <img src="https://picsum.photos/seed/karri/80/80" alt="" width="42" height="42">
-            <span><span class="nm">Karri Saarinen</span><br><span class="ro">Co-founder &amp; CEO, Linear</span></span>
+    </div>
+  </section>
+
+  <!-- ============ §3 TRANSITION STATEMENT ============ -->
+  <section class="section statement" aria-labelledby="stmt-h">
+    <div class="wrap">
+      <h2 id="stmt-h">Granola helps you <span class="accent">before</span>, <span class="accent">during</span> and <span class="accent">after</span> your meetings.</h2>
+    </div>
+  </section>
+
+  <!-- ============ §4 BEFORE / IN / AFTER scrollspy ============ -->
+  <section class="section" style="padding-top:0" aria-labelledby="prep-h">
+    <div class="wrap phases">
+      <nav class="phase-nav" aria-label="Meeting timeline">
+        <button class="phase-tab" data-tab="before" aria-current="true"><span class="ph-k">Before the meeting</span><span class="ph-t">Start prepared</span></button>
+        <button class="phase-tab" data-tab="in"><span class="ph-k">In the meeting</span><span class="ph-t">Full attention</span></button>
+        <button class="phase-tab" data-tab="after"><span class="ph-k">After the meeting</span><span class="ph-t">Admin, done</span></button>
+      </nav>
+
+      <div class="phase-list">
+        <article class="phase" id="before" aria-labelledby="prep-h">
+          <p class="eyebrow">Before the meeting</p>
+          <h3 id="prep-h">Start your meeting prepared</h3>
+          <p class="lead">Granola syncs with your calendar and preps a Brief before every external meeting: who’s attending, what you discussed last time, and what matters now.</p>
+          <div class="brief">
+            <div class="brief-top">
+              <span class="tl" aria-hidden="true"><span class="r"></span><span class="y"></span><span class="g"></span></span>
+              <h4>Your Brief · Northwind Sync</h4>
+              <span class="enh"><svg class="ic" viewBox="0 0 16 16" fill="none"><path d="M8 1.5l1.6 3.6L13.5 6.7 10.8 9.4 11.5 13 8 11.2 4.5 13l.7-3.6L2.5 6.7l3.9-1.6L8 1.5z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>Auto-prepped</span>
+            </div>
+            <dl class="brief-grid">
+              <dt>Attendees</dt><dd>Alex Park (VP at Northwind), plus two from the buying team</dd>
+              <dt>Last time</dt><dd>Push-back on pricing is team-driven, not executive-level; a counter-proposal is coming to today’s call.</dd>
+              <dt>Open items</dt><dd>Q3 implementation is a hard constraint · EU data residency still open from procurement</dd>
+            </dl>
+          </div>
+        </article>
+
+        <article class="phase" id="in" aria-labelledby="in-h">
+          <p class="eyebrow">In the meeting</p>
+          <h3 id="in-h">Give your full attention</h3>
+          <p class="lead">Don’t choose between listening and taking good notes. Write down as much or as little as you like — Granola uses meeting context to write clear notes, personal to you.</p>
+          <figure class="note" role="img" aria-label="A live meeting where the user jots a few words and Granola fills in clear, contextual notes.">
+            <div class="note-bar">
+              <span class="tl" aria-hidden="true"><span class="r"></span><span class="y"></span><span class="g"></span></span>
+              <span class="note-title">Northwind Sync</span>
+              <span class="rec" style="margin-left:auto"><span class="dot"></span>Recording</span>
+            </div>
+            <div class="note-body"><div class="note-main" style="grid-column:1 / -1">
+              <ul class="note-list" style="margin-top:4px">
+                <li><span class="bullet" aria-hidden="true"></span><span>Q3 roadmap check-in — two initiatives <b>pulled forward from Q4</b>; one project deprioritised pending research.</span></li>
+                <li><span class="bullet" aria-hidden="true"></span><span>Design-system rollout: Phase 1 ships next week, blocked on the documentation site.</span></li>
+                <li><span class="bullet" aria-hidden="true"></span><span>Onboarding improvements — three angles: in-app tour, intro video, sample data.</span></li>
+              </ul>
+            </div></div>
+          </figure>
+        </article>
+
+        <article class="phase" id="after" aria-labelledby="after-h">
+          <p class="eyebrow">After the meeting</p>
+          <h3 id="after-h">Post-meeting admin, done</h3>
+          <p class="lead">Notes, action items, and follow-ups are ready the moment the meeting ends, so you can move things forward.</p>
+          <div class="brief">
+            <div class="brief-top">
+              <span class="tl" aria-hidden="true"><span class="r"></span><span class="y"></span><span class="g"></span></span>
+              <h4>Next steps · ready to send</h4>
+              <span class="enh"><svg class="ic" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.2l3 3 8-8.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Generated</span>
+            </div>
+            <ul class="todo" style="margin-top:16px">
+              <li><span class="box" aria-hidden="true"></span><span class="t"><span class="who">Sam</span> — draft doc outline by Friday</span></li>
+              <li><span class="box" aria-hidden="true"></span><span class="t"><span class="who">Jess</span> — set up the A/B test plan</span></li>
+              <li><span class="box" aria-hidden="true"></span><span class="t">Sync again Friday</span></li>
+            </ul>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ §5 PERFECT MEETING MEMORY (lime) ============ -->
+  <section class="section on-lime" aria-labelledby="mem-h">
+    <div class="wrap memory-grid">
+      <div style="min-width:0">
+        <p class="eyebrow" style="color:var(--lime-text)">Granola Chat</p>
+        <h2 id="mem-h">Perfect<br>meeting<br>memory</h2>
+        <p class="lead">AI chat that already knows what you’re working on. Ask across every conversation you’ve had — Granola answers from your own notes.</p>
+      </div>
+      <div class="chat" role="img" aria-label="Granola Chat answering the question: what did I promise to do in my meetings this week, citing the user's own team stand-up notes.">
+        <div class="chat-head">
+          <svg class="gmark" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="6" stroke="currentColor" stroke-width="1.6"/><path d="M7 13.5c1.2 2.2 3 3.3 5 3.3s3.8-1.1 5-3.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <strong>Granola Chat</strong>
+        </div>
+        <div class="chat-body">
+          <div class="bub me">What did I promise to do in my meetings this week?</div>
+          <div class="bub ai">
+            You took on four commitments: <b>update the ICP doc</b> and pause paid campaigns, <b>scope the business-case template</b> by Tuesday, share CS proof points, and <b>draft the doc outline</b> by Friday.
+            <span class="cite"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="2.5" y="2" width="11" height="12" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M5 6h6M5 9h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>From your team stand-ups</span>
+          </div>
+        </div>
+        <div class="chat-input">
+          Ask anything
+          <span class="send" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 13V3M8 3L4 7M8 3l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ §6 TESTIMONIALS (dark, ×5 verbatim) ============ -->
+  <section class="section on-dark" aria-labelledby="busy-h">
+    <div class="wrap">
+      <h2 id="busy-h" class="busy-title">Helping busy people through busy days</h2>
+      <div class="tgrid">
+        <figure class="tcard wide">
+          <blockquote>“Granola was one of those things that just clicked instantly. It’s seamless and very purpose-built.”</blockquote>
+          <figcaption>
+            <img src="https://picsum.photos/seed/karri-saarinen/84/84" width="42" height="42" alt="Portrait of Karri Saarinen" loading="lazy" />
+            <span><span class="who">Karri Saarinen</span><br><span class="role">CEO of Linear</span></span>
           </figcaption>
         </figure>
-        <figure class="quote small">
-          <blockquote>"I have perfect recall of every meeting now. It quietly changed how I run my week."</blockquote>
-          <figcaption class="cite-by">
-            <img src="https://picsum.photos/seed/dani/80/80" alt="" width="42" height="42">
-            <span><span class="nm">Dani Reyes</span><br><span class="ro">Head of Product, Mercury</span></span>
+        <figure class="tcard">
+          <blockquote>“It’s the easiest AI notetaker to start using “out of the box,” and it gets better with more meetings”</blockquote>
+          <figcaption>
+            <img src="https://picsum.photos/seed/olivia-moore/84/84" width="42" height="42" alt="Portrait of Olivia Moore" loading="lazy" />
+            <span><span class="who">Olivia Moore</span><br><span class="role">Partner at Andreessen Horowitz</span></span>
           </figcaption>
         </figure>
-        <figure class="quote small">
-          <blockquote>"No bot, no friction. My clients never know it's there, and my follow-ups write themselves."</blockquote>
-          <figcaption class="cite-by">
-            <img src="https://picsum.photos/seed/sam/80/80" alt="" width="42" height="42">
-            <span><span class="nm">Sam Okafor</span><br><span class="ro">Partner, Index Ventures</span></span>
+        <figure class="tcard">
+          <blockquote>“It’s actually unbelievable how good Granola is.”</blockquote>
+          <figcaption>
+            <img src="https://picsum.photos/seed/guillermo-rauch/84/84" width="42" height="42" alt="Portrait of Guillermo Rauch" loading="lazy" />
+            <span><span class="who">Guillermo Rauch</span><br><span class="role">CEO of Vercel</span></span>
+          </figcaption>
+        </figure>
+        <figure class="tcard">
+          <blockquote>“If you are in a lot of meetings, this is a gamechanger.”</blockquote>
+          <figcaption>
+            <img src="https://picsum.photos/seed/deedy-das/84/84" width="42" height="42" alt="Portrait of Deedy Das" loading="lazy" />
+            <span><span class="who">Deedy Das</span><br><span class="role">Partner at Menlo Ventures</span></span>
+          </figcaption>
+        </figure>
+        <figure class="tcard">
+          <blockquote>“Granola generates the best meeting notes of anything I’ve tried so far.”</blockquote>
+          <figcaption>
+            <img src="https://picsum.photos/seed/nat-friedman/84/84" width="42" height="42" alt="Portrait of Nat Friedman" loading="lazy" />
+            <span><span class="who">Nat Friedman</span></span>
           </figcaption>
         </figure>
       </div>
     </div>
   </section>
 
-  <!-- §7 WORKS EVERYWHERE — feature grid -->
-  <section id="everywhere" class="wrap" aria-labelledby="ev-h">
-    <div class="sec-head">
-      <h2 class="h2" id="ev-h">Works everywhere you do, how you do</h2>
-      <p>Granola fits the way you already meet, write and share — instead of asking you to change it.</p>
-    </div>
-    <div class="grid3">
-      <div class="cell">
-        <span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3" stroke="currentColor" stroke-width="1.6"/><path d="M3 19c.9-3 3.2-4.6 6-4.6S14.1 16 15 19" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M16 6.5a3 3 0 0 1 0 5.6M18.5 19c-.3-1.6-1-2.9-2-3.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
-        <h3>Humans in the room, not bots</h3>
-        <p>Computer audio means no uninvited recorder shows up on the call.</p>
+  <!-- ============ §7 WORKS EVERYWHERE (feature grid ×5) ============ -->
+  <section class="section" aria-labelledby="works-h">
+    <div class="wrap">
+      <div class="sec-head" style="margin-bottom:40px">
+        <h2 id="works-h" style="max-width:15ch">Works everywhere you do, how you do</h2>
       </div>
-      <div class="cell">
-        <span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M5 6h14M5 10h10M5 14h12M5 18h7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
-        <h3>Notes in the background</h3>
-        <p>Granola transcribes quietly while you stay focused on the conversation.</p>
-      </div>
-      <div class="cell">
-        <span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="13" height="9" rx="1.6" stroke="currentColor" stroke-width="1.6"/><rect x="15" y="9" width="6" height="11" rx="1.6" stroke="currentColor" stroke-width="1.6"/><path d="M7 17h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
-        <h3>Every device, in sync</h3>
-        <p>Mac, Windows and iPhone — your notes follow you across all of them.</p>
-      </div>
-      <div class="cell">
-        <span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="4" y="3" width="16" height="18" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M8 8h8M8 12h8M8 16h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
-        <h3>Your templates</h3>
-        <p>Shape notes the way your team works — standups, sales calls, interviews.</p>
-      </div>
-      <div class="cell">
-        <span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0 4-4m-4 4-4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 15v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
-        <h3>Share in a click</h3>
-        <p>Send a clean summary to Notion, Slack or a doc the moment you're done.</p>
-      </div>
-      <div class="cell">
-        <span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="1.6"/><path d="m16 16 4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
-        <h3>Search across it all</h3>
-        <p>Find any decision, name or number from any meeting — in seconds.</p>
+      <div class="fgrid">
+        <div class="fcell span3">
+          <div class="fi" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="9" r="2.4" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 19c.6-3 2.8-4.5 5.5-4.5S14 16 14.5 19M16 14.5c2.2 0 3.9 1.3 4.5 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+          <h3>Humans in the room, not bots</h3>
+          <p>Granola doesn’t join your meeting. Instead, it transcribes in the background while you stay present.</p>
+        </div>
+        <div class="fcell span3">
+          <div class="fi" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="11" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+          <h3>Works with all meeting apps</h3>
+          <p>Zoom, Meet, Teams, Huddles, in-person, on-the-go: capture conversations wherever you have them.</p>
+        </div>
+        <div class="fcell span2">
+          <div class="fi" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.6"/></svg></div>
+          <h3>Private by default, ready to share</h3>
+          <p>Your notes are just for you. Search them, polish them, analyze them, then send them as you like.</p>
+        </div>
+        <div class="fcell span2">
+          <div class="fi" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="6" y="2.5" width="12" height="19" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M10.5 18.5h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+          <h3>Made for in-person meetings too</h3>
+          <p>Walking meetings, conferences or coffee catchups — use the iPhone app to take notes anywhere.</p>
+        </div>
+        <div class="fcell span2">
+          <div class="fi" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5" width="17" height="15" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 9h17M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+          <h3>Syncs with your calendar</h3>
+          <p>Granola detects upcoming meetings automatically. One click, and every conversation is captured and easy to find.</p>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- §8 USE ANYWHERE — MCP connector -->
-  <section class="anywhere" aria-labelledby="any-h">
-    <div class="wrap conn">
-      <div>
-        <h2 class="h2" id="any-h" style="margin-bottom:var(--s5)">Use your meeting notes anywhere</h2>
-        <p style="font-size:19px;color:var(--muted);margin:0 0 var(--s6);max-width:44ch">The Granola MCP connector lets your favorite AI tools read your meeting context — securely, and only when you ask.</p>
-        <p style="font-size:16px;color:var(--muted);margin:0 0 var(--s8);max-width:46ch">Bring last week's roadmap call into Claude, draft a follow-up in ChatGPT, or pull a decision into Cursor without copy-paste.</p>
-        <a class="btn btn-ghost" href="#">Explore the connector
-          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 8h8m0 0L8.5 4.5M12 8l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <!-- ============ §8 MCP CONNECTOR ============ -->
+  <section class="section mcp" id="mcp" aria-labelledby="mcp-h">
+    <div class="wrap mcp-grid">
+      <div style="min-width:0">
+        <p class="eyebrow">Granola MCP Connector</p>
+        <h2 id="mcp-h">Use your meeting notes anywhere</h2>
+        <p class="lead" style="margin-top:18px">No more copy-pasting meeting transcripts into AI tools.</p>
+        <p class="lead" style="margin-top:14px">Connect Granola in a few clicks and your AI apps become aware of your meeting notes. So you can power what you’re working on with what you talked about.</p>
+        <a class="btn btn-primary" href="#download" style="margin-top:26px">
+          Download for free
+          <svg class="arr" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
       </div>
-      <div class="conn-panel" role="img" aria-label="The Granola MCP connector linking meeting notes to Claude, ChatGPT and Cursor, each marked connected.">
-        <div class="conn-hub">
-          <span class="mk" aria-hidden="true">G</span>
-          <span><span class="t">Granola MCP</span><br><span class="s">Meeting context, on request</span></span>
+
+      <div class="conn-card">
+        <div class="conn-source">
+          <span class="gmark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M7 13.5c1.2 2.2 3 3.3 5 3.3s3.8-1.1 5-3.3" stroke="#FCFCF8" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="9.2" r="1.4" fill="#FCFCF8"/><circle cx="15" cy="9.2" r="1.4" fill="#FCFCF8"/></svg></span>
+          <span class="nm">Granola<small>Your meeting notes, as a source</small></span>
+          <span class="live"><span class="d"></span>Live</span>
         </div>
-        <div class="conn-row"><span class="lg" aria-hidden="true">Cl</span>Claude<span class="ok"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Connected</span></div>
-        <div class="conn-row"><span class="lg" aria-hidden="true">GP</span>ChatGPT<span class="ok"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Connected</span></div>
-        <div class="conn-row"><span class="lg" aria-hidden="true">Cu</span>Cursor<span class="ok"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Connected</span></div>
+        <div class="conn-grid" role="list" aria-label="AI apps connected to Granola">
+          <div class="chip" role="listitem"><span class="ci" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M13 3L6 13h5l-1 8 8-11h-5l1-7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></span><span class="cn">Bolt</span><svg class="ck" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.4l3 3 7-7.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="chip" role="listitem"><span class="ci" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="6.5" r="2.6" stroke="currentColor" stroke-width="1.5"/><circle cx="9" cy="12" r="2.6" stroke="currentColor" stroke-width="1.5"/><circle cx="14.5" cy="6.5" r="2.6" stroke="currentColor" stroke-width="1.5"/></svg></span><span class="cn">Figma</span><svg class="ck" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.4l3 3 7-7.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="chip" role="listitem"><span class="ci" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 18V8l6 4 6-4v10" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/></svg></span><span class="cn">Manus</span><svg class="ck" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.4l3 3 7-7.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="chip" role="listitem"><span class="ci" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="6" y="4" width="6" height="6" rx="1.4" stroke="currentColor" stroke-width="1.5"/><rect x="13" y="9" width="6" height="6" rx="1.4" stroke="currentColor" stroke-width="1.5"/><rect x="6" y="14" width="6" height="6" rx="1.4" stroke="currentColor" stroke-width="1.5"/></svg></span><span class="cn">Replit</span><svg class="ck" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.4l3 3 7-7.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="chip" role="listitem"><span class="ci" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7.5" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="2.6" stroke="currentColor" stroke-width="1.5"/></svg></span><span class="cn">OpenAI</span><svg class="ck" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.4l3 3 7-7.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="chip" role="listitem"><span class="ci" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 4v16M4 12h16M6.3 6.3l11.4 11.4M17.7 6.3L6.3 17.7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span><span class="cn">Claude</span><svg class="ck" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.4l3 3 7-7.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="chip" role="listitem"><span class="ci" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 4l13 6-5 2-2 5-6-13z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></span><span class="cn">Cursor</span><svg class="ck" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.4l3 3 7-7.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="chip" role="listitem"><span class="ci" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 20s-7-4.5-7-9a4 4 0 0 1 7-2 4 4 0 0 1 7 2c0 4.5-7 9-7 9z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></span><span class="cn">Lovable</span><svg class="ck" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.4l3 3 7-7.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="chip" role="listitem"><span class="ci" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M8 9.5l2.4 2.4L16 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="cn">Tasklet</span><svg class="ck" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.4l3 3 7-7.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="chip" role="listitem"><span class="ci" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 7l4 10 4-10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="17" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/></svg></span><span class="cn">v0</span><svg class="ck" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.4l3 3 7-7.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="chip" role="listitem"><span class="ci" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 11a7 7 0 0 1 14 0c0 4-3 6-7 6s-7-2-7-6z" stroke="currentColor" stroke-width="1.5"/><circle cx="9.5" cy="10.5" r="1" fill="currentColor"/></svg></span><span class="cn">Duckbill</span><svg class="ck" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.4l3 3 7-7.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- §9 FINAL CTA -->
-  <section id="pricing" class="final wrap" aria-labelledby="fin-h">
-    <h2 class="display" id="fin-h">Unlimited meeting notes for free</h2>
-    <p>Start taking better notes today. No credit card, no meeting bots — just download and join your next call.</p>
-    <div class="final-cta">
-      <a class="btn btn-cta btn-lg" href="#">Download for free
-        <svg width="17" height="17" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 3v8m0 0 3-3m-3 3L5 8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </a>
-      <a class="btn btn-ghost btn-lg" href="#">View pricing</a>
+  <!-- ============ §9 FINAL CTA ============ -->
+  <section class="section final" id="pricing" aria-labelledby="final-h">
+    <div class="wrap">
+      <h2 id="final-h">Unlimited meeting notes for free</h2>
+      <p class="lead">Take as many notes as you’d like. Upgrade to view and work with notes older than 30 days.</p>
+      <div class="final-cta">
+        <a class="btn btn-primary" href="#download">
+          Download for free
+          <svg class="arr" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1v10M8 11l-4-4M8 11l4-4M2 15h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a class="btn btn-ghost" href="#pricing">View pricing</a>
+      </div>
+      <p class="final-note">Available for macOS, Windows, iPhone</p>
     </div>
-    <span class="avail" style="display:inline-flex;margin-top:var(--s6)">
-      <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.3" stroke="currentColor" stroke-width="1.3"/><path d="M8 5v3.1l2 1.3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-      Available for macOS, Windows and iPhone
-    </span>
   </section>
 </main>
 
-<!-- §10 FOOTER -->
-<footer aria-labelledby="foot-h">
-  <h2 id="foot-h" class="sr-only" style="position:absolute;left:-9999px">Footer</h2>
+<!-- ============ FOOTER ============ -->
+<footer class="footer" id="blog">
   <div class="wrap">
     <div class="foot-top">
       <div class="foot-brand">
-        <a class="brand" href="#" aria-label="Granola home"><span class="mk" aria-hidden="true"></span>Granola</a>
-        <p>The AI notepad for back-to-back meetings. Notes, actions and memory — without a bot.</p>
+        <a class="brand" href="#top" aria-label="Granola — home" style="color:var(--dark-ink)">
+          <svg class="brand-mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="2" y="2" width="20" height="20" rx="6" fill="#B2C248"/>
+            <path d="M7 13.5c1.2 2.2 3 3.3 5 3.3s3.8-1.1 5-3.3" stroke="#292929" stroke-width="1.7" stroke-linecap="round"/>
+            <circle cx="9" cy="9.2" r="1.3" fill="#292929"/><circle cx="15" cy="9.2" r="1.3" fill="#292929"/>
+          </svg>
+          <span class="brand-name">Granola</span>
+        </a>
+        <p>The AI notepad for people in back-to-back meetings.</p>
+        <div class="foot-social">
+          <a href="#linkedin" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.94 8.5H4.3V19h2.64V8.5zM5.62 4.3a1.53 1.53 0 1 0 0 3.06 1.53 1.53 0 0 0 0-3.06zM19.7 19v-5.77c0-3.08-1.64-4.51-3.84-4.51-1.77 0-2.56.97-3 1.66V8.5H10.2c.03.74 0 10.5 0 10.5h2.65v-5.86c0-.32.02-.63.12-.86.25-.63.83-1.28 1.8-1.28 1.27 0 1.78.97 1.78 2.39V19h2.65z"/></svg></a>
+          <a href="#x" aria-label="X (Twitter)"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 4h2.9l-6.36 7.27L21.7 20h-5.86l-4.6-6.02L5.98 20H3.06l6.8-7.78L2.6 4h6l4.16 5.5L17.5 4zm-1.02 14.2h1.6L7.6 5.7H5.88l10.6 12.5z"/></svg></a>
+          <a href="#youtube" aria-label="YouTube"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.6 7.2c-.23-.86-.9-1.53-1.76-1.76C18.27 5 12 5 12 5s-6.27 0-7.84.44A2.5 2.5 0 0 0 2.4 7.2C2 8.77 2 12 2 12s0 3.23.4 4.8c.23.86.9 1.53 1.76 1.76C5.73 19 12 19 12 19s6.27 0 7.84-.44a2.5 2.5 0 0 0 1.76-1.76C22 15.23 22 12 22 12s0-3.23-.4-4.8zM10 15V9l5.2 3L10 15z"/></svg></a>
+        </div>
       </div>
-      <nav class="foot-col" aria-label="Product">
+      <div class="foot-col">
+        <h4>Features</h4>
+        <ul>
+          <li><a href="#features">Notepad</a></li>
+          <li><a href="#features">Chat</a></li>
+          <li><a href="#features">Mobile</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
         <h4>Product</h4>
-        <a href="#effortless">Features</a>
-        <a href="#pricing">Pricing</a>
-        <a href="#">Download</a>
-        <a href="#">Changelog</a>
-      </nav>
-      <nav class="foot-col" aria-label="Company">
+        <ul>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#mcp">Enterprise</a></li>
+          <li><a href="#mcp">AI notepad vs notetaker</a></li>
+          <li><a href="#features">For sales</a></li>
+          <li><a href="#features">For product management</a></li>
+          <li><a href="#features">Explore more…</a></li>
+        </ul>
+      </div>
+      <div class="foot-col" id="careers">
         <h4>Company</h4>
-        <a href="#">About</a>
-        <a href="#">Careers</a>
-        <a href="#">Blog</a>
-        <a href="#">Brand</a>
-      </nav>
-      <nav class="foot-col" aria-label="Resources">
+        <ul>
+          <li><a href="#careers">Careers</a></li>
+          <li><a href="#press">Press</a></li>
+          <li><a href="#events">Events</a></li>
+          <li><a href="#startup">Startup program</a></li>
+          <li><a href="#student">Student program</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
         <h4>Resources</h4>
-        <a href="#">Help center</a>
-        <a href="#">Security</a>
-        <a href="#">Privacy</a>
-        <a href="#">Terms</a>
-      </nav>
-      <nav class="foot-col" aria-label="Connect">
-        <h4>Connect</h4>
-        <a href="#">X / Twitter</a>
-        <a href="#">LinkedIn</a>
-        <a href="#">Community</a>
-        <a href="#">Contact</a>
-      </nav>
+        <ul>
+          <li><a href="#blog">Blog</a></li>
+          <li><a href="#security">Security</a></li>
+          <li><a href="#help">Help Center</a></li>
+          <li><a href="#status">Status</a></li>
+          <li><a href="#affiliates">Affiliates</a></li>
+          <li><a href="#contact">Contact us</a></li>
+        </ul>
+      </div>
     </div>
     <div class="foot-bottom">
-      <span>© 2026 Granola Labs, Inc.</span>
-      <span class="soc">
-        <a href="#" aria-label="Granola on X"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 4l16 16M20 4L4 20" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></a>
-        <a href="#" aria-label="Granola on LinkedIn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.6"/><path d="M7 10v7M7 7v.01M11 17v-4a2 2 0 0 1 4 0v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></a>
-      </span>
+      <span class="cc">© Granola, Inc. 2026 · Made with <svg viewBox="0 0 24 24" fill="currentColor" role="img" aria-label="love"><path d="M12 20s-7-4.5-7-9a4 4 0 0 1 7-2 4 4 0 0 1 7 2c0 4.5-7 9-7 9z"/></svg> in Shoreditch</span>
+      <div class="legal">
+        <a href="#terms">Terms</a>
+        <a href="#privacy">Privacy</a>
+        <a href="#license">License</a>
+      </div>
     </div>
   </div>
 </footer>
 
-<!-- mobile sticky CTA (thumb zone + safe-area) -->
-<div class="mbar" aria-hidden="false">
-  <a class="btn btn-cta" href="#pricing">Download for free</a>
+<!-- mobile thumb-zone CTA -->
+<div class="mcta">
+  <a class="btn btn-primary" href="#download">Download for free</a>
 </div>
 
+<script>
+(function () {
+  var nav = document.getElementById('nav');
+  var onScroll = function () { nav.classList.toggle('scrolled', window.scrollY > 8); };
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // mobile disclosure menu (real working open/close, keyboard-operable)
+  var toggle = document.getElementById('navToggle');
+  var menu = document.getElementById('mobileMenu');
+  function setMenu(open) {
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    menu.classList.toggle('open', open);
+    if (open) { var f = menu.querySelector('a'); if (f) f.focus(); }
+  }
+  toggle.addEventListener('click', function () {
+    setMenu(toggle.getAttribute('aria-expanded') !== 'true');
+  });
+  menu.addEventListener('click', function (e) {
+    if (e.target.closest('a')) setMenu(false);
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+      setMenu(false); toggle.focus();
+    }
+  });
+  window.addEventListener('resize', function () {
+    if (window.innerWidth > 820 && toggle.getAttribute('aria-expanded') === 'true') setMenu(false);
+  });
+
+  // before/in/after scrollspy (highlight only — conveys position, not decoration)
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.phase-tab'));
+  var phases = Array.prototype.slice.call(document.querySelectorAll('.phase'));
+  tabs.forEach(function (t) {
+    t.addEventListener('click', function () {
+      var el = document.getElementById(t.getAttribute('data-tab'));
+      if (el) el.scrollIntoView({ block: 'start' });
+    });
+  });
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          tabs.forEach(function (t) {
+            t.setAttribute('aria-current', t.getAttribute('data-tab') === e.target.id ? 'true' : 'false');
+          });
+        }
+      });
+    }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+    phases.forEach(function (p) { io.observe(p); });
+  }
+})();
+</script>
 </body>
 </html>

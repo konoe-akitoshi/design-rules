@@ -1,623 +1,997 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Cartesia — Real-time speech & transcription models for voice agents</title>
-<!-- benchmark #2: cartesia.ai のクローン。題材=リアルタイム音声/発話 AI 研究ラボ(Sonic/Ink/Line)。
-     様式=研究ラボのデータシート/図面: ハードエッジ矩形・ヘアライン・mono spec・波形モチーフ・"rooms"図面。
-     bespoke palette = 深いパイングリーン/クリーム + growth green 1アクセント。
-     書体: Fraunces(編集セリフ display) + Inter(sans 本文) + IBM Plex Mono(spec) + Homemade Apple(手書き 1箇所)。
-     テンプレ骨格でなく題材から構造を導く。全13セクション(nav〜footer)。 -->
+<title>Cartesia — AI that learns and interacts like humans</title>
+<meta name="description" content="The #1 real-time speech and transcription models purpose-built for voice agents. One API, no tradeoffs between quality and speed.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Homemade+Apple&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..500&family=IBM+Plex+Mono:wght@400;500&family=Homemade+Apple&display=swap">
 <style>
-  :root{
-    /* bespoke palette — pine green ink on warm bone, growth-green accent */
-    --bone:#EEEADF; --bone-2:#E7E2D3; --surface:#F5F2E8; --surface-2:#F0ECDF;
-    --ink:#163627; --ink-soft:#274C39; --muted:#465A4E; --quiet:#5C6F62;
-    --line:#D7D1BF; --line-2:#C7C0A9;
-    --forest:#0F2E20; --forest-2:#0B2418; --forest-line:#274434;
-    --cream:#ECE7DA; --cream-2:#A8BAAD; --cream-line:#2C4938;
-    --growth:#48C46C;          /* bright green — accent on dark only */
-    --growth-ink:#15663A;      /* dark green — accent text/links on cream (>4.5:1) */
-    --on-forest-btn:#0F2E20;
-    /* spacing — 4pt grid */
-    --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:20px;--s6:24px;--s8:32px;--s10:40px;--s12:48px;--s16:64px;--s20:80px;--s24:96px;
-    --serif:"Fraunces",Georgia,"Times New Roman",serif;
-    --sans:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
-    --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
-    --hand:"Homemade Apple",cursive;
-    --maxw:1180px;
-  }
-  *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{margin:0;background:var(--bone);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
-  a{color:inherit;text-decoration:none}
-  h1,h2,h3,h4,p{margin:0}
-  ::selection{background:#16362720;color:var(--ink)}
-  :focus-visible{outline:2px solid var(--growth-ink);outline-offset:2px}
-  .forest :focus-visible,.foot :focus-visible{outline-color:var(--growth)}
-  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--s10)}
+/* ============ Tokens — bespoke green-on-cream, contrast-audited ============ */
+:root{
+  /* warm cream ground ramp (light theme) */
+  --cream:#F1ECDE; --cream-surf:#F7F3EA; --cream-sunk:#EAE3D2;
+  --line:#D9D1BE; --line-strong:#C4BAA1;
+  --ink:#15251B;        /* headings/body — 13.6:1 on cream */
+  --ink-soft:#26392C;
+  --muted:#44564A;      /* secondary body — 6.6:1 on cream */
+  --quiet:#4E5F52;      /* mono labels — ~5.9:1 on cream */
+  --accent-deep:#176A37;/* links/accent text on light — 5.6:1 */
+  --growth:#309D4B;     /* brand accent: fills, dots, dark-surface emphasis */
+  --growth-lt:#3CB45A;
+  --verdant:#2E7D46;    /* mid green — borders / large only on light */
+  /* deep forest ramp (dark theme) */
+  --forest:#0F2418; --forest-surf:#13301F; --forest-raised:#19392A;
+  --forest-line:rgba(241,236,222,.12); --forest-line-2:rgba(241,236,222,.22);
+  --on-dark:#F1ECDE;        /* ink on forest — 13.8:1 */
+  --muted-dark:#AFC0B0;     /* body on forest — 8.6:1 */
+  --quiet-dark:#9FB3A2;     /* mono labels on forest — 7.3:1 */
+  --verdant-dark:#6FBF86;   /* mid green on forest — 7.4:1 */
+  /* fonts */
+  --sans:"Archivo",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --serif:"Newsreader",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  --hand:"Homemade Apple",cursive;
+  /* radii — golden ratio system; hard edges reserved for datasheet elements */
+  --r-lg:10px; --r-md:6px; --r-sm:4px;
+  --gut:clamp(20px,5vw,64px);
+  --maxw:1200px;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--cream); color:var(--ink);
+  font-family:var(--sans); font-size:16px; line-height:1.6;
+  font-weight:400; -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  overflow-x:hidden;
+}
+h1,h2,h3,h4{margin:0; font-weight:400; line-height:1.08; letter-spacing:-.012em}
+p{margin:0}
+a{color:inherit; text-decoration:none}
+img,svg{display:block; max-width:100%}
+ul{margin:0; padding:0; list-style:none}
+button{font:inherit; color:inherit; cursor:pointer}
 
-  /* mono spec label — datasheet voice */
-  .spec{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:500}
-  .forest .spec,.foot .spec{color:var(--cream-2)}
+/* focus visibility */
+a:focus-visible,button:focus-visible,[tabindex]:focus-visible{
+  outline:2px solid var(--growth); outline-offset:2px; border-radius:2px;
+}
+.on-forest a:focus-visible,.on-forest button:focus-visible{outline-color:var(--growth-lt)}
 
-  /* buttons */
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);font-family:var(--sans);font-weight:600;font-size:15px;cursor:pointer;border:1px solid transparent;min-height:48px;padding:13px 22px;border-radius:0;transition:background .15s,border-color .15s,color .15s}
-  .btn svg{flex:0 0 auto}
-  .btn-fill{background:var(--ink);color:var(--cream);border-color:var(--ink)}
-  .btn-fill:hover{background:var(--forest-2);border-color:var(--forest-2)}
-  .btn-ghost{background:transparent;color:var(--ink);border-color:var(--line-2)}
-  .btn-ghost:hover{background:var(--bone-2);border-color:var(--ink-soft)}
-  .forest .btn-fill{background:var(--growth);color:var(--on-forest-btn);border-color:var(--growth)}
-  .forest .btn-fill:hover{background:#5fd683;border-color:#5fd683}
-  .forest .btn-ghost{color:var(--cream);border-color:var(--cream-line)}
-  .forest .btn-ghost:hover{background:#16382780;border-color:var(--cream-2)}
-  .link-arrow{display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:15px;color:var(--growth-ink);min-height:44px}
-  .forest .link-arrow{color:var(--growth)}
-  .link-arrow:hover svg{transform:translateX(3px)}
-  .link-arrow svg{transition:transform .15s}
+.skip{position:absolute; left:8px; top:-48px; z-index:200; background:var(--ink); color:var(--cream);
+  padding:10px 18px; border-radius:var(--r-md); transition:top .15s}
+.skip:focus{top:8px}
 
-  /* ===== nav ===== */
-  header.nav{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--bone) 92%,transparent);backdrop-filter:saturate(1.2) blur(8px);border-bottom:1px solid var(--line)}
-  .nav-in{display:flex;align-items:center;gap:var(--s8);height:64px;padding-top:max(0px,env(safe-area-inset-top))}
-  .mark{display:flex;align-items:center;gap:var(--s3);font-weight:600;font-size:19px;letter-spacing:-.02em;color:var(--ink)}
-  .nav-links{display:flex;gap:var(--s6);margin-right:auto}
-  .nav-links a{display:inline-flex;align-items:center;min-height:44px;color:var(--ink-soft);font-size:14.5px;font-weight:500}
-  .nav-links a:hover{color:var(--ink)}
-  .nav-cta{display:flex;align-items:center;gap:var(--s3)}
-  .nav-cta .btn{min-height:44px;padding:10px 18px;font-size:14px}
-  .menu-btn{display:none;align-items:center;justify-content:center;width:44px;height:44px;border:1px solid var(--line-2);background:transparent;border-radius:0;cursor:pointer;color:var(--ink)}
+/* layout */
+.wrap{max-width:var(--maxw); margin:0 auto; padding-inline:var(--gut)}
+section{padding-block:clamp(64px,9vw,120px)}
+.eyebrow{font-family:var(--mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--quiet); margin:0 0 20px; display:flex; align-items:center; gap:10px}
+.eyebrow::before{content:""; width:18px; height:1px; background:var(--verdant); display:inline-block}
+.on-forest .eyebrow{color:var(--quiet-dark)}
+.on-forest .eyebrow::before{background:var(--verdant-dark)}
 
-  /* ===== announcement / dark hero band ===== */
-  .forest{background:var(--forest);color:var(--cream)}
-  .promo{border-bottom:1px solid var(--forest-line)}
-  .promo-in{display:flex;align-items:center;gap:var(--s5);flex-wrap:wrap;padding:var(--s5) 0}
-  .pill{display:inline-flex;align-items:center;gap:var(--s2);border:1px solid var(--cream-line);padding:6px 14px;font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:var(--cream)}
-  .pill .dot{width:8px;height:8px;border-radius:50%;background:var(--growth)}
-  .promo-txt{color:var(--cream-2);font-size:14.5px;max-width:62ch}
-  .promo-txt b{color:var(--cream);font-weight:600}
-  .promo-txt .g{color:var(--growth);font-family:var(--serif);font-weight:500;font-style:italic}
-  .promo-spacer{margin-left:auto}
+/* display type */
+.display{font-family:var(--serif); font-weight:380; letter-spacing:-.02em; line-height:1.02}
+h1.display{font-size:clamp(2.5rem,6vw,5rem)}
+h2.display{font-size:clamp(2rem,4.4vw,3.4rem); line-height:1.04}
+.lede{font-size:clamp(1.05rem,1.7vw,1.3rem); color:var(--muted); line-height:1.5; max-width:40ch}
+.on-forest .lede{color:var(--muted-dark)}
 
-  /* hero (cream, editorial) */
-  .hero{padding:var(--s20) 0 var(--s16);display:grid;grid-template-columns:1.05fr .95fr;gap:var(--s16);align-items:center}
-  h1{font-family:var(--serif);font-weight:400;font-size:clamp(40px,6vw,74px);line-height:1.0;letter-spacing:-.02em;color:var(--ink)}
-  h1 em{font-style:italic;font-weight:500}
-  .hero .lede{margin-top:var(--s6);font-size:19px;line-height:1.55;color:var(--muted);max-width:46ch}
-  .hero .cta-row{margin-top:var(--s8);display:flex;gap:var(--s3);flex-wrap:wrap}
-  /* hero signature: spectrogram/waveform panel (the native material of a speech model) */
-  .scope{border:1px solid var(--line-2);background:var(--surface);padding:var(--s6) var(--s8) var(--s8)}
-  .scope .hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--s5)}
-  .scope .read{font-family:var(--mono);font-size:12px;color:var(--ink-soft)}
-  .scope .read b{color:var(--growth-ink)}
-  .wavebox{display:flex;align-items:flex-end;gap:3px;height:128px}
-  .wavebox i{flex:1;background:var(--growth-ink);opacity:.92;transform-origin:bottom;animation:eq 1.5s ease-in-out infinite}
-  /* spectrogram silhouette — each bar keeps an intrinsic height so it always reads as a waveform */
-  .wavebox i:nth-child(1){height:34%}.wavebox i:nth-child(2){height:58%}.wavebox i:nth-child(3){height:80%}
-  .wavebox i:nth-child(4){height:46%}.wavebox i:nth-child(5){height:96%}.wavebox i:nth-child(6){height:62%}
-  .wavebox i:nth-child(7){height:38%}.wavebox i:nth-child(8){height:72%}.wavebox i:nth-child(9){height:100%}
-  .wavebox i:nth-child(10){height:54%}.wavebox i:nth-child(11){height:84%}.wavebox i:nth-child(12){height:42%}
-  .wavebox i:nth-child(13){height:66%}.wavebox i:nth-child(14){height:90%}.wavebox i:nth-child(15){height:50%}
-  .wavebox i:nth-child(16){height:76%}.wavebox i:nth-child(17){height:36%}.wavebox i:nth-child(18){height:60%}
-  @keyframes eq{0%,100%{transform:scaleY(.78)}50%{transform:scaleY(1)}}
-  .scope .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:var(--s6)}
-  .scope .cell{background:var(--surface);padding:var(--s4) var(--s4)}
-  .scope .cell .n{font-family:var(--mono);font-size:22px;color:var(--ink);font-weight:500;letter-spacing:-.02em}
-  .scope .cell .n s{text-decoration:none;font-size:13px;color:var(--muted)}
+/* buttons */
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  padding:12px 20px; border-radius:var(--r-md); font-size:.94rem; font-weight:500;
+  border:1px solid transparent; transition:background .15s,border-color .15s,color .15s; white-space:nowrap;
+  min-height:44px}
+.btn .lab{transform:translateY(-1px)} /* cap-height optical correction */
+.btn-primary{background:var(--ink); color:var(--cream); border-color:var(--ink)}
+.btn-primary:hover{background:#0c1a13}
+.btn-ghost{background:transparent; color:var(--ink); border-color:var(--line-strong)}
+.btn-ghost:hover{background:var(--cream-sunk)}
+.on-forest .btn-primary{background:var(--growth); color:var(--forest); border-color:var(--growth)}
+.on-forest .btn-primary:hover{background:var(--growth-lt)}
+.on-forest .btn-ghost{color:var(--on-dark); border-color:var(--forest-line-2)}
+.on-forest .btn-ghost:hover{background:rgba(241,236,222,.06)}
+.link-arrow{display:inline-flex; align-items:center; gap:7px; font-weight:500; color:var(--accent-deep);
+  font-size:.95rem; border-bottom:1px solid transparent; padding-bottom:1px; transition:border-color .15s}
+.link-arrow:hover{border-bottom-color:currentColor}
+.on-forest .link-arrow{color:var(--growth-lt)}
+.link-arrow svg{transition:transform .2s}
+.link-arrow:hover svg{transform:translateX(3px)}
 
-  /* generic section */
-  section{padding:var(--s24) 0}
-  .sec-head{max-width:62ch}
-  .sec-head .spec{display:block;margin-bottom:var(--s4)}
-  h2{font-family:var(--serif);font-weight:400;font-size:clamp(30px,4vw,46px);line-height:1.06;letter-spacing:-.015em;color:var(--ink)}
-  h2 em{font-style:italic;font-weight:500}
-  .forest h2{color:var(--cream)}
-  .sec-sub{margin-top:var(--s5);font-size:18px;color:var(--muted);max-width:54ch;line-height:1.55}
-  .forest .sec-sub{color:var(--cream-2)}
+/* waveform motif */
+.wave{display:flex; align-items:center; gap:3px; height:30px}
+.wave span{width:3px; background:currentColor; border-radius:2px; opacity:.85;
+  animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scaleY(.4)}50%{transform:scaleY(1)}}
 
-  /* ===== rooms (use-case floor plan) ===== */
-  .tabs{display:flex;gap:0;margin-top:var(--s8);border:1px solid var(--line-2);width:fit-content;flex-wrap:wrap}
-  .tab{appearance:none;background:transparent;border:0;border-right:1px solid var(--line-2);font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:12px 18px;min-height:44px;cursor:pointer}
-  .tab:last-child{border-right:0}
-  .tab[aria-selected="true"]{background:var(--ink);color:var(--cream)}
-  .rooms{margin-top:var(--s8);display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
-  .room{background:var(--surface);padding:var(--s5) var(--s5) var(--s6);min-height:172px;display:flex;flex-direction:column;gap:var(--s3)}
-  .room:hover{background:var(--surface-2)}
-  .room .rn{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--quiet)}
-  .room h4{font-size:16px;font-weight:600;color:var(--ink);letter-spacing:-.01em}
-  .room p{font-size:13.5px;color:var(--muted);line-height:1.5;flex:1}
-  .room .listen{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--growth-ink);min-height:32px}
-  .room .listen .bars{display:inline-flex;align-items:flex-end;gap:2px;height:13px}
-  .room .listen .bars i{width:2px;background:var(--growth-ink);height:40%}
-  .room .listen .bars i:nth-child(2){height:90%}.room .listen .bars i:nth-child(3){height:60%}.room .listen .bars i:nth-child(4){height:100%}.room .listen .bars i:nth-child(5){height:50%}
+/* ============ Top nav ============ */
+.nav{position:sticky; top:0; z-index:100; background:rgba(241,236,222,.86);
+  backdrop-filter:saturate(140%) blur(10px); border-bottom:1px solid var(--line);
+  padding-top:env(safe-area-inset-top)}
+.nav-in{max-width:var(--maxw); margin:0 auto; padding:0 var(--gut); height:64px;
+  display:flex; align-items:center; gap:28px}
+.brand{display:inline-flex; align-items:center; gap:9px; font-weight:600; font-size:1.18rem;
+  letter-spacing:-.02em; color:var(--ink)}
+.brand .wm{color:var(--growth)}
+.nav-menu{display:flex; align-items:center; gap:4px; margin-left:6px}
+.nav-item{position:relative}
+.nav-link{display:inline-flex; align-items:center; gap:5px; padding:8px 12px; border-radius:var(--r-md);
+  font-size:.92rem; color:var(--ink-soft); font-weight:500; background:none; border:none}
+.nav-link:hover{background:var(--cream-sunk); color:var(--ink)}
+.nav-link .chev{width:11px; height:11px; transition:transform .2s; color:var(--quiet)}
+.nav-item[data-open="true"] .chev{transform:rotate(180deg)}
+.nav-spacer{flex:1}
+.nav-cta{display:flex; align-items:center; gap:10px}
 
-  /* ===== logos ===== */
-  .logos-band{padding:var(--s16) 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-  .logos-band p{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:center}
-  .logos{margin-top:var(--s8);display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:var(--s6) var(--s12)}
-  .logos span{font-weight:600;font-size:20px;color:var(--ink-soft);letter-spacing:-.01em;opacity:.82}
-  .logos .lt{font-family:var(--serif);font-weight:500;font-style:italic;opacity:.9}
+/* mega dropdown */
+.mega{position:absolute; top:calc(100% + 8px); left:0; min-width:300px;
+  background:var(--cream-surf); border:1px solid var(--line); border-radius:var(--r-lg);
+  padding:10px; opacity:0; visibility:hidden; transform:translateY(-6px);
+  transition:opacity .16s,transform .16s,visibility .16s; z-index:120}
+.nav-item[data-open="true"] .mega{opacity:1; visibility:visible; transform:translateY(0)}
+.mega.wide{min-width:520px; display:grid; grid-template-columns:1fr 1fr; gap:6px}
+.mega-col-h{font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--quiet); padding:8px 12px 6px}
+.mega-link{display:flex; gap:12px; align-items:flex-start; padding:10px 12px; border-radius:var(--r-md)}
+.mega-link:hover{background:var(--cream-sunk)}
+.mega-ic{flex:0 0 30px; height:30px; border:1px solid var(--line-strong); border-radius:var(--r-sm);
+  display:grid; place-items:center; color:var(--accent-deep); background:var(--cream)}
+.mega-ic svg{width:16px; height:16px}
+.mega-t{font-weight:600; font-size:.92rem; color:var(--ink); line-height:1.3}
+.mega-d{font-size:.82rem; color:var(--muted); line-height:1.35}
 
-  /* ===== benchmark ===== */
-  .bench{display:grid;grid-template-columns:auto 1fr;gap:var(--s8);align-items:center;border:1px solid var(--line-2);background:var(--surface);padding:var(--s10) var(--s12)}
-  .rank{font-family:var(--serif);font-weight:500;font-size:clamp(64px,9vw,104px);line-height:.8;color:var(--ink);letter-spacing:-.03em}
-  .rank s{text-decoration:none;color:var(--growth-ink)}
-  .bench .b-body .spec{margin-bottom:var(--s3)}
-  .bench h3{font-family:var(--serif);font-weight:400;font-size:26px;color:var(--ink);line-height:1.2}
-  .bench p{margin-top:var(--s3);color:var(--muted);max-width:48ch}
+.hamburger{display:none; width:44px; height:44px; align-items:center; justify-content:center;
+  border:1px solid var(--line-strong); border-radius:var(--r-md); background:var(--cream-surf)}
+.hamburger svg{width:20px; height:20px}
 
-  /* ===== model datasheet cards ===== */
-  .stack{margin-top:var(--s12);display:grid;grid-template-columns:1fr 1fr;gap:var(--s6)}
-  .card{border:1px solid var(--line-2);background:var(--surface);padding:var(--s8);display:flex;flex-direction:column;gap:var(--s4)}
-  .card .ct{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s4)}
-  .card .ct h3{font-family:var(--serif);font-weight:500;font-size:34px;color:var(--ink);letter-spacing:-.01em}
-  .card .ct h3 s{text-decoration:none;color:var(--growth-ink)}
-  .card .role{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
-  .card .desc{font-size:15.5px;color:var(--muted);line-height:1.55}
-  .card .specrow{margin-top:auto;display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line)}
-  .card .specrow div{background:var(--surface);padding:var(--s3) var(--s4)}
-  .card .specrow .k{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--quiet)}
-  .card .specrow .v{font-family:var(--mono);font-size:18px;color:var(--ink);font-weight:500;margin-top:2px}
-  .card-wide{grid-column:1/-1}
-  .card-forest{background:var(--forest);border-color:var(--forest-line)}
-  .card-forest .ct h3{color:var(--cream)} .card-forest .ct h3 s{color:var(--growth)}
-  .card-forest .desc{color:var(--cream-2)} .card-forest .role{color:var(--cream-2)}
-  .card-forest .specrow{background:var(--forest-line);border-color:var(--forest-line)}
-  .card-forest .specrow div{background:var(--forest)} .card-forest .specrow .k{color:var(--cream-2)} .card-forest .specrow .v{color:var(--cream)}
+/* off-canvas mobile menu */
+.mobile-menu{position:fixed; inset:0; z-index:150; visibility:hidden}
+.mm-scrim{position:absolute; inset:0; background:rgba(15,36,24,.5); opacity:0; transition:opacity .25s}
+.mm-panel{position:absolute; top:0; right:0; bottom:0; width:min(88vw,380px);
+  background:var(--cream); border-left:1px solid var(--line); transform:translateX(100%);
+  transition:transform .28s cubic-bezier(.4,0,.2,1); display:flex; flex-direction:column;
+  padding:calc(env(safe-area-inset-top) + 16px) 22px calc(env(safe-area-inset-bottom) + 24px); overflow-y:auto}
+.mobile-menu[data-open="true"]{visibility:visible}
+.mobile-menu[data-open="true"] .mm-scrim{opacity:1}
+.mobile-menu[data-open="true"] .mm-panel{transform:translateX(0)}
+.mm-top{display:flex; align-items:center; justify-content:space-between; margin-bottom:24px}
+.mm-close{width:44px; height:44px; display:grid; place-items:center; border:1px solid var(--line-strong);
+  border-radius:var(--r-md); background:var(--cream-surf)}
+.mm-group{padding:14px 0; border-top:1px solid var(--line)}
+.mm-group:first-of-type{border-top:none}
+.mm-gh{font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--quiet); margin-bottom:6px}
+.mm-link{display:block; padding:11px 8px; border-radius:var(--r-md); font-size:1rem; color:var(--ink); font-weight:500}
+.mm-link:hover{background:var(--cream-sunk)}
+.mm-link .sub{font-size:.8rem; color:var(--muted); font-weight:400}
+.mm-cta{margin-top:20px; display:grid; gap:10px}
+.mm-cta .btn{width:100%}
 
-  /* ssm note */
-  .ssm{display:grid;grid-template-columns:.8fr 1.2fr;gap:var(--s10);margin-top:var(--s10);align-items:start}
-  .ssm .big{font-family:var(--serif);font-weight:400;font-size:26px;line-height:1.3;color:var(--ink)}
-  .ssm .small{color:var(--muted);line-height:1.6}
+/* ============ Section 1 — dark announcement band ============ */
+.on-forest{background:var(--forest); color:var(--on-dark)}
+.announce{position:relative; overflow:hidden; padding-block:clamp(52px,7vw,84px)}
+.announce::after{content:""; position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(120% 90% at 85% 0%,rgba(48,157,75,.14),transparent 60%)}
+.announce-grid{display:grid; grid-template-columns:1.3fr .9fr; gap:48px; align-items:center; position:relative; z-index:1}
+.announce h2{font-family:var(--serif); font-weight:360; font-size:clamp(1.9rem,3.6vw,3rem); line-height:1.05}
+.announce h2 em{font-style:normal; color:var(--growth)}
+.announce .sub{color:var(--muted-dark); margin-top:18px; max-width:46ch; font-size:1.05rem}
+.announce-actions{display:flex; align-items:center; gap:20px; margin-top:28px; flex-wrap:wrap}
+.trial-badge{border:1px solid var(--forest-line-2); border-radius:var(--r-lg); padding:18px 22px; background:var(--forest-surf)}
+.trial-badge .bt{display:flex; align-items:center; gap:8px; font-weight:600; color:var(--on-dark); font-size:1.02rem}
+.trial-badge .bt .dot{width:8px; height:8px; border-radius:50%; background:var(--growth)}
+.trial-badge .fine{font-size:.8rem; color:var(--quiet-dark); margin-top:8px}
+.trial-badge .fine a{color:var(--verdant-dark); border-bottom:1px solid transparent}
+.trial-badge .fine a:hover{border-bottom-color:currentColor}
 
-  /* ===== research (forest) ===== */
-  .research-in{display:grid;grid-template-columns:1.1fr .9fr;gap:var(--s16);align-items:center}
-  .tagset{display:flex;gap:var(--s2);flex-wrap:wrap;margin-top:var(--s8)}
-  .tagset span{font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:var(--cream);border:1px solid var(--cream-line);padding:7px 13px}
-  .hnet{border:1px solid var(--cream-line);padding:var(--s8);display:grid;gap:var(--s4)}
-  .hnet .row{display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap}
-  .hnet .node{font-family:var(--mono);font-size:12px;color:var(--cream);border:1px solid var(--cream-line);padding:8px 12px;background:var(--forest-2)}
-  .hnet .node.acc{color:var(--growth);border-color:#48c46c55}
-  .hnet .arr{color:var(--cream-2);flex:0 0 auto}
-  .hnet .cap{font-family:var(--mono);font-size:11px;color:var(--cream-2);letter-spacing:.04em;line-height:1.5}
+/* ============ Section 2 — editorial hero ============ */
+.hero{padding-block:clamp(72px,11vw,150px)}
+.hero-grid{display:grid; grid-template-columns:1.15fr .85fr; gap:56px; align-items:end}
+.hero h1{margin-bottom:28px}
+.hero .lede{font-size:clamp(1.1rem,1.8vw,1.4rem); max-width:42ch}
+.hero-actions{display:flex; gap:14px; margin-top:34px; flex-wrap:wrap}
+.instrument{border:1px solid var(--line); border-radius:0; background:var(--cream-surf); padding:0; overflow:hidden}
+.inst-head{display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid var(--line)}
+.inst-head .t{font-family:var(--mono); font-size:11.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--quiet)}
+.inst-head .live{display:inline-flex; align-items:center; gap:7px; font-family:var(--mono); font-size:11px; color:var(--accent-deep)}
+.inst-head .live .dot{width:7px; height:7px; border-radius:50%; background:var(--growth); animation:blink 1.6s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+.inst-body{padding:26px 22px}
+.bigwave{display:flex; align-items:flex-end; gap:4px; height:120px; color:var(--growth)}
+.bigwave span{flex:1; background:currentColor; border-radius:2px; opacity:.9; animation:pulse 1.5s ease-in-out infinite}
+.inst-readout{display:grid; grid-template-columns:1fr 1fr 1fr; border-top:1px solid var(--line); margin-top:24px}
+.ro{padding:14px 16px; border-right:1px solid var(--line)}
+.ro:last-child{border-right:none}
+.ro .k{font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--quiet)}
+.ro .v{font-family:var(--mono); font-size:1.15rem; color:var(--ink); margin-top:4px; font-weight:500}
+.ro .v .u{font-size:.7rem; color:var(--muted)}
 
-  /* ===== deploy ===== */
-  .deploy{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:var(--s12)}
-  .dcol{background:var(--surface);padding:var(--s8);display:flex;flex-direction:column;gap:var(--s4)}
-  .dcol .icon{width:36px;height:36px;border:1px solid var(--line-2);display:flex;align-items:center;justify-content:center;color:var(--ink-soft)}
-  .dcol h3{font-size:19px;font-weight:600;color:var(--ink)}
-  .dcol .num{font-family:var(--mono);font-size:11px;color:var(--quiet);letter-spacing:.1em}
-  .dcol p{font-size:14.5px;color:var(--muted);line-height:1.55}
+/* ============ Section 3 — floor plan rooms ============ */
+.rooms-head{display:flex; justify-content:space-between; align-items:flex-end; gap:32px; flex-wrap:wrap; margin-bottom:40px}
+.tabs{display:flex; gap:6px; border:1px solid var(--line); border-radius:var(--r-md); padding:4px; background:var(--cream-surf)}
+.tab{padding:9px 16px; border-radius:var(--r-sm); font-size:.9rem; font-weight:500; border:none; background:none; color:var(--muted); min-height:40px}
+.tab[aria-selected="true"]{background:var(--ink); color:var(--cream)}
+.tab:hover:not([aria-selected="true"]){background:var(--cream-sunk); color:var(--ink)}
+.rooms-grid{display:grid; grid-template-columns:1.5fr 1fr; gap:28px; align-items:stretch}
+.floorplan{position:relative; aspect-ratio:3/2; border:1px solid var(--line-strong); background:var(--cream);
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:24px 24px; background-position:-1px -1px}
+.room{position:absolute; border:1px solid var(--line-strong); background:var(--cream-surf);
+  display:flex; flex-direction:column; justify-content:space-between; padding:10px 12px; text-align:left;
+  transition:background .15s,border-color .15s; overflow:hidden}
+.room:hover{background:var(--cream-sunk); border-color:var(--verdant)}
+.room[aria-pressed="true"]{background:#e6f0e2; border-color:var(--growth); z-index:2}
+.room .rn{font-family:var(--mono); font-size:11.5px; line-height:1.25; color:var(--ink); letter-spacing:-.01em}
+.room[aria-pressed="true"] .rn{color:var(--accent-deep); font-weight:500}
+.room .rdot{width:7px; height:7px; border-radius:50%; border:1px solid var(--line-strong); align-self:flex-end}
+.room[aria-pressed="true"] .rdot{background:var(--growth); border-color:var(--growth)}
+.room-detail{border:1px solid var(--line); background:var(--cream-surf); padding:26px 24px; display:flex; flex-direction:column}
+.room-detail .label{font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--quiet)}
+.room-detail h3{font-family:var(--serif); font-size:1.7rem; font-weight:400; margin:10px 0 14px}
+.room-detail .desc{color:var(--muted); font-size:1rem; line-height:1.55}
+.listen{margin-top:auto; padding-top:24px}
+.btn-listen{display:inline-flex; align-items:center; gap:9px; padding:10px 16px; border:1px solid var(--line-strong);
+  border-radius:var(--r-md); background:var(--cream); font-size:.9rem; font-weight:500; color:var(--ink)}
+.btn-listen:hover{border-color:var(--growth); background:#e9f1e5}
+.btn-listen .play{width:22px; height:22px; border-radius:50%; background:var(--growth); display:grid; place-items:center; color:var(--forest)}
+.btn-listen .play svg{width:10px; height:10px; transform:translateX(.8px)} /* triangle bisection offset */
+.rooms-copy{grid-column:1/-1; margin-top:24px; color:var(--muted); font-size:1.05rem; max-width:60ch}
 
-  /* ===== get started ===== */
-  .start{display:grid;grid-template-columns:1fr 1fr;gap:var(--s6);margin-top:var(--s12)}
-  .start .card{justify-content:space-between;min-height:248px}
-  .start .card h3{font-family:var(--serif);font-weight:500;font-size:28px;color:var(--ink)}
-  .start .card p{color:var(--muted);line-height:1.55}
+/* ============ Section 4 — logo wall ============ */
+.logos{border-top:1px solid var(--line); border-bottom:1px solid var(--line)}
+.logos h2{font-family:var(--serif); font-size:clamp(1.5rem,2.6vw,2.1rem); font-weight:380; margin-bottom:40px; max-width:24ch}
+.logo-row{display:grid; grid-template-columns:repeat(5,1fr); gap:1px; background:var(--line);
+  border:1px solid var(--line)}
+.logo-cell{background:var(--cream); display:grid; place-items:center; padding:30px 16px; min-height:96px}
+.logo-cell span{font-weight:700; font-size:1.15rem; letter-spacing:-.01em; color:var(--ink-soft);
+  opacity:.78; transition:opacity .15s}
+.logo-cell:hover span{opacity:1}
+.stories{margin-top:40px}
+.stories .sh{font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--quiet); margin-bottom:18px}
+.story-row{display:grid; grid-template-columns:repeat(3,1fr); gap:16px}
+.story{border:1px solid var(--line); border-radius:var(--r-lg); padding:20px 22px; background:var(--cream-surf)}
+.story .nm{font-weight:600; color:var(--ink)}
+.story .ar{margin-top:14px; color:var(--accent-deep); font-size:.85rem; display:inline-flex; align-items:center; gap:6px}
 
-  /* ===== hiring ===== */
-  .hiring{border-top:1px solid var(--line)}
-  .hiring-in{display:flex;align-items:center;justify-content:space-between;gap:var(--s8);flex-wrap:wrap;padding:var(--s12) 0}
-  .hiring .hand{font-family:var(--hand);font-size:22px;color:var(--growth-ink);line-height:1}
-  .hiring h3{font-family:var(--serif);font-weight:400;font-size:clamp(24px,3vw,34px);color:var(--ink);margin-top:var(--s4)}
+/* ============ Section 5 — benchmark ============ */
+.bench-card{border:1px solid var(--forest-line-2); background:var(--forest-surf); border-radius:0; overflow:hidden}
+.bench-grid{display:grid; grid-template-columns:.95fr 1.05fr}
+.bench-left{padding:clamp(32px,4vw,56px); border-right:1px solid var(--forest-line-2)}
+.bench-left .rank{font-family:var(--serif); font-size:clamp(3rem,7vw,5.5rem); line-height:.9; color:var(--growth-lt); font-weight:400}
+.bench-left h2{font-family:var(--serif); font-size:clamp(1.4rem,2.4vw,2rem); font-weight:380; margin:18px 0 0; max-width:20ch}
+.bench-left h2 strong{font-weight:500; color:var(--on-dark)}
+.bench-left .src{margin-top:20px; font-family:var(--mono); font-size:12px; color:var(--quiet-dark); letter-spacing:.04em}
+.bench-left .src strong{color:var(--verdant-dark); font-weight:500}
+.lb{display:flex; flex-direction:column}
+.lb-h{display:grid; grid-template-columns:36px 1fr auto; padding:14px 24px; border-bottom:1px solid var(--forest-line);
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--quiet-dark)}
+.lb-row{display:grid; grid-template-columns:36px 1fr auto; padding:16px 24px; border-bottom:1px solid var(--forest-line); align-items:center}
+.lb-row:last-child{border-bottom:none}
+.lb-row .pos{font-family:var(--mono); color:var(--quiet-dark)}
+.lb-row .nm{color:var(--muted-dark); font-size:.95rem}
+.lb-row .sc{font-family:var(--mono); color:var(--muted-dark)}
+.lb-row.you{background:rgba(48,157,75,.12)}
+.lb-row.you .pos{color:var(--growth-lt)}
+.lb-row.you .nm{color:var(--on-dark); font-weight:600}
+.lb-row.you .sc{color:var(--growth-lt)}
 
-  /* ===== footer ===== */
-  footer.foot{background:var(--forest);color:var(--cream);padding:var(--s20) 0 calc(var(--s12) + env(safe-area-inset-bottom))}
-  .foot-top{display:grid;grid-template-columns:1.4fr 3fr;gap:var(--s16)}
-  .foot-brand .mark{color:var(--cream)}
-  .foot-brand p{margin-top:var(--s5);color:var(--cream-2);font-size:15px;max-width:30ch;line-height:1.5}
-  .social{display:flex;gap:var(--s3);margin-top:var(--s6)}
-  .social a{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border:1px solid var(--cream-line);color:var(--cream)}
-  .social a:hover{border-color:var(--cream-2);background:#16382760}
-  .foot-cols{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s10) var(--s6)}
-  .foot-col h4{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--cream-2);margin-bottom:var(--s4)}
-  .foot-col a{display:block;color:var(--cream);font-size:14px;padding:7px 0;opacity:.88}
-  .foot-col a:hover{opacity:1;color:var(--growth)}
-  .foot-bot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:var(--s3);margin-top:var(--s16);padding-top:var(--s6);border-top:1px solid var(--cream-line);color:var(--cream-2);font-size:13px}
+/* ============ Section 6/7 — model datasheets ============ */
+.stack-head{max-width:60ch}
+.stack-head .lede{max-width:54ch; margin-top:22px}
+.ssm-note{display:grid; grid-template-columns:auto 1fr; gap:18px; margin-top:28px; padding-top:24px; border-top:1px solid var(--line); max-width:62ch}
+.ssm-note .tag{font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--accent-deep); padding-top:3px}
+.ssm-note p{color:var(--muted); font-size:1rem; line-height:1.55}
+.ssm-note p strong{color:var(--ink); font-weight:600}
+.model-grid{display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:48px}
+.datasheet{border:1px solid var(--line-strong); background:var(--cream-surf); border-radius:0; display:flex; flex-direction:column}
+.ds-head{display:flex; align-items:baseline; justify-content:space-between; gap:12px; padding:20px 24px; border-bottom:1px solid var(--line)}
+.ds-head .nm{font-family:var(--serif); font-size:1.9rem; font-weight:420}
+.ds-head .kind{font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--quiet)}
+.ds-body{padding:24px; display:flex; flex-direction:column; gap:22px; flex:1}
+.ds-body .claim{font-size:1.12rem; color:var(--ink-soft); line-height:1.4; font-weight:500; max-width:30ch}
+.ds-wave{display:flex; align-items:flex-end; gap:3px; height:64px; color:var(--growth)}
+.ds-wave span{flex:1; background:currentColor; opacity:.85; border-radius:1px; animation:pulse 1.5s ease-in-out infinite}
+.spec{display:grid; grid-template-columns:1fr 1fr; border-top:1px solid var(--line); border-left:1px solid var(--line)}
+.spec .cell{padding:13px 16px; border-right:1px solid var(--line); border-bottom:1px solid var(--line)}
+.spec .k{font-family:var(--mono); font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--quiet)}
+.spec .v{font-family:var(--mono); font-size:1.05rem; color:var(--ink); margin-top:3px; font-weight:500}
+.ds-foot{padding:16px 24px; border-top:1px solid var(--line); margin-top:auto}
 
-  /* ===== responsive ===== */
-  @media(max-width:1000px){
-    .hero{grid-template-columns:1fr;gap:var(--s12);padding-top:var(--s16)}
-    .research-in{grid-template-columns:1fr;gap:var(--s10)}
-    .rooms{grid-template-columns:repeat(2,1fr)}
-    .foot-top{grid-template-columns:1fr;gap:var(--s10)}
-  }
-  @media(max-width:760px){
-    .wrap{padding:0 var(--s5)}
-    .nav-links,.nav-cta .btn-ghost{display:none}
-    .menu-btn{display:inline-flex}
-    section{padding:var(--s16) 0}
-    .stack,.start{grid-template-columns:1fr}
-    .deploy{grid-template-columns:1fr}
-    .ssm{grid-template-columns:1fr;gap:var(--s5)}
-    .bench{grid-template-columns:1fr;gap:var(--s5);padding:var(--s8)}
-    .scope .grid{grid-template-columns:1fr}
-    .foot-cols{grid-template-columns:repeat(2,1fr)}
-    .promo-spacer{display:none}
-    .mobile-cta{display:flex}
-    body{padding-bottom:72px}
-  }
-  @media(max-width:430px){ .rooms{grid-template-columns:1fr} }
+.line-card{margin-top:20px; border:1px solid var(--line-strong); background:var(--cream-surf); border-radius:0;
+  display:grid; grid-template-columns:1fr 1.4fr}
+.line-card .lc-l{padding:32px; border-right:1px solid var(--line)}
+.line-card .lc-l .nm{font-family:var(--serif); font-size:2.2rem; font-weight:420}
+.line-card .lc-l .kind{font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--quiet); margin-top:6px}
+.line-card .lc-r{padding:32px; display:flex; flex-direction:column; gap:24px; justify-content:center}
+.line-card .lc-r p{font-size:1.18rem; color:var(--ink-soft); line-height:1.45; max-width:40ch}
+.pipe{display:flex; align-items:center; gap:14px; font-family:var(--mono); font-size:12px; color:var(--quiet)}
+.pipe .node{padding:7px 12px; border:1px solid var(--line-strong); background:var(--cream); color:var(--ink)}
+.pipe .node.acc{border-color:var(--growth); color:var(--accent-deep)}
+.pipe .arr{color:var(--verdant)}
 
-  /* mobile sticky CTA (thumb zone + safe area) */
-  .mobile-cta{display:none;position:fixed;left:0;right:0;bottom:0;z-index:50;gap:var(--s3);padding:var(--s3) var(--s4) calc(var(--s3) + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--bone) 94%,transparent);backdrop-filter:blur(8px);border-top:1px solid var(--line)}
-  .mobile-cta .btn{flex:1;min-height:48px}
+/* ============ Section 8 — research (dark) ============ */
+.research-grid{display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:center}
+.research h2{font-family:var(--serif); font-weight:360; font-size:clamp(1.9rem,3.6vw,3rem); line-height:1.06; max-width:18ch}
+.research .body{color:var(--muted-dark); font-size:1.1rem; line-height:1.55; margin-top:24px; max-width:46ch}
+.research .body strong{color:var(--on-dark); font-weight:600}
+.arch-card{border:1px solid var(--forest-line-2); background:var(--forest-surf); padding:32px; position:relative}
+.arch-card .ah{font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--quiet-dark); margin-bottom:20px}
+.arch-list{display:flex; flex-direction:column; gap:1px; background:var(--forest-line); border:1px solid var(--forest-line)}
+.arch-item{background:var(--forest-surf); padding:18px 20px; display:flex; align-items:center; justify-content:space-between}
+.arch-item .at{color:var(--on-dark); font-weight:600}
+.arch-item .ad{font-family:var(--mono); font-size:11.5px; color:var(--verdant-dark)}
+.hand-note{font-family:var(--hand); color:var(--growth-lt); font-size:1.05rem; line-height:1.5;
+  transform:rotate(-3deg); position:absolute; right:18px; bottom:-14px; max-width:13ch; text-align:center}
 
-  @media (prefers-reduced-motion:reduce){
-    html{scroll-behavior:auto}
-    .wavebox i{animation:none;transform:scaleY(.7)}
-    *{transition:none!important}
-  }
+/* ============ Section 9 — deploy ============ */
+.deploy-head{max-width:56ch}
+.deploy-head h2 .l2{color:var(--muted); display:block}
+.deploy-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:48px}
+.deploy-card{border:1px solid var(--line); border-radius:var(--r-lg); background:var(--cream-surf); padding:28px 26px;
+  display:flex; flex-direction:column; gap:16px}
+.deploy-card .di{width:40px; height:40px; border:1px solid var(--line-strong); border-radius:var(--r-md);
+  display:grid; place-items:center; color:var(--accent-deep)}
+.deploy-card h3{font-size:1.25rem; font-weight:600; letter-spacing:-.01em}
+.deploy-card p{color:var(--muted); font-size:.97rem; line-height:1.55}
+.deploy-card .tag{margin-top:auto; font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--quiet)}
+
+/* ============ Section 10 — get started ============ */
+.start-grid{display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:44px}
+.start-card{border:1px solid var(--line); border-radius:var(--r-lg); background:var(--cream-surf); padding:36px 34px;
+  display:flex; flex-direction:column; gap:18px}
+.start-card .si{width:44px; height:44px; border-radius:var(--r-md); background:var(--ink); color:var(--cream); display:grid; place-items:center}
+.start-card h3{font-family:var(--serif); font-size:1.6rem; font-weight:420}
+.start-card p{color:var(--muted); font-size:1rem; line-height:1.55; max-width:34ch}
+.start-card .btn{align-self:flex-start; margin-top:8px}
+
+/* ============ Section 11 — hiring ============ */
+.hiring{background:var(--forest); color:var(--on-dark)}
+.hiring-in{display:flex; align-items:center; justify-content:space-between; gap:32px; flex-wrap:wrap}
+.hiring .tag{font-family:var(--mono); font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--growth-lt); margin-bottom:14px}
+.hiring h2{font-family:var(--serif); font-weight:360; font-size:clamp(1.8rem,3.4vw,2.8rem); max-width:18ch; line-height:1.08}
+
+/* ============ Footer ============ */
+.foot{background:var(--forest); color:var(--on-dark); padding-block:clamp(56px,7vw,88px) 40px}
+.foot-top{display:grid; grid-template-columns:1.3fr 2.7fr; gap:56px}
+.foot-brand .brand{color:var(--on-dark); font-size:1.4rem}
+.foot-brand p{color:var(--muted-dark); margin-top:18px; max-width:30ch; font-size:1.02rem; line-height:1.5}
+.social{display:flex; gap:10px; margin-top:24px}
+.social a{width:40px; height:40px; border:1px solid var(--forest-line-2); border-radius:var(--r-md);
+  display:grid; place-items:center; color:var(--muted-dark)}
+.social a:hover{color:var(--on-dark); border-color:var(--forest-line-2); background:rgba(241,236,222,.06)}
+.foot-cols{display:grid; grid-template-columns:repeat(4,1fr); gap:32px}
+.fcol h4{font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--quiet-dark); margin-bottom:16px; font-weight:400}
+.fcol li{margin-bottom:11px}
+.fcol a{color:var(--muted-dark); font-size:.92rem; line-height:1.5}
+.fcol a:hover{color:var(--on-dark)}
+.foot-bottom{display:flex; justify-content:space-between; align-items:center; gap:20px; flex-wrap:wrap;
+  margin-top:48px; padding-top:24px; border-top:1px solid var(--forest-line); padding-bottom:env(safe-area-inset-bottom)}
+.foot-bottom p{font-family:var(--mono); font-size:11.5px; color:var(--quiet-dark); letter-spacing:.03em}
+.foot-legal{display:flex; gap:20px; flex-wrap:wrap}
+.foot-legal a{font-family:var(--mono); font-size:11.5px; color:var(--quiet-dark)}
+.foot-legal a:hover{color:var(--on-dark)}
+
+/* ============ Responsive ============ */
+@media (max-width:1000px){
+  .nav-menu,.nav-cta .desk{display:none}
+  .hamburger{display:flex}
+  .announce-grid,.hero-grid,.rooms-grid,.bench-grid,.model-grid,.research-grid,.start-grid,.line-card,.foot-top{grid-template-columns:1fr}
+  .hero-grid{gap:40px}
+  .bench-left{border-right:none; border-bottom:1px solid var(--forest-line-2)}
+  .line-card .lc-l{border-right:none; border-bottom:1px solid var(--line)}
+  .deploy-grid,.story-row{grid-template-columns:1fr 1fr}
+  .foot-cols{grid-template-columns:repeat(2,1fr)}
+  .instrument{max-width:520px}
+}
+@media (max-width:640px){
+  .deploy-grid,.story-row,.spec{grid-template-columns:1fr}
+  .logo-row{grid-template-columns:1fr 1fr}
+  .foot-cols{grid-template-columns:1fr 1fr}
+  .inst-readout{grid-template-columns:1fr 1fr}
+  .ro:nth-child(2){border-right:none}
+  .rooms-head{flex-direction:column; align-items:stretch}
+  .tabs{align-self:flex-start}
+  .room .rn{font-size:10px}
+  .hiring-in{flex-direction:column; align-items:flex-start}
+}
+@media (max-width:420px){
+  .logo-row{grid-template-columns:1fr}
+  .foot-cols{grid-template-columns:1fr}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none !important; transition:none !important; scroll-behavior:auto !important}
+  .wave span,.bigwave span,.ds-wave span{transform:scaleY(.7)}
+}
 </style>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 
-<!-- 0 · NAV -->
+<!-- ===== NAV ===== -->
 <header class="nav">
-  <div class="wrap nav-in">
-    <a class="mark" href="#top" aria-label="Cartesia home">
-      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
-        <rect x="2"    y="8"   width="2.4" height="6"  rx="1.2" fill="currentColor"/>
-        <rect x="6.5"  y="4"   width="2.4" height="14" rx="1.2" fill="currentColor"/>
-        <rect x="11"   y="1.5" width="2.4" height="19" rx="1.2" fill="#15663A"/>
-        <rect x="15.5" y="6"   width="2.4" height="10" rx="1.2" fill="currentColor"/>
-      </svg>
+  <div class="nav-in">
+    <a class="brand" href="#" aria-label="Cartesia home">
+      <span class="wave wm" aria-hidden="true" style="height:18px">
+        <span style="height:40%;animation-delay:0s"></span><span style="height:100%;animation-delay:.1s"></span>
+        <span style="height:60%;animation-delay:.2s"></span><span style="height:90%;animation-delay:.3s"></span>
+      </span>
       cartesia
     </a>
-    <nav class="nav-links" aria-label="Primary">
-      <a href="#stack">Products</a>
-      <a href="#research">Research</a>
-      <a href="#rooms">Customers</a>
-      <a href="#start">Pricing</a>
-      <a href="#stack">Docs</a>
+    <nav class="nav-menu" aria-label="Primary">
+      <div class="nav-item" data-dropdown>
+        <button class="nav-link" aria-haspopup="true" aria-expanded="false">Products
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="mega">
+          <a class="mega-link" href="#models">
+            <span class="mega-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h3l3-8 4 16 3-8h5"/></svg></span>
+            <span><span class="mega-t">Sonic</span><span class="mega-d">Text to speech</span></span>
+          </a>
+          <a class="mega-link" href="#models">
+            <span class="mega-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M5 7h10M5 17h7"/></svg></span>
+            <span><span class="mega-t">Ink</span><span class="mega-d">Speech to text</span></span>
+          </a>
+          <a class="mega-link" href="#line">
+            <span class="mega-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 18V6m5 12V9m5 9V4m5 14v-7"/></svg></span>
+            <span><span class="mega-t">Line</span><span class="mega-d">Voice agents</span></span>
+          </a>
+        </div>
+      </div>
+      <div class="nav-item" data-dropdown>
+        <button class="nav-link" aria-haspopup="true" aria-expanded="false">Resources
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="mega wide">
+          <div>
+            <div class="mega-col-h">Explore</div>
+            <a class="mega-link" href="#"><span class="mega-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h12l4 4v10H4z"/><path d="M8 10h8M8 14h6"/></svg></span><span class="mega-t">Docs</span></a>
+            <a class="mega-link" href="#"><span class="mega-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h14v16l-7-3-7 3z"/></svg></span><span class="mega-t">Blog</span></a>
+            <a class="mega-link" href="#"><span class="mega-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l3 6 6 1-4 4 1 6-6-3-6 3 1-6-4-4 6-1z"/></svg></span><span class="mega-t">Startups</span></a>
+            <a class="mega-link" href="#"><span class="mega-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg></span><span class="mega-t">Trust Center</span></a>
+          </div>
+          <div>
+            <div class="mega-col-h">Company</div>
+            <a class="mega-link" href="#"><span class="mega-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></span><span class="mega-t">About</span></a>
+            <a class="mega-link" href="#"><span class="mega-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8h16v12H4z"/><path d="M9 8V5h6v3"/></svg></span><span class="mega-t">Careers</span></a>
+            <a class="mega-link" href="#research"><span class="mega-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M16 16l5 5"/></svg></span><span class="mega-t">Research</span></a>
+            <a class="mega-link" href="#"><span class="mega-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16v14H4z"/><path d="M8 3v4M16 3v4M4 11h16"/></svg></span><span class="mega-t">Events</span></a>
+          </div>
+        </div>
+      </div>
+      <a class="nav-link" href="#">Languages</a>
+      <a class="nav-link" href="#customers">Customers</a>
+      <a class="nav-link" href="#">Pricing</a>
     </nav>
+    <div class="nav-spacer"></div>
     <div class="nav-cta">
-      <a class="btn btn-ghost" href="#start">Contact sales</a>
-      <a class="btn btn-fill" href="#start">Try Cartesia</a>
-      <button class="menu-btn" aria-label="Open menu" aria-expanded="false">
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M2 5h14M2 9h14M2 13h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <a class="btn btn-ghost desk" href="#start"><span class="lab">Contact Sales</span></a>
+      <a class="btn btn-primary desk" href="#start"><span class="lab">Try Cartesia</span></a>
+      <button class="hamburger" id="menuOpen" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
       </button>
     </div>
   </div>
 </header>
 
-<main id="top">
-
-  <!-- 1 · ANNOUNCEMENT / DARK BAND -->
-  <div class="forest promo">
-    <div class="wrap promo-in">
-      <span class="pill"><span class="dot"></span>Sonic-3.5 · Ink-2 — live</span>
-      <p class="promo-txt"><b>Meet Sonic-3.5 and Ink-2.</b> The <span class="g">#1</span> real-time speech and transcription models, purpose-built for voice agents — one API, no tradeoffs between quality and speed.</p>
-      <span class="promo-spacer"></span>
-      <a class="link-arrow" href="#stack">Learn more
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7h8m0 0L8 4m3 3L8 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </a>
+<!-- ===== MOBILE OFF-CANVAS MENU ===== -->
+<div class="mobile-menu" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Site menu">
+  <div class="mm-scrim" data-close></div>
+  <div class="mm-panel">
+    <div class="mm-top">
+      <span class="brand" style="font-size:1.1rem">cartesia</span>
+      <button class="mm-close" data-close aria-label="Close menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <nav aria-label="Mobile">
+      <div class="mm-group">
+        <div class="mm-gh">Products</div>
+        <a class="mm-link" href="#models">Sonic <span class="sub">— Text to speech</span></a>
+        <a class="mm-link" href="#models">Ink <span class="sub">— Speech to text</span></a>
+        <a class="mm-link" href="#line">Line <span class="sub">— Voice agents</span></a>
+      </div>
+      <div class="mm-group">
+        <div class="mm-gh">Resources</div>
+        <a class="mm-link" href="#">Docs</a>
+        <a class="mm-link" href="#">Blog</a>
+        <a class="mm-link" href="#">Startups</a>
+        <a class="mm-link" href="#">Trust Center</a>
+      </div>
+      <div class="mm-group">
+        <div class="mm-gh">Company</div>
+        <a class="mm-link" href="#">About</a>
+        <a class="mm-link" href="#">Careers</a>
+        <a class="mm-link" href="#research">Research</a>
+        <a class="mm-link" href="#">Events</a>
+      </div>
+      <div class="mm-group">
+        <a class="mm-link" href="#">Languages</a>
+        <a class="mm-link" href="#customers">Customers</a>
+        <a class="mm-link" href="#">Pricing</a>
+      </div>
+    </nav>
+    <div class="mm-cta">
+      <a class="btn btn-ghost" href="#start"><span class="lab">Contact Sales</span></a>
+      <a class="btn btn-primary" href="#start"><span class="lab">Try Cartesia</span></a>
     </div>
   </div>
+</div>
 
-  <!-- 2 · HERO -->
-  <div class="wrap">
-    <section class="hero" aria-labelledby="hero-h">
-      <div>
-        <p class="spec">Foundation models for voice</p>
-        <h1 id="hero-h" style="margin-top:var(--s5)">Architecting AI that <em>learns and interacts</em> like humans</h1>
-        <p class="lede">Today's AI learns from data curated by humans. We're building AI that learns from the world as it is — and gets better with every interaction.</p>
-        <div class="cta-row">
-          <a class="btn btn-fill" href="#start">Start building
-            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true"><path d="M3 7.5h8m0 0L8 4.5m3 3L8 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
-          <a class="btn btn-ghost" href="#start">Talk to an expert</a>
-        </div>
-      </div>
+<main id="main">
 
-      <!-- signature: live spectrogram / latency readout — the native material of a speech model -->
-      <div class="scope" role="img" aria-label="Cartesia Sonic のリアルタイム音声合成パネル。レイテンシ 90ミリ秒、サンプルレート 44.1kHz の波形メーターと主要指標を表示。">
-        <div class="hd">
-          <span class="spec">Sonic · streaming</span>
-          <span class="read">latency <b>90 ms</b></span>
-        </div>
-        <div class="wavebox" aria-hidden="true">
-          <i style="animation-delay:0s"></i><i style="animation-delay:.08s"></i><i style="animation-delay:.16s"></i><i style="animation-delay:.24s"></i><i style="animation-delay:.32s"></i><i style="animation-delay:.4s"></i><i style="animation-delay:.48s"></i><i style="animation-delay:.56s"></i><i style="animation-delay:.64s"></i><i style="animation-delay:.5s"></i><i style="animation-delay:.36s"></i><i style="animation-delay:.2s"></i><i style="animation-delay:.1s"></i><i style="animation-delay:.28s"></i><i style="animation-delay:.44s"></i><i style="animation-delay:.6s"></i><i style="animation-delay:.3s"></i><i style="animation-delay:.14s"></i>
-        </div>
-        <div class="grid">
-          <div class="cell"><div class="spec">First token</div><div class="n">90<s>ms</s></div></div>
-          <div class="cell"><div class="spec">Sample rate</div><div class="n">44.1<s>kHz</s></div></div>
-          <div class="cell"><div class="spec">Languages</div><div class="n">15<s>+</s></div></div>
-        </div>
+<!-- ===== 1. ANNOUNCEMENT (dark) ===== -->
+<section class="on-forest announce" aria-label="Announcement">
+  <div class="wrap announce-grid">
+    <div>
+      <div class="wave" aria-hidden="true" style="color:var(--growth-lt);height:44px">
+        <span style="height:30%;animation-delay:0s"></span><span style="height:70%;animation-delay:.08s"></span>
+        <span style="height:100%;animation-delay:.16s"></span><span style="height:55%;animation-delay:.24s"></span>
+        <span style="height:85%;animation-delay:.32s"></span><span style="height:40%;animation-delay:.4s"></span>
+        <span style="height:65%;animation-delay:.48s"></span>
       </div>
-    </section>
+      <h2 style="margin-top:24px">Meet <em>Sonic-3.5</em> and <em>Ink-2</em>.</h2>
+      <p class="sub">The #1 real-time speech and transcription models purpose-built for voice agents. One API, no tradeoffs between quality and speed.</p>
+      <div class="announce-actions">
+        <a class="link-arrow" href="#models">Learn more
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="trial-badge">
+      <div class="bt"><span class="dot" aria-hidden="true"></span>Try Cartesia — 3 months on us<span aria-hidden="true">*</span></div>
+      <p class="fine"><span aria-hidden="true">*</span>Terms and conditions <a href="#">here</a></p>
+    </div>
   </div>
+</section>
 
-  <!-- 3 · USE-CASE FLOOR PLAN (rooms) -->
-  <div class="wrap">
-    <section id="rooms" aria-labelledby="rooms-h">
-      <div class="sec-head">
-        <span class="spec">Deployed in production</span>
-        <h2 id="rooms-h">Frontier research, deployed in <em>every conversation</em></h2>
-        <p class="sec-sub">Voice agents that improve customer experience, enhance security, and streamline operations across the financial ecosystem — running in every room of the institution.</p>
+<!-- ===== 2. EDITORIAL HERO ===== -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <h1 class="display">Architecting AI that learns and interacts like humans</h1>
+      <p class="lede">Today's AI learns from data curated by humans. We're building AI that learns from the world as it is, and gets better with every interaction.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#start"><span class="lab">Try Cartesia</span></a>
+        <a class="btn btn-ghost" href="#start"><span class="lab">Contact Sales</span></a>
       </div>
+    </div>
+    <div class="instrument" role="img" aria-label="Live waveform readout showing Sonic generating speech at sub-100 millisecond latency">
+      <div class="inst-head">
+        <span class="t">Sonic-3.5 · synthesis</span>
+        <span class="live"><span class="dot" aria-hidden="true"></span>live</span>
+      </div>
+      <div class="inst-body">
+        <div class="bigwave" aria-hidden="true">
+          <span style="height:20%;animation-delay:0s"></span><span style="height:48%;animation-delay:.05s"></span>
+          <span style="height:74%;animation-delay:.1s"></span><span style="height:96%;animation-delay:.15s"></span>
+          <span style="height:62%;animation-delay:.2s"></span><span style="height:84%;animation-delay:.25s"></span>
+          <span style="height:40%;animation-delay:.3s"></span><span style="height:70%;animation-delay:.35s"></span>
+          <span style="height:100%;animation-delay:.4s"></span><span style="height:54%;animation-delay:.45s"></span>
+          <span style="height:78%;animation-delay:.5s"></span><span style="height:34%;animation-delay:.55s"></span>
+          <span style="height:60%;animation-delay:.6s"></span><span style="height:88%;animation-delay:.65s"></span>
+          <span style="height:46%;animation-delay:.7s"></span><span style="height:72%;animation-delay:.75s"></span>
+          <span style="height:28%;animation-delay:.8s"></span><span style="height:66%;animation-delay:.85s"></span>
+        </div>
+        <div class="inst-readout">
+          <div class="ro"><div class="k">Latency</div><div class="v">42<span class="u"> ms</span></div></div>
+          <div class="ro"><div class="k">Languages</div><div class="v">15+</div></div>
+          <div class="ro"><div class="k">Uptime</div><div class="v">99.9<span class="u"> %</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
+<!-- ===== 3. FLOOR-PLAN ROOMS ===== -->
+<section id="usecases">
+  <div class="wrap">
+    <div class="rooms-head">
+      <div>
+        <p class="eyebrow">Deployed in production</p>
+        <h2 class="display">Frontier research, deployed in <em style="font-style:italic;color:var(--accent-deep)">every conversation</em></h2>
+      </div>
       <div class="tabs" role="tablist" aria-label="Industry">
-        <button class="tab" role="tab" aria-selected="true">Finance</button>
-        <button class="tab" role="tab" aria-selected="false">Healthcare</button>
-        <button class="tab" role="tab" aria-selected="false">Government</button>
+        <button class="tab" role="tab" aria-selected="true" data-ind="finance" id="tab-finance">Finance</button>
+        <button class="tab" role="tab" aria-selected="false" data-ind="healthcare" id="tab-healthcare">Healthcare</button>
+        <button class="tab" role="tab" aria-selected="false" data-ind="government" id="tab-government">Government</button>
       </div>
-
-      <div class="rooms" role="list" aria-label="Finance floor plan — rooms where Cartesia voice agents operate">
-        <article class="room" role="listitem">
-          <span class="rn">ROOM 01</span><h4>Fraud detection</h4>
-          <p>Real-time outbound verification calls on suspicious transactions, with step-up authentication.</p>
-          <span class="listen"><span class="bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>Listen in</span>
-        </article>
-        <article class="room" role="listitem">
-          <span class="rn">ROOM 02</span><h4>Customer support</h4>
-          <p>Resolve balance, card and payment questions instantly, then hand off with full context.</p>
-          <span class="listen"><span class="bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>Listen in</span>
-        </article>
-        <article class="room" role="listitem">
-          <span class="rn">ROOM 03</span><h4>Back office operations</h4>
-          <p>Automate reconciliation callbacks and document follow-ups across systems of record.</p>
-          <span class="listen"><span class="bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>Listen in</span>
-        </article>
-        <article class="room" role="listitem">
-          <span class="rn">ROOM 04</span><h4>Loan assistance</h4>
-          <p>Guide applicants through eligibility, documents and status — in their own language.</p>
-          <span class="listen"><span class="bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>Listen in</span>
-        </article>
-        <article class="room" role="listitem">
-          <span class="rn">ROOM 05</span><h4>Wealth management</h4>
-          <p>Brief clients on portfolio changes and schedule reviews with their advisor.</p>
-          <span class="listen"><span class="bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>Listen in</span>
-        </article>
-        <article class="room" role="listitem">
-          <span class="rn">ROOM 06</span><h4>Collections</h4>
-          <p>Compliant, empathetic outreach that negotiates and confirms repayment plans.</p>
-          <span class="listen"><span class="bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>Listen in</span>
-        </article>
-        <article class="room" role="listitem">
-          <span class="rn">ROOM 07</span><h4>Account opening &amp; recovery</h4>
-          <p>Verify identity, capture details and re-activate dormant accounts end to end.</p>
-          <span class="listen"><span class="bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>Listen in</span>
-        </article>
-        <article class="room" role="listitem">
-          <span class="rn">ROOM 08</span><h4>Compliance &amp; risk</h4>
-          <p>Run disclosures and consent flows with a verbatim, auditable transcript every time.</p>
-          <span class="listen"><span class="bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>Listen in</span>
-        </article>
+    </div>
+    <div class="rooms-grid">
+      <div class="floorplan" id="floorplan" role="group" aria-label="Use-case floor plan — select a room"></div>
+      <div class="room-detail">
+        <p class="label" id="ind-label">Financial services</p>
+        <h3 id="room-title">Fraud detection</h3>
+        <p class="desc" id="room-desc" aria-live="polite">Real-time outbound verification calls on suspicious transactions, step-up authentication.</p>
+        <div class="listen">
+          <button class="btn-listen" type="button">
+            <span class="play" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4l13 8-13 8z"/></svg></span>
+            Listen in
+          </button>
+        </div>
       </div>
-    </section>
+      <p class="rooms-copy" id="ind-copy">Voice agents that improve customer experience, enhance security, and streamline operations across the financial ecosystem.</p>
+    </div>
   </div>
+</section>
 
-  <!-- 4 · LOGOS -->
-  <div class="logos-band">
-    <div class="wrap">
-      <p>Join the teams making the switch to Cartesia</p>
-      <div class="logos" aria-label="Customers">
-        <span>ServiceNow</span>
-        <span class="lt">Decagon</span>
-        <span>Zomato</span>
-        <span class="lt">Sanas</span>
-        <span>Elise AI</span>
-        <span class="lt">Blue Machines</span>
-        <span>Retell AI</span>
-        <span class="lt">Fundamento</span>
+<!-- ===== 4. LOGO WALL ===== -->
+<section class="logos" id="customers">
+  <div class="wrap">
+    <h2 class="display">Join the teams making the switch to Cartesia</h2>
+    <div class="logo-row">
+      <div class="logo-cell"><span>ServiceNow</span></div>
+      <div class="logo-cell"><span>Decagon</span></div>
+      <div class="logo-cell"><span>Zomato</span></div>
+      <div class="logo-cell"><span>Sanas</span></div>
+      <div class="logo-cell"><span>Elise AI</span></div>
+    </div>
+    <div class="stories">
+      <p class="sh">Customer stories</p>
+      <div class="story-row">
+        <a class="story" href="#"><div class="nm">Blue Machines</div><div class="ar">Read the story <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div></a>
+        <a class="story" href="#"><div class="nm">Retell AI</div><div class="ar">Read the story <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div></a>
+        <a class="story" href="#"><div class="nm">Fundamento</div><div class="ar">Read the story <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div></a>
       </div>
     </div>
   </div>
+</section>
 
-  <!-- 5 · BENCHMARK -->
+<!-- ===== 5. BENCHMARK ===== -->
+<section aria-label="Benchmark ranking">
   <div class="wrap">
-    <section aria-labelledby="bench-h">
-      <div class="bench">
-        <div class="rank" aria-hidden="true">#<s>1</s></div>
-        <div class="b-body">
-          <span class="spec">Artificial Analysis · independent benchmark</span>
-          <h3 id="bench-h">Ranked #1 in the Speech Arena and Speech-to-Text leaderboards</h3>
-          <p>Sonic and Ink top the public leaderboards for quality and latency, measured by Artificial Analysis — not by us.</p>
+    <div class="bench-card on-forest">
+      <div class="bench-grid">
+        <div class="bench-left">
+          <div class="rank">#1</div>
+          <h2><strong>Ranked #1</strong> in Speech Arena leaderboard &amp; Speech to Text leaderboard</h2>
+          <p class="src">by <strong>Artificial Analysis</strong></p>
+        </div>
+        <div class="lb">
+          <div class="lb-h"><span>#</span><span>Model</span><span>Score</span></div>
+          <div class="lb-row you"><span class="pos">1</span><span class="nm">Cartesia · Sonic-3.5</span><span class="sc">94.7</span></div>
+          <div class="lb-row"><span class="pos">2</span><span class="nm">Provider A</span><span class="sc">91.2</span></div>
+          <div class="lb-row"><span class="pos">3</span><span class="nm">Provider B</span><span class="sc">88.5</span></div>
+          <div class="lb-row"><span class="pos">4</span><span class="nm">Provider C</span><span class="sc">86.1</span></div>
         </div>
       </div>
-    </section>
-  </div>
-
-  <!-- 6 · FULL STACK / MODELS -->
-  <div class="wrap">
-    <section id="stack" aria-labelledby="stack-h">
-      <div class="sec-head">
-        <span class="spec">The models</span>
-        <h2 id="stack-h">The full stack for <em>interactive intelligence</em></h2>
-        <p class="sec-sub">The fastest models you can trust. Designed for live, synchronous interaction — and benchmarked in the open.</p>
-      </div>
-
-      <div class="ssm">
-        <p class="big">Built on State Space Models (SSMs) — a new primitive for large-scale foundation models.</p>
-        <p class="small">SSMs deliver ultra-low latency, long-context reasoning and greater efficiency at scale than transformer-only stacks. That is what lets Sonic and Ink run in real time, in production, without choosing between quality and speed.</p>
-      </div>
-
-      <div class="stack">
-        <article class="card">
-          <div class="ct"><h3>Ink<s>.</s></h3><span class="role">Speech&nbsp;→&nbsp;Text</span></div>
-          <p class="desc">The fastest and most accurate streaming transcription model. Word-level timestamps, code-switching and noise robustness, built for live agents.</p>
-          <div class="specrow">
-            <div><div class="k">First token</div><div class="v">120 ms</div></div>
-            <div><div class="k">Mode</div><div class="v">streaming</div></div>
-          </div>
-        </article>
-        <article class="card">
-          <div class="ct"><h3>Sonic<s>.</s></h3><span class="role">Text&nbsp;→&nbsp;Speech</span></div>
-          <p class="desc">The fastest and most realistic speech generation model. Instant voice cloning, expressive control and natural prosody across 15+ languages.</p>
-          <div class="specrow">
-            <div><div class="k">First audio</div><div class="v">90 ms</div></div>
-            <div><div class="k">Sample rate</div><div class="v">44.1 kHz</div></div>
-          </div>
-        </article>
-
-        <!-- 7 · VOICE AGENTS / LINE (wide forest card continues the stack) -->
-        <article class="card card-wide card-forest">
-          <div class="ct"><h3>Line<s>.</s></h3><span class="role">Build · voice agents</span></div>
-          <p class="desc">Voice agents as fast and accurate as the models powering them. Built on Sonic and Ink, enterprise-grade from the ground up — they integrate with your existing systems, handle complex conversations, and deploy at any scale.</p>
-          <div class="specrow">
-            <div><div class="k">Powered by</div><div class="v">Sonic + Ink</div></div>
-            <div><div class="k">Deploy</div><div class="v">any scale</div></div>
-          </div>
-        </article>
-      </div>
-    </section>
-  </div>
-
-  <!-- 8 · RESEARCH (forest) -->
-  <div class="forest">
-    <div class="wrap">
-      <section id="research" aria-labelledby="research-h">
-        <div class="research-in">
-          <div>
-            <span class="spec">Research lab</span>
-            <h2 id="research-h" style="margin-top:var(--s4)">Pioneering AI research: <em>architectures that learn through interaction</em></h2>
-            <p class="sec-sub">Our team pioneered breakthrough AI architectures, including state space models (SSMs), Mamba and H-Nets. Our research manifests our mission — we architect AI that learns from and interacts with the world the way humans do.</p>
-            <div class="tagset" aria-hidden="true"><span>SSMs</span><span>Mamba</span><span>H-Nets</span><span>Long-context</span></div>
-            <div style="margin-top:var(--s8)"><a class="link-arrow" href="#research">Read our research
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7h8m0 0L8 4m3 3L8 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </a></div>
-          </div>
-          <div class="hnet" role="img" aria-label="H-Net 階層アーキテクチャの模式図: 生波形を状態空間モデルで階層的に符号化し、トークン非依存の表現で相互作用へつなぐ流れ。">
-            <span class="spec">H-Net · hierarchical</span>
-            <div class="row"><span class="node">raw audio</span><svg class="arr" width="20" height="12" viewBox="0 0 20 12" fill="none" aria-hidden="true"><path d="M2 6h14m0 0l-3-3m3 3l-3 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="node">SSM encode</span></div>
-            <div class="row"><span class="node">SSM encode</span><svg class="arr" width="20" height="12" viewBox="0 0 20 12" fill="none" aria-hidden="true"><path d="M2 6h14m0 0l-3-3m3 3l-3 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="node">hierarchy</span></div>
-            <div class="row"><span class="node">hierarchy</span><svg class="arr" width="20" height="12" viewBox="0 0 20 12" fill="none" aria-hidden="true"><path d="M2 6h14m0 0l-3-3m3 3l-3 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="node acc">interact</span></div>
-            <p class="cap">Token-free. Learns the structure of speech directly from the signal.</p>
-          </div>
-        </div>
-      </section>
     </div>
   </div>
+</section>
 
-  <!-- 9 · DEPLOY -->
+<!-- ===== 6. FULL STACK / MODELS ===== -->
+<section id="models">
   <div class="wrap">
-    <section id="deploy" aria-labelledby="deploy-h">
-      <div class="sec-head">
-        <span class="spec">Deployment</span>
-        <h2 id="deploy-h">Deploy AI anywhere. <em>Own it everywhere.</em></h2>
-        <p class="sec-sub">The same models and agents across cloud, on-premise and on-device. Inference runs in-region — keeping you within your latency envelope, data-residency obligations and compliance frameworks.</p>
+    <div class="stack-head">
+      <p class="eyebrow">The full stack</p>
+      <h2 class="display">The full stack for <em style="font-style:italic;color:var(--accent-deep)">interactive intelligence</em></h2>
+      <p class="lede">The fastest models you can trust.</p>
+      <div class="ssm-note">
+        <span class="tag">SSM</span>
+        <p>Our models are designed for live, synchronous interactions, built on <strong>State Space Models (SSMs)</strong>. A new primitive for large-scale foundation models, SSMs deliver ultra-low latency, long-context reasoning, and greater efficiency at scale.</p>
       </div>
-      <div class="deploy">
-        <div class="dcol">
-          <div class="icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5.5 14a3.5 3.5 0 0 1-.3-6.98A4.5 4.5 0 0 1 14 7.2 3 3 0 0 1 14 14H5.5Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></div>
-          <span class="num">01 · CLOUD</span>
-          <h3>Cloud</h3>
-          <p>Deploy via regional API endpoints across the globe — ensuring in-region processing, high availability and the uptime your production systems demand.</p>
-        </div>
-        <div class="dcol">
-          <div class="icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="3" y="11" width="14" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/><circle cx="6" cy="6.5" r=".9" fill="currentColor"/><circle cx="6" cy="13.5" r=".9" fill="currentColor"/></svg></div>
-          <span class="num">02 · ON-PREM</span>
-          <h3>On-premise</h3>
-          <p>Deploy in your VPC, on your own hardware, or directly in your customer's environment — with complete ownership and control over every layer.</p>
-        </div>
-        <div class="dcol">
-          <div class="icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="5" y="5" width="10" height="10" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M8 2.5v2M12 2.5v2M8 15.5v2M12 15.5v2M2.5 8h2M2.5 12h2M15.5 8h2M15.5 12h2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></div>
-          <span class="num">03 · ON-DEVICE</span>
-          <h3>On-device</h3>
-          <p>Deploy at the edge, directly on-device across mobile, PC, robotics and beyond. Your data stays where it lives — fully private, instantly accessible, always on.</p>
-        </div>
-      </div>
-    </section>
-  </div>
-
-  <!-- 10 · GET STARTED -->
-  <div class="wrap">
-    <section id="start" aria-labelledby="start-h">
-      <div class="sec-head"><span class="spec">Get started</span><h2 id="start-h">Get started today</h2></div>
-      <div class="start">
-        <article class="card">
-          <div>
-            <span class="role">For teams</span>
-            <h3 style="margin-top:var(--s3)">Talk to an expert</h3>
-            <p style="margin-top:var(--s4)">Connect with a member of our team and learn how Cartesia can help you build world-class voice experiences.</p>
+    </div>
+    <div class="model-grid">
+      <article class="datasheet">
+        <div class="ds-head"><span class="nm">Ink.</span><span class="kind">Speech-to-text</span></div>
+        <div class="ds-body">
+          <p class="claim">The fastest and most accurate streaming transcription model</p>
+          <div class="ds-wave" aria-hidden="true">
+            <span style="height:30%;animation-delay:0s"></span><span style="height:60%;animation-delay:.06s"></span><span style="height:90%;animation-delay:.12s"></span><span style="height:45%;animation-delay:.18s"></span><span style="height:75%;animation-delay:.24s"></span><span style="height:100%;animation-delay:.3s"></span><span style="height:50%;animation-delay:.36s"></span><span style="height:80%;animation-delay:.42s"></span><span style="height:35%;animation-delay:.48s"></span><span style="height:65%;animation-delay:.54s"></span><span style="height:95%;animation-delay:.6s"></span><span style="height:40%;animation-delay:.66s"></span>
           </div>
-          <div><a class="btn btn-ghost" href="#start">Contact sales</a></div>
-        </article>
-        <article class="card">
-          <div>
-            <span class="role">For developers</span>
-            <h3 style="margin-top:var(--s3)">Start building</h3>
-            <p style="margin-top:var(--s4)">Access our models via API and bring an agent into production with our robust SDKs and developer tools.</p>
+          <div class="spec">
+            <div class="cell"><div class="k">Word error rate</div><div class="v">best-in-class</div></div>
+            <div class="cell"><div class="k">Streaming</div><div class="v">real-time</div></div>
+            <div class="cell"><div class="k">First token</div><div class="v">&lt; 100 ms</div></div>
+            <div class="cell"><div class="k">Modality</div><div class="v">audio → text</div></div>
           </div>
-          <div><a class="btn btn-fill" href="#start">Get an API key
-            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true"><path d="M3 7.5h8m0 0L8 4.5m3 3L8 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a></div>
-        </article>
-      </div>
-    </section>
-  </div>
-
-  <!-- 11 · HIRING -->
-  <div class="hiring">
-    <div class="wrap hiring-in">
-      <div>
-        <span class="hand">we're hiring!</span>
-        <h3>Build the future of interactive intelligence</h3>
-      </div>
-      <a class="btn btn-ghost" href="#">Careers page
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7h8m0 0L8 4m3 3L8 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </a>
+        </div>
+        <div class="ds-foot"><a class="link-arrow" href="#">Explore Ink <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+      </article>
+      <article class="datasheet">
+        <div class="ds-head"><span class="nm">Sonic.</span><span class="kind">Text-to-speech</span></div>
+        <div class="ds-body">
+          <p class="claim">The fastest and most realistic speech generation model</p>
+          <div class="ds-wave" aria-hidden="true">
+            <span style="height:55%;animation-delay:0s"></span><span style="height:85%;animation-delay:.06s"></span><span style="height:40%;animation-delay:.12s"></span><span style="height:70%;animation-delay:.18s"></span><span style="height:100%;animation-delay:.24s"></span><span style="height:50%;animation-delay:.3s"></span><span style="height:78%;animation-delay:.36s"></span><span style="height:32%;animation-delay:.42s"></span><span style="height:64%;animation-delay:.48s"></span><span style="height:90%;animation-delay:.54s"></span><span style="height:46%;animation-delay:.6s"></span><span style="height:72%;animation-delay:.66s"></span>
+          </div>
+          <div class="spec">
+            <div class="cell"><div class="k">Latency</div><div class="v">&lt; 90 ms</div></div>
+            <div class="cell"><div class="k">Voices</div><div class="v">cloneable</div></div>
+            <div class="cell"><div class="k">Languages</div><div class="v">15+</div></div>
+            <div class="cell"><div class="k">Modality</div><div class="v">text → audio</div></div>
+          </div>
+        </div>
+        <div class="ds-foot"><a class="link-arrow" href="#">Explore Sonic <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+      </article>
     </div>
   </div>
+</section>
+
+<!-- ===== 7. VOICE AGENTS / LINE ===== -->
+<section id="line">
+  <div class="wrap">
+    <div class="stack-head">
+      <p class="eyebrow">Voice agents</p>
+      <h2 class="display">Voice agents as fast and accurate as the models powering them</h2>
+      <p class="lede" style="max-width:54ch">Our voice agents are designed for live, synchronous interactions, built on our Sonic and Ink models. Enterprise-grade from the ground up, they integrate with your existing systems, handle complex conversations, and deploy at any scale.</p>
+    </div>
+    <div class="line-card">
+      <div class="lc-l">
+        <div class="nm">Line.</div>
+        <div class="kind">Build voice agents</div>
+        <div class="pipe" style="margin-top:28px" aria-hidden="true">
+          <span class="node acc">Ink</span><span class="arr">→</span><span class="node">Reason</span><span class="arr">→</span><span class="node acc">Sonic</span>
+        </div>
+      </div>
+      <div class="lc-r">
+        <p>The fastest, most customizable platform for building and shipping enterprise voice agents, powered by our models.</p>
+        <a class="btn btn-primary" href="#start" style="align-self:flex-start"><span class="lab">Build with Line</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 8. RESEARCH (dark) ===== -->
+<section class="on-forest research" id="research">
+  <div class="wrap research-grid">
+    <div>
+      <p class="eyebrow">Research</p>
+      <h2>Pioneering AI research: architectures that learn through interaction</h2>
+      <p class="body">Our team has pioneered breakthrough AI architectures, including state space models (SSMs), <strong>Mamba &amp; H-Nets</strong>. Our research manifests our mission — we architect AI that learns from and interacts with the world like humans do.</p>
+      <div style="margin-top:28px"><a class="link-arrow" href="#">Our research <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+    </div>
+    <div class="arch-card">
+      <div class="ah">Architectures · first principles</div>
+      <div class="arch-list">
+        <div class="arch-item"><span class="at">State Space Models</span><span class="ad">SSM</span></div>
+        <div class="arch-item"><span class="at">Mamba</span><span class="ad">selective scan</span></div>
+        <div class="arch-item"><span class="at">H-Nets</span><span class="ad">hierarchical</span></div>
+      </div>
+      <p class="hand-note" aria-hidden="true">learns from the world as it is</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 9. DEPLOY ===== -->
+<section id="deploy">
+  <div class="wrap">
+    <div class="deploy-head">
+      <p class="eyebrow">Deployment</p>
+      <h2 class="display">Deploy AI anywhere. <span class="l2">Own it everywhere.</span></h2>
+      <p class="lede" style="max-width:54ch; margin-top:22px">The same models and agents across cloud, on-premise, and on-device. Inference runs in-region — keeping you within your latency envelope, data residency obligations, and compliance frameworks.</p>
+    </div>
+    <div class="deploy-grid">
+      <article class="deploy-card">
+        <span class="di"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 18a4 4 0 010-8 5 5 0 019.6-1.5A3.5 3.5 0 0118 18z"/></svg></span>
+        <h3>Cloud</h3>
+        <p>Deploy via regional API endpoints across the globe — ensuring in-region processing, high availability, and the uptime your production systems demand.</p>
+        <span class="tag">regional endpoints</span>
+      </article>
+      <article class="deploy-card">
+        <span class="di"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6h16v5H4zM4 13h16v5H4z"/><path d="M7 8.5h.01M7 15.5h.01"/></svg></span>
+        <h3>On-premise</h3>
+        <p>Deploy in your VPC, on your own hardware, or directly in your customer's environment — with complete ownership and control over every layer of your deployment.</p>
+        <span class="tag">your VPC · your hardware</span>
+      </article>
+      <article class="deploy-card">
+        <span class="di"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="1.5"/><path d="M11 18h2"/></svg></span>
+        <h3>On-device</h3>
+        <p>Deploy at the edge, directly on-device across mobile, PC, robotics, and beyond. Your data stays where it lives — fully private, instantly accessible, and always on.</p>
+        <span class="tag">edge · mobile · robotics</span>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 10. GET STARTED ===== -->
+<section id="start">
+  <div class="wrap">
+    <p class="eyebrow">Get started</p>
+    <h2 class="display">Get started today</h2>
+    <div class="start-grid">
+      <article class="start-card">
+        <span class="si"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 5h16v11H8l-4 4z"/></svg></span>
+        <h3>Talk to an expert.</h3>
+        <p>Connect with a member of our team and learn how Cartesia can help you build world-class voice experiences.</p>
+        <a class="btn btn-primary" href="#"><span class="lab">Contact Sales</span></a>
+      </article>
+      <article class="start-card">
+        <span class="si"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M9 8l-5 4 5 4M15 8l5 4-5 4"/></svg></span>
+        <h3>Start building.</h3>
+        <p>Access our models via API and bring an agent into production with our robust SDKs and developer tools.</p>
+        <a class="btn btn-primary" href="#"><span class="lab">Try Cartesia</span></a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 11. HIRING (dark) ===== -->
+<section class="hiring">
+  <div class="wrap hiring-in">
+    <div>
+      <p class="tag">We're hiring!</p>
+      <h2>Build the future of interactive intelligence</h2>
+    </div>
+    <a class="btn btn-primary" href="#"><span class="lab">Careers page</span></a>
+  </div>
+</section>
+
 </main>
 
-<!-- 12 · FOOTER -->
-<footer class="foot forest">
+<!-- ===== FOOTER ===== -->
+<footer class="foot">
   <div class="wrap">
     <div class="foot-top">
       <div class="foot-brand">
-        <span class="mark" style="font-size:20px;font-weight:600;letter-spacing:-.02em">cartesia</span>
+        <span class="brand">cartesia</span>
         <p>Architecting AI that learns and interacts like humans.</p>
         <div class="social">
-          <a href="#" aria-label="Cartesia on X"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2.5 2.5l5 6.2M13.5 13.5l-5-6.2M2.8 13.5L7.2 8.4M13.2 2.5L8.8 7.6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></a>
-          <a href="#" aria-label="Cartesia on LinkedIn"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="2" y="2" width="12" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 7v4M5 5v.01M8 11V7m0 0c.4-1 3-1.2 3 1v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></a>
-          <a href="#" aria-label="Cartesia on GitHub"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1.6a6.4 6.4 0 0 0-2 12.5c.32.06.44-.14.44-.31v-1.2c-1.8.39-2.18-.86-2.18-.86-.3-.75-.72-.95-.72-.95-.59-.4.04-.4.04-.4.65.05 1 .67 1 .67.58 1 1.52.71 1.9.54.06-.42.23-.71.41-.87-1.44-.16-2.95-.72-2.95-3.2 0-.71.25-1.29.67-1.74-.07-.16-.29-.82.06-1.71 0 0 .55-.18 1.8.66a6.2 6.2 0 0 1 3.26 0c1.24-.84 1.79-.66 1.79-.66.35.89.13 1.55.06 1.71.42.45.67 1.03.67 1.74 0 2.49-1.51 3.04-2.96 3.2.24.2.44.6.44 1.2v1.78c0 .17.12.38.45.31A6.4 6.4 0 0 0 8 1.6Z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg></a>
+          <a href="#" aria-label="Cartesia on X"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M18 3h3l-7 8 8 10h-6l-5-6-5 6H3l8-9L3 3h6l4 5z"/></svg></a>
+          <a href="#" aria-label="Cartesia on LinkedIn"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M5 4a2 2 0 110 4 2 2 0 010-4zM3 9h4v12H3zM10 9h4v2a4 4 0 014-2c3 0 4 2 4 5v7h-4v-6c0-1.5-.5-2.5-2-2.5S14 13 14 15v6h-4z"/></svg></a>
+          <a href="#" aria-label="Cartesia on GitHub"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 00-3.16 19.49c.5.09.68-.22.68-.48l-.01-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.89 1.53 2.34 1.09 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.5 9.5 0 015 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.94.36.31.68.92.68 1.85l-.01 2.74c0 .27.18.58.69.48A10 10 0 0012 2z"/></svg></a>
         </div>
       </div>
       <div class="foot-cols">
-        <div class="foot-col">
+        <div class="fcol">
           <h4>Products</h4>
-          <a href="#stack">Sonic — Text to speech</a><a href="#stack">Ink — Speech to text</a><a href="#stack">Line — Voice agents</a><a href="#stack">Agents</a>
+          <ul><li><a href="#models">Sonic</a></li><li><a href="#models">Ink</a></li><li><a href="#line">Agents</a></li></ul>
+          <h4 style="margin-top:28px">Solutions</h4>
+          <ul><li><a href="#">Customer service</a></li><li><a href="#">Localization</a></li><li><a href="#">Recruiting</a></li><li><a href="#usecases">Finance</a></li><li><a href="#usecases">Healthcare</a></li></ul>
         </div>
-        <div class="foot-col">
-          <h4>Solutions</h4>
-          <a href="#rooms">Customer service</a><a href="#rooms">Localization</a><a href="#rooms">Recruiting</a><a href="#deploy">Deployment</a>
-        </div>
-        <div class="foot-col">
+        <div class="fcol">
           <h4>Capabilities</h4>
-          <a href="#stack">AI Voice Generator</a><a href="#stack">Voice Cloning</a><a href="#stack">Text to Speech API</a><a href="#stack">AI Dubbing</a><a href="#stack">Speech Synthesis</a><a href="#stack">Voice Reader</a>
+          <ul>
+            <li><a href="#">AI Voice Generator</a></li><li><a href="#">Voice Cloning</a></li>
+            <li><a href="#">Text to Speech API</a></li><li><a href="#">Voice Changer</a></li>
+            <li><a href="#">AI Voiceover</a></li><li><a href="#">AI Dubbing</a></li>
+            <li><a href="#">Speech Synthesis</a></li><li><a href="#">Voice Conversion</a></li>
+            <li><a href="#">AI Voice Enhancer</a></li><li><a href="#">Text to MP3</a></li><li><a href="#">Voice Reader</a></li>
+          </ul>
         </div>
-        <div class="foot-col">
-          <h4>Company</h4>
-          <a href="#research">About</a><a href="#">Careers</a><a href="#research">Research</a><a href="#">Events</a>
-        </div>
-        <div class="foot-col">
+        <div class="fcol">
           <h4>Resources</h4>
-          <a href="#stack">Docs</a><a href="#">Blog</a><a href="#start">Startups</a><a href="#">Trust Center</a>
+          <ul><li><a href="#">Blog</a></li><li><a href="#customers">Customers</a></li><li><a href="#">Docs</a></li><li><a href="#">Events</a></li><li><a href="#">Pricing</a></li><li><a href="#research">Research</a></li><li><a href="#">Support</a></li><li><a href="#">Trust Center</a></li></ul>
         </div>
-        <div class="foot-col">
-          <h4>Legal</h4>
-          <a href="#">Terms of service</a><a href="#">Privacy</a><a href="#">Acceptable use</a><a href="#">Cookie settings</a>
+        <div class="fcol">
+          <h4>Company</h4>
+          <ul><li><a href="#">About</a></li><li><a href="#">Careers</a></li></ul>
+          <h4 style="margin-top:28px">Legal</h4>
+          <ul><li><a href="#">Terms of service</a></li><li><a href="#">Privacy</a></li><li><a href="#">Acceptable use</a></li><li><a href="#">Cookie settings</a></li></ul>
         </div>
       </div>
     </div>
-    <div class="foot-bot">
-      <span>© 2026 Cartesia, Inc.</span>
-      <span class="spec">Sonic · Ink · Line — real-time speech foundation models</span>
+    <div class="foot-bottom">
+      <p>© 2025 Cartesia, Inc.</p>
+      <div class="foot-legal">
+        <a href="#">Terms of service</a><a href="#">Privacy</a><a href="#">Acceptable use</a><a href="#">Cookie settings</a>
+      </div>
     </div>
   </div>
 </footer>
 
-<!-- mobile primary CTA — thumb zone + safe-area -->
-<div class="mobile-cta">
-  <a class="btn btn-ghost" href="#start">Contact sales</a>
-  <a class="btn btn-fill" href="#start">Try Cartesia</a>
-</div>
+<script>
+(function(){
+  "use strict";
+  /* ---- desktop dropdowns ---- */
+  document.querySelectorAll('[data-dropdown]').forEach(function(item){
+    var btn=item.querySelector('.nav-link'), to;
+    function open(v){item.setAttribute('data-open',v);btn.setAttribute('aria-expanded',v)}
+    item.addEventListener('mouseenter',function(){clearTimeout(to);open('true')});
+    item.addEventListener('mouseleave',function(){to=setTimeout(function(){open('false')},120)});
+    btn.addEventListener('click',function(){open(item.getAttribute('data-open')==='true'?'false':'true')});
+    item.addEventListener('focusout',function(e){if(!item.contains(e.relatedTarget))open('false')});
+    item.addEventListener('keydown',function(e){if(e.key==='Escape'){open('false');btn.focus()}});
+  });
 
+  /* ---- mobile off-canvas menu ---- */
+  var mm=document.getElementById('mobileMenu'),openBtn=document.getElementById('menuOpen'),last;
+  function setMenu(v){
+    mm.setAttribute('data-open',v?'true':'false');
+    openBtn.setAttribute('aria-expanded',v?'true':'false');
+    document.body.style.overflow=v?'hidden':'';
+    if(v){last=document.activeElement;var f=mm.querySelector('.mm-close');f&&f.focus();}
+    else if(last){last.focus();}
+  }
+  openBtn.addEventListener('click',function(){setMenu(true)});
+  mm.querySelectorAll('[data-close]').forEach(function(el){el.addEventListener('click',function(){setMenu(false)})});
+  mm.querySelectorAll('.mm-link,.mm-cta a').forEach(function(a){a.addEventListener('click',function(){setMenu(false)})});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&mm.getAttribute('data-open')==='true')setMenu(false)});
+
+  /* ---- floor-plan rooms (irregular plan, real proportions from source) ---- */
+  var positions=[
+    {t:'0%',l:'0%',w:'40.56%',h:'31.97%'},
+    {t:'0%',l:'40.56%',w:'26.9%',h:'30.39%'},
+    {t:'0%',l:'74.79%',w:'25.21%',h:'30.39%'},
+    {t:'30.39%',l:'0%',w:'32.68%',h:'32.2%'},
+    {t:'30.39%',l:'39.72%',w:'27.75%',h:'30.84%'},
+    {t:'30.39%',l:'74.79%',w:'25.21%',h:'30.84%'},
+    {t:'62.59%',l:'0%',w:'26.62%',h:'37.41%'},
+    {t:'61.22%',l:'74.79%',w:'25.21%',h:'38.78%'}
+  ];
+  var industries={
+    finance:{label:'Financial services',
+      copy:'Voice agents that improve customer experience, enhance security, and streamline operations across the financial ecosystem.',
+      rooms:[
+        ['Fraud detection','Real-time outbound verification calls on suspicious transactions, step-up authentication.'],
+        ['Customer support','Natural, on-brand support that resolves routine requests and escalates with full context.'],
+        ['Back office operations','Automating reconciliation, data entry, and post-call work across back-office systems.'],
+        ['Loan assistance','Guided applications, status updates, and document collection over the phone.'],
+        ['Wealth management','Proactive portfolio check-ins and appointment scheduling for advisory teams.'],
+        ['Collections','Compliant outreach with flexible payment arrangements and dispute handling.'],
+        ['Account Opening & Recovery','Identity verification and onboarding that recovers stalled applications.'],
+        ['Compliance & Risk','Monitored, recorded conversations with policy-aware guardrails.']
+      ]},
+    healthcare:{label:'Healthcare services',
+      copy:'Voice agents that expand access, reduce administrative load, and keep every interaction private and compliant.',
+      rooms:[
+        ['Patient intake','Collect history and consent before the visit, in the patient’s language.'],
+        ['Appointment scheduling','Book, confirm, and reschedule across calendars without hold times.'],
+        ['Benefits & eligibility','Answer coverage questions and verify eligibility in real time.'],
+        ['Care follow-up','Post-discharge check-ins and adherence reminders that flag concerns.'],
+        ['Prescription refills','Triage refill requests and route approvals to the care team.'],
+        ['Triage support','Symptom intake with escalation to the right level of care.'],
+        ['Records requests','Authenticate and fulfil records requests with an audit trail.'],
+        ['Billing support','Explain statements and set up compliant payment plans.']
+      ]},
+    government:{label:'Government services',
+      copy:'Voice agents that make public services reachable, multilingual, and accountable at population scale.',
+      rooms:[
+        ['Citizen services','24/7 answers on services, hours, and locations in many languages.'],
+        ['Benefits enrollment','Guided enrolment with eligibility checks and document capture.'],
+        ['Permit & licensing','Application status, renewals, and requirements over the phone.'],
+        ['Case status','Secure, authenticated updates on open cases and filings.'],
+        ['Emergency lines','Overflow handling that keeps critical lines open and routed.'],
+        ['Records requests','Public-records intake with verification and tracking.'],
+        ['Tax assistance','Filing guidance, deadlines, and payment arrangements.'],
+        ['Compliance','Recorded, policy-aware conversations with full traceability.']
+      ]}
+  };
+  var fp=document.getElementById('floorplan'),
+      tTitle=document.getElementById('room-title'),
+      tDesc=document.getElementById('room-desc'),
+      tLabel=document.getElementById('ind-label'),
+      tCopy=document.getElementById('ind-copy');
+
+  function select(ind,i){
+    var r=industries[ind].rooms[i];
+    var btns=fp.querySelectorAll('.room');
+    btns.forEach(function(x,xi){x.setAttribute('aria-pressed',xi===i?'true':'false')});
+    tTitle.textContent=r[0];
+    tDesc.textContent=r[1];
+  }
+  function render(ind){
+    var data=industries[ind];
+    fp.innerHTML='';
+    data.rooms.forEach(function(r,i){
+      var p=positions[i];
+      var b=document.createElement('button');
+      b.type='button'; b.className='room';
+      b.style.top=p.t; b.style.left=p.l; b.style.width=p.w; b.style.height=p.h;
+      b.setAttribute('aria-pressed',i===0?'true':'false');
+      b.setAttribute('aria-label',r[0]+' use case');
+      b.innerHTML='<span class="rdot" aria-hidden="true"></span><span class="rn">'+r[0]+'</span>';
+      b.addEventListener('click',function(){select(ind,i)});
+      fp.appendChild(b);
+    });
+    tLabel.textContent=data.label;
+    tCopy.textContent=data.copy;
+    tTitle.textContent=data.rooms[0][0];
+    tDesc.textContent=data.rooms[0][1];
+  }
+  document.querySelectorAll('.tab').forEach(function(tab){
+    tab.addEventListener('click',function(){
+      if(tab.getAttribute('aria-selected')==='true')return;
+      document.querySelectorAll('.tab').forEach(function(t){t.setAttribute('aria-selected','false')});
+      tab.setAttribute('aria-selected','true');
+      render(tab.getAttribute('data-ind'));
+    });
+  });
+  render('finance');
+})();
+</script>
 </body>
 </html>
