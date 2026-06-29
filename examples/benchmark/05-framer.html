@@ -54,7 +54,7 @@
   h1,h2,h3,h4,h5,p,figure{margin:0}
   img{display:block;max-width:100%}
   ul{margin:0;padding:0;list-style:none}
-  ::selection{background:rgba(0,153,255,.30);color:#fff}
+  ::selection{background:rgba(0,153,255,.30);color:var(--ink)}
   :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
 
   .wrap{width:100%;max-width:var(--maxw);margin-inline:auto;padding-inline:var(--s6)}
@@ -124,9 +124,9 @@
 
   /* ---------- hero ---------- */
   .hero{padding-top:var(--s20);padding-bottom:var(--s12)}
-  .hero-head{max-width:17ch}
+  .hero-head{max-width:760px}
   .hero h1.disp{margin-bottom:var(--s5)}
-  .hero .lead{margin-bottom:var(--s8)}
+  .hero .lead{margin-bottom:var(--s8);max-width:620px}
   .hero-cta{display:flex;flex-wrap:wrap;gap:var(--s3);align-items:center}
   .hero-note{display:flex;align-items:center;gap:var(--s2);margin-top:var(--s5);color:var(--quiet);font-size:13.5px}
   .hero-note svg{width:15px;height:15px;color:var(--ok)}
@@ -177,7 +177,7 @@
   .frame-nav .fl{margin-left:auto;display:flex;gap:14px;color:var(--quiet);font-size:11.5px}
   @media(max-width:460px){.frame-nav .fl{display:none}}
   .frame-hero{padding:var(--s6) var(--s5) var(--s5)}
-  .frame-hero h4{font-family:var(--disp);font-weight:600;font-size:clamp(20px,4.6vw,29px);line-height:1.04;letter-spacing:-.02em;margin-bottom:8px}
+  .frame-hero h2{font-family:var(--disp);font-weight:600;font-size:clamp(20px,4.6vw,29px);line-height:1.04;letter-spacing:-.02em;margin-bottom:8px}
   .frame-hero p{color:var(--muted);font-size:12.5px;max-width:30ch;margin-bottom:var(--s4)}
   .ticker-row{display:flex;gap:10px;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
               mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
@@ -323,7 +323,7 @@
   .comm-card .meta{padding:var(--s4) var(--s5) var(--s5)}
   .comm-card .meta .cat{display:flex;align-items:center;justify-content:space-between;font:600 11px/1 var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--accent-bright)}
   .comm-card .meta .cat .likes{color:var(--quiet);letter-spacing:.02em}
-  .comm-card .meta h4{font-family:var(--disp);font-weight:600;font-size:15.5px;line-height:1.3;margin-top:10px;letter-spacing:-.01em}
+  .comm-card .meta h3{font-family:var(--disp);font-weight:600;font-size:15.5px;line-height:1.3;margin-top:10px;letter-spacing:-.01em}
   .comm-card .meta .by{display:block;margin-top:9px;color:var(--quiet);font:500 12px/1 var(--mono)}
   .comm-actions{display:flex;flex-wrap:wrap;gap:var(--s3);margin-top:var(--s12)}
 
@@ -358,7 +358,7 @@
   .foot-brand{min-width:0}
   .foot-brand .brand{margin-bottom:var(--s4)}
   .foot-brand p{color:var(--muted);font-size:14px;max-width:28ch}
-  .fcol h5{font:600 12px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--quiet);margin-bottom:var(--s4)}
+  .fcol h3{font:600 12px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--quiet);margin-bottom:var(--s4)}
   .fcol li{margin-bottom:2px}
   .fcol a{display:inline-flex;align-items:center;min-height:30px;color:var(--muted);font-size:14px}
   .fcol a:hover{color:var(--ink)}
@@ -474,7 +474,7 @@
               <span class="fl"><span>Work</span><span>Studio</span><span>Contact</span></span>
             </div>
             <div class="frame-hero">
-              <h4>A studio for brands that refuse to blend in.</h4>
+              <h2>A studio for brands that refuse to blend in.</h2>
               <p>Identity, web, and motion for ambitious teams.</p>
               <div class="ticker-row">
                 <div class="ticker-track">
@@ -526,7 +526,6 @@
   <!-- ============ AGENTS ============ -->
   <section class="sec wrap" id="agents">
     <div class="sec-head">
-      <span class="kicker">Agents</span>
       <h2 class="disp">Agents that work alongside you, not instead of you</h2>
       <p class="lead">Hand off the busywork and keep the judgment. Agents design, manage content, and write code on your canvas — you review and approve every change.</p>
     </div>
@@ -614,7 +613,6 @@
 
     <!-- connect to any AI -->
     <div class="connect" id="developers">
-      <span class="kicker" style="display:block;margin-bottom:16px">Connect to any agent</span>
       <h3>Connect to any AI</h3>
       <p>Take action on your site from anywhere. Update copy from Slack, trigger CMS changes from the terminal, and ship from a GitHub PR — drive it all from your terminal, Codex, Claude Code, Cursor, or any external agent.</p>
       <div class="chips">
@@ -634,7 +632,6 @@
   <!-- ============ PLATFORM (index spec sheet) ============ -->
   <section class="sec wrap" id="platform">
     <div class="sec-head">
-      <span class="kicker">Platform</span>
       <h2 class="disp">Not just vibes, a full platform</h2>
       <p class="lead">Everything a real site needs is built in. No plugins to wire up, no hosting to configure — design and ship on one stack.</p>
     </div>
@@ -723,26 +720,25 @@
   <section class="community">
     <div class="sec wrap">
       <div class="sec-head">
-        <span class="kicker">Community</span>
         <h2 class="disp">Built on a community that isn't going anywhere</h2>
         <p class="lead">Thousands of templates, plugins, and made-in-Framer sites — remix any of them as a starting point, then make it yours.</p>
       </div>
       <div class="comm-grid">
         <article class="comm-card">
           <div class="thumb"><img src="https://picsum.photos/seed/tmpl-studio/640/480" width="640" height="480" loading="lazy" alt="Preview of an editorial portfolio template — a dark, type-led layout."></div>
-          <div class="meta"><span class="cat">Template<span class="likes">1.3K likes</span></span><h4>Studio — editorial portfolio</h4><span class="by">@asia_gawron</span></div>
+          <div class="meta"><span class="cat">Template<span class="likes">1.3K likes</span></span><h3>Studio — editorial portfolio</h3><span class="by">@asia_gawron</span></div>
         </article>
         <article class="comm-card">
           <div class="thumb"><img src="https://picsum.photos/seed/plugin-motion/640/480" width="640" height="480" loading="lazy" alt="Preview of a scroll-motion plugin running on a canvas."></div>
-          <div class="meta"><span class="cat">Plugin<span class="likes">862 likes</span></span><h4>Motion — scroll &amp; parallax</h4><span class="by">@theryanhayward</span></div>
+          <div class="meta"><span class="cat">Plugin<span class="likes">862 likes</span></span><h3>Motion — scroll &amp; parallax</h3><span class="by">@theryanhayward</span></div>
         </article>
         <article class="comm-card">
           <div class="thumb"><img src="https://picsum.photos/seed/comp-ticker/640/480" width="640" height="480" loading="lazy" alt="Preview of a 3D image ticker component."></div>
-          <div class="meta"><span class="cat">Component<span class="likes">76 likes</span></span><h4>3D Image Ticker</h4><span class="by">@27b.ureau</span></div>
+          <div class="meta"><span class="cat">Component<span class="likes">76 likes</span></span><h3>3D Image Ticker</h3><span class="by">@27b.ureau</span></div>
         </article>
         <article class="comm-card">
           <div class="thumb"><img src="https://picsum.photos/seed/made-field/640/480" width="640" height="480" loading="lazy" alt="Preview of a made-in-Framer commerce storefront."></div>
-          <div class="meta"><span class="cat">Made in Framer<span class="likes">211 likes</span></span><h4>Field — commerce storefront</h4><span class="by">@victoria_framer</span></div>
+          <div class="meta"><span class="cat">Made in Framer<span class="likes">211 likes</span></span><h3>Field — commerce storefront</h3><span class="by">@victoria_framer</span></div>
         </article>
       </div>
       <div class="comm-actions">
@@ -842,7 +838,7 @@
         <p>The AI website builder for standout sites. Design, manage, and ship on one platform.</p>
       </div>
       <nav class="fcol" aria-label="Product">
-        <h5>Product</h5>
+        <h3>Product</h3>
         <ul>
           <li><a href="#">Features</a></li>
           <li><a href="#">Pricing</a></li>
@@ -853,7 +849,7 @@
         </ul>
       </nav>
       <nav class="fcol" aria-label="Solutions">
-        <h5>Solutions</h5>
+        <h3>Solutions</h3>
         <ul>
           <li><a href="#">Startups</a></li>
           <li><a href="#">Agencies</a></li>
@@ -863,7 +859,7 @@
         </ul>
       </nav>
       <nav class="fcol" aria-label="Developers">
-        <h5>Developers</h5>
+        <h3>Developers</h3>
         <ul>
           <li><a href="#">Overview</a></li>
           <li><a href="#">Plugins</a></li>
@@ -873,7 +869,7 @@
         </ul>
       </nav>
       <nav class="fcol" aria-label="Resources">
-        <h5>Resources</h5>
+        <h3>Resources</h3>
         <ul>
           <li><a href="#">Blog</a></li>
           <li><a href="#">Newsletter</a></li>
@@ -885,7 +881,7 @@
         </ul>
       </nav>
       <nav class="fcol" aria-label="Company">
-        <h5>Company</h5>
+        <h3>Company</h3>
         <ul>
           <li><a href="#">About</a></li>
           <li><a href="#">Careers</a></li>

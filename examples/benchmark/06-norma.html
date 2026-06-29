@@ -107,9 +107,9 @@ h1,h2,h3,h4,p{margin:0}
   white-space:nowrap;
 }
 .btn-primary{background:var(--ink);color:var(--paper)}
-.btn-primary:hover{background:#000}
+.btn-primary:hover{background:var(--coal)}
 .coal .btn-primary{background:var(--on-coal);color:var(--coal)}
-.coal .btn-primary:hover{background:#fff}
+.coal .btn-primary:hover{background:var(--paper-card)}
 .btn-ghost{background:transparent;border-color:var(--line-strong);color:var(--ink)}
 .btn-ghost:hover{background:rgba(14,14,14,.05)}
 .coal .btn-ghost{border-color:var(--line-coal-strong);color:var(--on-coal)}
@@ -159,7 +159,7 @@ h1,h2,h3,h4,p{margin:0}
 .hero-media{
   position:relative;border-radius:var(--r-xl);overflow:hidden;
   border:1px solid var(--line-coal);
-  background:radial-gradient(120% 90% at 50% 0%,#201e1b 0%,#0d0c0b 70%);
+  background:var(--coal-card);
   aspect-ratio:5/6;display:grid;place-items:center;padding:8%;
 }
 .disc-stage{position:relative;width:min(74%,360px);aspect-ratio:1}
@@ -218,7 +218,7 @@ h1,h2,h3,h4,p{margin:0}
 .split>*{min-width:0}
 .phone-mock{
   margin-inline:auto;width:min(280px,80%);aspect-ratio:9/19;border-radius:40px;
-  background:var(--coal-card);border:1px solid var(--line-coal);padding:12px;
+  background:var(--coal-card);border:1px solid var(--line-coal);padding:10px 12px;
   box-shadow:0 30px 70px rgba(0,0,0,.5);
 }
 .phone-screen{height:100%;border-radius:30px;overflow:hidden;background:#0d0c0b;display:flex;flex-direction:column;border:1px solid var(--line-coal)}
@@ -228,9 +228,9 @@ h1,h2,h3,h4,p{margin:0}
 .app-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 10px;padding:18px 16px}
 .app-ico{aspect-ratio:1;border-radius:14px;background:var(--coal-sunk);border:1px solid var(--line-coal);position:relative}
 .app-ico.off{opacity:.32}
-.app-ico.off::after{content:"";position:absolute;inset:0;border-radius:14px;background:repeating-linear-gradient(45deg,transparent,transparent 5px,rgba(255,255,255,.05) 5px,rgba(255,255,255,.05) 6px)}
-.phone-foot{margin-top:auto;padding:16px;border-top:1px solid var(--line-coal)}
-.phone-block{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--on-coal);color:var(--coal);border-radius:var(--r-pill);padding:12px;font-weight:600;font-size:.9rem}
+.app-ico.off::after{content:"";position:absolute;inset:0;border-radius:14px;background:rgba(255,255,255,.045)}
+.phone-foot{margin-top:auto;padding:14px 16px;border-top:1px solid var(--line-coal)}
+.phone-block{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--on-coal);color:var(--coal);border-radius:var(--r-pill);padding:10px 16px;font-weight:600;font-size:.9rem}
 
 /* ---------- mac ---------- */
 .mac-mock{
@@ -241,7 +241,7 @@ h1,h2,h3,h4,p{margin:0}
 .mac-bar i{width:11px;height:11px;border-radius:50%;background:var(--coal-sunk);border:1px solid var(--line-coal)}
 .mac-body{aspect-ratio:16/10;display:grid;grid-template-columns:1fr;background:#0d0c0b;position:relative;overflow:hidden}
 .mac-body img{width:100%;height:100%;object-fit:cover;filter:grayscale(1) brightness(.7) contrast(1.05);opacity:.55}
-.mac-overlay{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:24px}
+.mac-overlay{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:20px 24px}
 .mac-overlay .blocked{display:inline-flex;align-items:center;gap:10px;padding:12px 22px;border-radius:var(--r-pill);background:rgba(10,10,10,.7);border:1px solid var(--line-coal-strong);font-weight:600;color:var(--on-coal)}
 
 /* ---------- testimonials ---------- */
@@ -306,7 +306,7 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bac
 .cfg-row:first-of-type{padding-top:0}
 .cfg-label{font-weight:500}
 .cfg-sub{font-size:.78rem;color:var(--on-coal-3);margin-top:3px}
-.stepper{display:flex;align-items:center;gap:6px;border:1px solid var(--line-coal-strong);border-radius:var(--r-pill);padding:4px}
+.stepper{display:flex;align-items:center;gap:6px;border:1px solid var(--line-coal-strong);border-radius:var(--r-pill);padding:4px 6px}
 .stepper button{width:40px;height:40px;border-radius:50%;border:none;background:transparent;color:var(--on-coal);display:grid;place-items:center;font-size:1.3rem;line-height:1}
 .stepper button:hover:not(:disabled){background:rgba(255,255,255,.1)}
 .stepper button:disabled{color:var(--on-coal-3);cursor:not-allowed}
@@ -380,7 +380,7 @@ table.cmp{width:100%;border-collapse:collapse;min-width:740px}
 .foot-top>*{min-width:0}
 .foot-brand .wm{font-size:2rem;font-weight:600;letter-spacing:-.04em}
 .foot-brand p{margin-top:14px;color:var(--on-coal-2);max-width:30ch}
-.foot-col h4{font-size:.76rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--on-coal-3);margin-bottom:16px}
+.foot-col h3{font-size:.76rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--on-coal-3);margin-bottom:16px}
 .foot-col a{display:block;padding:7px 0;color:var(--on-coal-2);font-size:.92rem}
 .foot-col a:hover{color:var(--on-coal)}
 .foot-bottom{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:center;padding-top:28px}
@@ -593,9 +593,7 @@ table.cmp{width:100%;border-collapse:collapse;min-width:740px}
   <!-- QUIET APP (feature index, dark) -->
   <section class="section coal" id="features">
     <div class="wrap">
-      <div class="sec-head">
-        <span class="overline">The app</span>
-        <h2 class="h2 balance">Everything lives in one quiet app.</h2>
+      <div class="sec-head">        <h2 class="h2 balance">Everything lives in one quiet app.</h2>
       </div>
       <div class="feat-explorer">
         <div class="feat-list" role="tablist" aria-label="App features" aria-orientation="vertical">
@@ -717,9 +715,7 @@ table.cmp{width:100%;border-collapse:collapse;min-width:740px}
   <!-- PROBLEM STATS -->
   <section class="section coal" style="padding-top:0">
     <div class="wrap">
-      <div class="sec-head">
-        <span class="overline">The problem</span>
-        <h2 class="h2 balance">Your phone is engineered for engagement.</h2>
+      <div class="sec-head">        <h2 class="h2 balance">Your phone is engineered for engagement.</h2>
       </div>
       <div class="stats">
         <div class="stat"><div class="big" data-count="58">0</div><span class="u">phone checks</span><span class="s">every day</span></div>
@@ -733,9 +729,7 @@ table.cmp{width:100%;border-collapse:collapse;min-width:740px}
   <!-- SCREEN-TIME CALCULATOR -->
   <section class="section">
     <div class="wrap">
-      <div class="sec-head">
-        <span class="overline">The math</span>
-        <h2 class="h2 balance">See your screen time in years.</h2>
+      <div class="sec-head">        <h2 class="h2 balance">See your screen time in years.</h2>
       </div>
       <div class="calc">
         <div class="calc-controls">
@@ -764,9 +758,7 @@ table.cmp{width:100%;border-collapse:collapse;min-width:740px}
   <!-- ORDER / CONFIGURATOR -->
   <section class="section coal" id="order">
     <div class="wrap">
-      <div class="sec-head" style="max-width:54ch">
-        <span class="overline">Order</span>
-        <h2 class="h2 balance">Order your Norma.</h2>
+      <div class="sec-head" style="max-width:54ch">        <h2 class="h2 balance">Order your Norma.</h2>
         <p class="lead">A one-time purchase — no subscription, no battery. Free worldwide shipping on 2+ units, backed by 14-day returns and a secure checkout.</p>
       </div>
       <div class="order-grid">
@@ -832,9 +824,7 @@ table.cmp{width:100%;border-collapse:collapse;min-width:740px}
   <!-- COMPARISON -->
   <section class="section">
     <div class="wrap">
-      <div class="sec-head">
-        <span class="overline">Compare</span>
-        <h2 class="h2 balance">How Norma compares.</h2>
+      <div class="sec-head">        <h2 class="h2 balance">How Norma compares.</h2>
       </div>
       <div class="cmp-wrap">
         <table class="cmp">
@@ -964,9 +954,7 @@ table.cmp{width:100%;border-collapse:collapse;min-width:740px}
   <section class="section" id="journal">
     <div class="wrap">
       <div class="journal-head">
-        <div class="sec-head" style="margin-bottom:0">
-          <span class="overline">Journal</span>
-          <h2 class="h2 balance" style="margin-top:14px">From the journal.</h2>
+        <div class="sec-head" style="margin-bottom:0">          <h2 class="h2 balance" style="margin-top:14px">From the journal.</h2>
           <p class="lead" style="margin-top:16px">Short, honest reads on attention, screen time, and getting your hours back.</p>
         </div>
         <a href="#journal" class="btn btn-ghost">Read all</a>
@@ -1012,9 +1000,7 @@ table.cmp{width:100%;border-collapse:collapse;min-width:740px}
     <div class="wrap">
       <div class="disc-stage" role="img" aria-label="The brushed steel Norma disc.">
         <div class="disc"></div>
-      </div>
-      <span class="overline">The steel disc</span>
-      <h2 class="h2 balance" style="margin-top:14px;max-width:18ch;margin-inline:auto">One disc. Built to outlast every app.</h2>
+      </div>      <h2 class="h2 balance" style="margin-top:14px;max-width:18ch;margin-inline:auto">One disc. Built to outlast every app.</h2>
       <p class="lead" style="margin:18px auto 32px;text-align:center;max-width:42ch">Machined from solid stainless steel — cold, weighted, and permanent.</p>
       <div class="steel-cta-buy">
         <a href="#order" class="btn btn-primary">Get your Norma</a>
@@ -1037,27 +1023,27 @@ table.cmp{width:100%;border-collapse:collapse;min-width:740px}
         </div>
       </div>
       <nav class="foot-col" aria-label="Explore">
-        <h4>Explore</h4>
+        <h3>Explore</h3>
         <a href="#how">How it works</a>
         <a href="#features">Features</a>
         <a href="#order">Shop</a>
         <a href="#faq">FAQ</a>
       </nav>
       <nav class="foot-col" aria-label="Product">
-        <h4>Product</h4>
+        <h3>Product</h3>
         <a href="#mac">Norma for Mac</a>
         <a href="#order">Download app</a>
         <a href="#order">For teams</a>
       </nav>
       <nav class="foot-col" aria-label="Company">
-        <h4>Company</h4>
+        <h3>Company</h3>
         <a href="#journal">Our story</a>
         <a href="#order">Affiliates</a>
         <a href="#order">Student 20% off</a>
         <a href="#faq">Contact</a>
       </nav>
       <nav class="foot-col" aria-label="Support">
-        <h4>Support</h4>
+        <h3>Support</h3>
         <a href="#faq">Email</a>
         <a href="#journal">Instagram</a>
         <a href="#journal">X</a>

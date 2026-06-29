@@ -150,7 +150,7 @@ h2.display{font-size:clamp(1.7rem,3.2vw,2.35rem)}
 /* mega dropdown */
 .mega{position:absolute; top:calc(100% + 8px); left:0; min-width:288px;
   background:var(--cream-surf); border:1px solid var(--line); border-radius:var(--r-lg);
-  padding:10px; opacity:0; visibility:hidden; transform:translateY(-6px);
+  padding:8px 10px; opacity:0; visibility:hidden; transform:translateY(-6px);
   transition:opacity .16s,transform .16s,visibility .16s; z-index:120}
 .nav-item[data-open="true"] .mega{opacity:1; visibility:visible; transform:translateY(0)}
 .mega.wide{min-width:520px; display:grid; grid-template-columns:1fr 1fr; gap:6px}
@@ -312,10 +312,10 @@ a.logo-cell:hover .story{opacity:1}
 .line-card{margin-top:32px; border:1px solid var(--line-strong); border-radius:var(--r-sm); background:var(--cream-surf);
   display:grid; grid-template-columns:.85fr 1.15fr; transition:border-color .15s}
 .line-card:hover{border-color:var(--verdant)}
-.line-card .lc-l{padding:34px; border-right:1px solid var(--line); display:flex; flex-direction:column; justify-content:center; gap:6px}
+.line-card .lc-l{padding:28px 34px; border-right:1px solid var(--line); display:flex; flex-direction:column; justify-content:center; gap:6px}
 .line-card .lc-l .nm{font-family:var(--serif); font-size:2.2rem; font-weight:440; color:var(--accent-deep)}
 .line-card .lc-l .kind{font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--quiet)}
-.line-card .lc-r{padding:34px; display:flex; flex-direction:column; gap:22px; justify-content:center}
+.line-card .lc-r{padding:28px 34px; display:flex; flex-direction:column; gap:22px; justify-content:center}
 .line-card .lc-r p{font-size:1.15rem; color:var(--ink-soft); line-height:1.45; max-width:42ch}
 
 /* ============ 8. RESEARCH (dark) ============ */
@@ -324,7 +324,7 @@ a.logo-cell:hover .story{opacity:1}
 .research .body{color:var(--muted-dark); font-size:1.08rem; line-height:1.55; margin-top:22px; max-width:48ch}
 .research .body strong{color:var(--on-dark); font-weight:600}
 .research .body a.link-arrow{margin-top:24px}
-.arch-card{border:1px solid var(--forest-line-2); border-radius:var(--r-sm); background:var(--forest-surf); padding:30px; position:relative}
+.arch-card{border:1px solid var(--forest-line-2); border-radius:var(--r-sm); background:var(--forest-surf); padding:26px 30px; position:relative}
 .arch-card .ah{font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--quiet-dark); margin-bottom:18px}
 .arch-list{display:flex; flex-direction:column; gap:1px; background:var(--forest-line); border:1px solid var(--forest-line); border-radius:var(--r-sm); overflow:hidden}
 .arch-item{background:var(--forest-surf); padding:18px 20px; display:flex; align-items:center; justify-content:space-between; gap:14px}
@@ -730,7 +730,6 @@ a.logo-cell:hover .story{opacity:1}
   <section class="research on-forest" id="research" aria-labelledby="research-h" style="background:var(--forest); color:var(--on-dark)">
     <div class="wrap research-grid">
       <div>
-        <p class="eyebrow">Research</p>
         <h2 id="research-h">Pioneering AI research: <span style="color:var(--verdant-dark)">architectures that learn through interaction</span></h2>
         <p class="body">Our team has pioneered breakthrough AI architectures, including <strong>state space models (SSMs), Mamba &amp; H-Nets</strong>. Our research manifests our mission &mdash; we architect AI that learns from and interacts with the world like humans do.</p>
         <a class="link-arrow" href="#research">Our research
@@ -752,7 +751,6 @@ a.logo-cell:hover .story{opacity:1}
   <section aria-labelledby="deploy-h">
     <div class="wrap">
       <div class="deploy-head">
-        <p class="eyebrow">Deployment</p>
         <h2 class="display" id="deploy-h">Deploy AI anywhere. <span class="v">Own it everywhere.</span></h2>
         <p class="lede" style="margin-top:20px; max-width:60ch">The same models and agents across cloud, on-premise, and on-device. Inference runs in-region &mdash; keeping you within your latency envelope, data residency obligations, and compliance frameworks.</p>
       </div>
@@ -781,7 +779,6 @@ a.logo-cell:hover .story{opacity:1}
   <!-- ===== 10. GET STARTED ===== -->
   <section id="start" aria-labelledby="start-h">
     <div class="wrap">
-      <p class="eyebrow">Get started today</p>
       <h2 class="display" id="start-h">Get started today</h2>
       <div class="start-grid">
         <div class="start-card">
