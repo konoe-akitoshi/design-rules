@@ -47,7 +47,7 @@
   --pad-x:clamp(20px,5vw,56px);
 }
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%;overflow-x:clip}
 body{
   margin:0;
   font-family:"Inter",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
@@ -57,7 +57,7 @@ body{
   line-height:1.6;
   -webkit-font-smoothing:antialiased;
   text-rendering:optimizeLegibility;
-  overflow-x:hidden;
+  overflow-x:clip;
 }
 img,svg,video{max-width:100%;display:block}
 a{color:inherit;text-decoration:none}
@@ -151,12 +151,6 @@ h1,h2,h3,h4,p{margin:0}
 .hero{background:var(--coal);color:var(--on-coal);padding-top:clamp(40px,6vw,64px);padding-bottom:clamp(48px,7vw,80px)}
 .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(28px,5vw,64px);align-items:center}
 .hero-grid>*{min-width:0}
-.badge-new{
-  display:inline-flex;align-items:center;gap:8px;margin-bottom:26px;
-  padding:7px 14px 7px 8px;border-radius:var(--r-pill);
-  border:1px solid var(--line-coal);font-size:.8rem;color:var(--on-coal-2);
-}
-.badge-new .dot{font-weight:600;color:var(--coal);background:var(--on-coal);padding:3px 9px;border-radius:var(--r-pill);font-size:.7rem;letter-spacing:.04em;text-transform:uppercase}
 .hero h1 .soft{color:var(--on-coal-2)}
 .hero-sub{margin-top:24px;font-size:clamp(1.05rem,1.5vw,1.25rem);line-height:1.5;color:var(--on-coal-2);max-width:40ch}
 .hero-sub b{color:var(--on-coal);font-weight:500}
@@ -188,10 +182,6 @@ h1,h2,h3,h4,p{margin:0}
   font-weight:600;letter-spacing:.02em;font-size:1.5rem;
   color:rgba(40,40,40,.6);text-shadow:0 1px 0 rgba(255,255,255,.5),0 -1px 1px rgba(0,0,0,.4);
 }
-.hero-stat-row{display:flex;gap:24px;flex-wrap:wrap;margin-top:36px}
-.hero-stat-row>div{min-width:0}
-.hero-stat-row .n{font-size:1.6rem;font-weight:600;letter-spacing:-.02em}
-.hero-stat-row .l{font-size:.78rem;color:var(--on-coal-3)}
 
 /* ---------- generic section header ---------- */
 .sec-head{max-width:48ch;margin-bottom:clamp(36px,5vw,64px)}
@@ -335,7 +325,7 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bac
 
 /* ---------- comparison table ---------- */
 .cmp-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--paper-card)}
-table.cmp{width:100%;border-collapse:collapse;min-width:620px}
+table.cmp{width:100%;border-collapse:collapse;min-width:740px}
 .cmp th,.cmp td{padding:16px 20px;text-align:left;border-bottom:1px solid var(--line);font-size:.95rem}
 .cmp thead th{font-size:.82rem;font-weight:600;color:var(--ink-3);letter-spacing:.02em;vertical-align:bottom}
 .cmp thead th.col-norma{color:var(--ink);font-size:1.05rem;letter-spacing:-.02em}
@@ -381,10 +371,12 @@ table.cmp{width:100%;border-collapse:collapse;min-width:620px}
 /* ---------- closing steel cta ---------- */
 .steel-cta{text-align:center}
 .steel-cta .disc-stage{width:min(220px,46vw);margin:0 auto 40px}
+.steel-cta-buy{display:inline-flex;align-items:center;gap:14px}
+.steel-cta-price{color:var(--on-coal-2);font-weight:500}
 
 /* ---------- footer ---------- */
 .foot{background:var(--coal);color:var(--on-coal);padding-top:clamp(56px,7vw,96px);padding-bottom:calc(40px + env(safe-area-inset-bottom))}
-.foot-top{display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:clamp(28px,4vw,48px);padding-bottom:48px;border-bottom:1px solid var(--line-coal)}
+.foot-top{display:grid;grid-template-columns:1.5fr repeat(4,1fr);gap:clamp(24px,3vw,40px);padding-bottom:48px;border-bottom:1px solid var(--line-coal)}
 .foot-top>*{min-width:0}
 .foot-brand .wm{font-size:2rem;font-weight:600;letter-spacing:-.04em}
 .foot-brand p{margin-top:14px;color:var(--on-coal-2);max-width:30ch}
@@ -399,19 +391,79 @@ table.cmp{width:100%;border-collapse:collapse;min-width:620px}
 .skip{position:absolute;left:-999px;top:0;background:var(--ink);color:var(--paper);padding:12px 20px;border-radius:0 0 var(--r-md) 0;z-index:100}
 .skip:focus{left:0}
 
+/* ---------- nav language ---------- */
+.nav-lang{font-size:.78rem;font-weight:600;letter-spacing:.06em;color:var(--ink-3);padding:6px 4px}
+.foot-join{display:flex;align-items:center;gap:14px;margin-top:20px}
+.foot-join .nav-lang{color:var(--on-coal-3)}
+
+/* ---------- hero shipping pills + mac banner ---------- */
+.hero-pills{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:26px}
+.hero-pill{
+  display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--r-pill);
+  background:rgba(255,255,255,.1);border:1px solid var(--line-coal);
+  font-size:.8rem;font-weight:500;color:var(--on-coal-2);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+}
+.mac-banner{
+  display:inline-flex;align-items:center;gap:10px;margin-top:28px;
+  padding:9px 16px 9px 9px;border-radius:var(--r-pill);border:1px solid var(--line-coal);
+  color:var(--on-coal-2);font-size:.9rem;font-weight:500;
+  transition:border-color .15s ease,color .15s ease;
+}
+.mac-banner:hover{border-color:var(--line-coal-strong);color:var(--on-coal)}
+.mac-banner-new{background:var(--on-coal);color:var(--coal);padding:3px 10px;border-radius:var(--r-pill);font-size:.7rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.mac-banner svg{flex:none}
+
+/* ---------- rating ---------- */
+.rating{display:flex;align-items:center;gap:10px;margin-top:18px}
+.rating-stars{letter-spacing:.12em;font-size:1.05rem;color:var(--on-coal)}
+.coal .rating-stars{color:var(--on-coal)}
+.rating-num{font-weight:600;font-size:1.05rem}
+
+/* ---------- feature explorer ---------- */
+.feat-explorer{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(28px,5vw,64px);align-items:start;margin-top:clamp(32px,5vw,52px)}
+.feat-explorer>*{min-width:0}
+.feat-list{display:flex;flex-direction:column;border-top:1px solid var(--line-coal)}
+.feat-tab{
+  display:flex;align-items:center;gap:16px;width:100%;text-align:left;
+  background:transparent;border:none;border-bottom:1px solid var(--line-coal);
+  padding:18px 4px;color:var(--on-coal-2);
+  font-size:clamp(1.1rem,1.7vw,1.45rem);font-weight:500;letter-spacing:-.02em;
+  transition:color .15s ease;
+}
+.feat-tab .fnum{font-size:.78rem;color:var(--on-coal-3);font-variant-numeric:tabular-nums;flex:none;width:1.8em}
+.feat-tab:hover{color:var(--on-coal)}
+.feat-tab[aria-selected=true]{color:var(--on-coal)}
+.feat-tab[aria-selected=true] .fnum{color:var(--on-coal)}
+.feat-tab .soon{margin-left:auto;flex:none}
+.feat-detail{
+  background:var(--coal-card);border:1px solid var(--line-coal);border-radius:var(--r-xl);
+  padding:clamp(24px,3vw,36px);position:sticky;top:84px;
+}
+.feat-detail h3{font-size:clamp(1.5rem,2.6vw,2.1rem);letter-spacing:-.02em;line-height:1.08;font-weight:600;color:var(--on-coal)}
+.feat-detail p{margin-top:14px;color:var(--on-coal-2);max-width:44ch;font-size:1.02rem;line-height:1.55}
+.feat-detail .phone-mock{margin-top:28px}
+
+/* ---------- plan "from" + comparison alt column ---------- */
+.plan .price .from{display:block;font-size:.72rem;font-weight:500;color:var(--on-coal-3);letter-spacing:.02em}
+.cmp td.col-alt{color:var(--ink-2)}
+
 /* ---------- responsive ---------- */
 @media (max-width:960px){
   .hero-grid{grid-template-columns:1fr;gap:40px}
   .hero-media{order:-1;aspect-ratio:4/3}
-  .calc,.split,.order-grid,.jfeature{grid-template-columns:1fr}
-  .config{position:static}
+  .calc,.split,.order-grid,.jfeature,.feat-explorer{grid-template-columns:1fr}
+  .config,.feat-detail{position:static}
+  .feat-detail{margin-top:8px}
   .steps{grid-template-columns:1fr 1fr}
   .stats{grid-template-columns:1fr 1fr}
   .quotes{grid-template-columns:1fr}
+  .foot-top{grid-template-columns:1fr 1fr}
+  .foot-brand{grid-column:1/-1}
 }
 @media (max-width:760px){
   .nav-links{display:none}
-  .nav-ship{display:none}
+  .nav-ship,.nav-lang{display:none}
   .menu-btn{display:inline-flex}
   .nav-cta{margin-left:auto}
   .mobile-menu[data-open=true]{display:block}
@@ -448,8 +500,8 @@ table.cmp{width:100%;border-collapse:collapse;min-width:620px}
       <a href="#journal">Journal</a>
     </nav>
     <div class="nav-cta">
-      <p class="nav-ship"><b>Order — 60 €</b>Free shipping on 2+ · Ships 3–5 days</p>
-      <a href="#order" class="btn btn-primary">Order</a>
+      <span class="nav-lang" aria-hidden="true">EN</span>
+      <a href="#order" class="btn btn-primary">Order — 60 €</a>
       <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mobileMenu" aria-label="Open menu">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
       </button>
@@ -469,21 +521,24 @@ table.cmp{width:100%;border-collapse:collapse;min-width:620px}
 <main id="main">
 
   <!-- HERO -->
-  <section class="hero">
+  <section class="hero coal">
     <div class="wrap hero-grid">
       <div>
-        <span class="badge-new"><span class="dot">New</span> Norma now works on your Mac</span>
+        <div class="hero-pills">
+          <span class="hero-pill">Free worldwide shipping on 2+ Units</span>
+          <span class="hero-pill">Ships in 3–5 days</span>
+        </div>
         <h1 class="display balance">Cut your screen time.<br><span class="soft">In one scan.</span></h1>
-        <p class="hero-sub">Norma is a <b>stainless steel disc</b>. Scan it with your iPhone and the apps you choose <b>disappear — until you scan again.</b></p>
+        <p class="hero-sub">A <b>stainless steel disc</b>. Scan it with your iPhone and the apps you choose <b>disappear — until you scan again.</b></p>
         <div class="hero-cta">
           <a href="#order" class="btn btn-primary">Quick buy</a>
           <a href="#features" class="btn btn-ghost">What are the features</a>
         </div>
-        <div class="hero-stat-row">
-          <div><div class="n">60 €</div><div class="l">one-time · no subscription</div></div>
-          <div><div class="n">0 g</div><div class="l">battery · nothing to charge</div></div>
-          <div><div class="n">3–5d</div><div class="l">free shipping on 2+ units</div></div>
-        </div>
+        <a href="#mac" class="mac-banner">
+          <span class="mac-banner-new">New</span>
+          <span>Norma now works on your Mac</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
       </div>
       <div class="hero-media">
         <div class="disc-stage" role="img" aria-label="A brushed stainless steel Norma disc engraved with the wordmark.">
@@ -497,33 +552,32 @@ table.cmp{width:100%;border-collapse:collapse;min-width:620px}
   <section class="section" id="how">
     <div class="wrap">
       <div class="sec-head">
-        <span class="overline">How it works</span>
-        <h2 class="h2 balance">Set your apps once, then let the disc do the rest.</h2>
-        <p class="lead">One scan to block them, another to bring them back.</p>
+        <h2 class="h2 balance">How it works.</h2>
+        <p class="lead">Set your apps once, then let the disc do the rest — one scan to block them, another to bring them back.</p>
       </div>
       <div class="steps">
         <article class="step">
           <div class="step-media"><img src="https://picsum.photos/seed/norma-preset/640/480" alt="Choosing apps to block inside the Norma app." loading="lazy" width="640" height="480"></div>
           <div class="step-body">
-            <span class="step-idx">01 — Build a preset</span>
-            <h3 class="h3">Pick the apps to block, once.</h3>
-            <p class="body">Group the distractions into a focus mode and save it.</p>
+            <span class="step-idx">1</span>
+            <h3 class="h3">Build a preset</h3>
+            <p class="body">Pick the apps to block, once.</p>
           </div>
         </article>
         <article class="step">
           <div class="step-media"><img src="https://picsum.photos/seed/norma-scan/640/480" alt="Holding an iPhone against the steel disc to scan it." loading="lazy" width="640" height="480"></div>
           <div class="step-body">
-            <span class="step-idx">02 — Scan your Norma</span>
-            <h3 class="h3">Hold your iPhone to the disc.</h3>
-            <p class="body">A single tap activates the preset over NFC.</p>
+            <span class="step-idx">2</span>
+            <h3 class="h3">Scan your Norma</h3>
+            <p class="body">Hold your iPhone to the disc.</p>
           </div>
         </article>
         <article class="step">
           <div class="step-media"><img src="https://picsum.photos/seed/norma-gone/640/480" alt="A phone home screen with distracting apps removed." loading="lazy" width="640" height="480"></div>
           <div class="step-body">
-            <span class="step-idx">03 — They disappear</span>
-            <h3 class="h3">Gone until you scan again.</h3>
-            <p class="body">The apps you chose stay blocked until the next scan.</p>
+            <span class="step-idx">3</span>
+            <h3 class="h3">They disappear</h3>
+            <p class="body">Gone until you scan again.</p>
           </div>
         </article>
       </div>
@@ -543,45 +597,33 @@ table.cmp{width:100%;border-collapse:collapse;min-width:620px}
         <span class="overline">The app</span>
         <h2 class="h2 balance">Everything lives in one quiet app.</h2>
       </div>
-      <div class="feat-index">
-        <div class="feat-row">
-          <span class="fnum">01</span>
-          <div><div class="fname">Presets</div></div>
-          <div class="fdesc">Focus modes for work, sleep, dinner.</div>
+      <div class="feat-explorer">
+        <div class="feat-list" role="tablist" aria-label="App features" aria-orientation="vertical">
+          <button class="feat-tab" role="tab" id="ft0" aria-selected="true" aria-controls="featPanel" data-title="One scan. The right apps turn off." data-desc="Group the apps you want gone into focus modes, then switch between them from the app’s home — work, sleep, dinner.">
+            <span class="fnum">01</span>Presets
+          </button>
+          <button class="feat-tab" role="tab" id="ft1" aria-selected="false" aria-controls="featPanel" data-title="Focus that starts on its own." data-desc="Wind-down mode runs on the weeknights you choose, and only inside the Places you set — like home. If you’re not there, it tells you.">
+            <span class="fnum">02</span>Wind-down mode
+          </button>
+          <button class="feat-tab" role="tab" id="ft2" aria-selected="false" aria-controls="featPanel" data-title="As strict as you need it." data-desc="Stack rules on a session: a timer that auto-unblocks, a hardlock you can’t stop for up to two hours, or auto-block the moment you arrive somewhere.">
+            <span class="fnum">03</span>Rules
+          </button>
+          <button class="feat-tab" role="tab" id="ft3" aria-selected="false" aria-controls="featPanel" data-title="See the time you get back." data-desc="Your total focus time, current streak, peak hours and longest session — tracked day by day, just for you.">
+            <span class="fnum">04</span>Insights
+          </button>
+          <button class="feat-tab" role="tab" id="ft4" aria-selected="false" aria-controls="featPanel" data-title="Compete, if you want to." data-desc="Off by default. Opt in to rank your focus time over 7 days, 14 days, or all-time.">
+            <span class="fnum">05</span>Leaderboard
+          </button>
+          <button class="feat-tab" role="tab" id="ft5" aria-selected="false" aria-controls="featPanel" data-title="Earn it, one session at a time." data-desc="Hit streaks and milestones to unlock achievements — small, satisfying proof that your quiet time is adding up.">
+            <span class="fnum">06</span>Achievements
+          </button>
+          <button class="feat-tab" role="tab" id="ft6" aria-selected="false" aria-controls="featPanel" data-title="Coming soon." data-desc="Wake up by scanning — a morning alarm you can only dismiss with your Norma. And Mac sync — block distracting websites on your Mac, straight from the same presets.">
+            <span class="fnum">07</span>Coming soon<span class="tag soon">Soon</span>
+          </button>
         </div>
-        <div class="feat-row">
-          <span class="fnum">02</span>
-          <div><div class="fname">Wind-down mode</div></div>
-          <div class="fdesc">Ease off the screen as the evening lands.</div>
-        </div>
-        <div class="feat-row">
-          <span class="fnum">03</span>
-          <div><div class="fname">Rules</div></div>
-          <div class="fdesc">Block apps and websites on your terms.</div>
-        </div>
-        <div class="feat-row">
-          <span class="fnum">04</span>
-          <div><div class="fname">Insights</div></div>
-          <div class="fdesc">See where your hours actually go.</div>
-        </div>
-        <div class="feat-row">
-          <span class="fnum">05</span>
-          <div><div class="fname">Leaderboard</div></div>
-          <div class="fdesc">Optional — compare focus with friends.</div>
-        </div>
-        <div class="feat-row">
-          <span class="fnum">06</span>
-          <div><div class="fname">Achievements</div></div>
-          <div class="fdesc"><span class="tag feat-soon">Coming soon</span></div>
-        </div>
-      </div>
-
-      <div class="split">
-        <div>
-          <h3 class="h2" style="font-size:clamp(1.6rem,3vw,2.4rem)">One scan. The right apps turn off.</h3>
-          <p class="lead" style="margin-top:18px;max-width:42ch">Group the apps you want gone into focus modes, then switch between them from the app’s home — work, sleep, dinner.</p>
-        </div>
-        <div>
+        <div class="feat-detail" id="featPanel" role="tabpanel" aria-labelledby="ft0" tabindex="0">
+          <h3 id="featTitle">One scan. The right apps turn off.</h3>
+          <p id="featDesc">Group the apps you want gone into focus modes, then switch between them from the app’s home — work, sleep, dinner.</p>
           <div class="phone-mock" role="img" aria-label="Norma app home screen showing a preset with several apps blocked.">
             <div class="phone-screen">
               <div class="phone-top">
@@ -641,27 +683,31 @@ table.cmp{width:100%;border-collapse:collapse;min-width:620px}
       <div class="sec-head">
         <span class="overline">Reviews</span>
         <h2 class="h2 balance">People put their phone down.</h2>
+        <div class="rating" aria-label="Rated 5.0 out of 5">
+          <span class="rating-stars" aria-hidden="true">★★★★★</span>
+          <span class="rating-num">5.0</span>
+        </div>
       </div>
       <div class="quotes">
         <figure class="quote">
           <p>Norma has helped me stay off social media and helped me disconnect and enjoy time with the people that mean most to me. As well as maximizing my productivity.</p>
           <figcaption class="q-by">
             <img src="https://picsum.photos/seed/ruy/80/80" alt="" aria-hidden="true" loading="lazy" width="80" height="80">
-            <span><span class="name">Ruy Rebollo</span><br><span class="role">Verified buyer</span></span>
+            <span class="name">Ruy Rebollo</span>
           </figcaption>
         </figure>
         <figure class="quote">
-          <p>The disc is heavy &amp; beautiful and the app design is great!</p>
+          <p>the disc is heavy &amp; beautiful and the app design is great!</p>
           <figcaption class="q-by">
             <img src="https://picsum.photos/seed/arthaud/80/80" alt="" aria-hidden="true" loading="lazy" width="80" height="80">
-            <span><span class="name">Arthaud</span><br><span class="role">Verified buyer</span></span>
+            <span class="name">Arthaud</span>
           </figcaption>
         </figure>
         <figure class="quote">
-          <p>Even cats are obsessed.</p>
+          <p>even cats are obsessed</p>
           <figcaption class="q-by">
             <img src="https://picsum.photos/seed/julien/80/80" alt="" aria-hidden="true" loading="lazy" width="80" height="80">
-            <span><span class="name">Julien</span><br><span class="role">Verified buyer</span></span>
+            <span class="name">Julien</span>
           </figcaption>
         </figure>
       </div>
@@ -676,10 +722,10 @@ table.cmp{width:100%;border-collapse:collapse;min-width:620px}
         <h2 class="h2 balance">Your phone is engineered for engagement.</h2>
       </div>
       <div class="stats">
-        <div class="stat"><div class="big">58</div><span class="u">phone checks</span><span class="s">every day</span></div>
-        <div class="stat"><div class="big">144</div><span class="u">unlocks</span><span class="s">every day</span></div>
-        <div class="stat"><div class="big">23</div><span class="u">minutes</span><span class="s">to refocus after each one</span></div>
-        <div class="stat"><div class="big">4<span style="font-size:.5em">h</span></div><span class="u">of screen time</span><span class="s">on average, daily</span></div>
+        <div class="stat"><div class="big" data-count="58">0</div><span class="u">phone checks</span><span class="s">every day</span></div>
+        <div class="stat"><div class="big" data-count="144">0</div><span class="u">unlocks</span><span class="s">every day</span></div>
+        <div class="stat"><div class="big" data-count="23">0</div><span class="u">minutes</span><span class="s">to refocus after each one</span></div>
+        <div class="stat"><div class="big" data-count="4" data-suffix="h">0<span style="font-size:.5em">h</span></div><span class="u">of screen time</span><span class="s">on average, daily</span></div>
       </div>
     </div>
   </section>
@@ -701,7 +747,7 @@ table.cmp{width:100%;border-collapse:collapse;min-width:620px}
             <label for="screen">Daily screen time <span class="v"><span id="screenOut">6.0</span> h</span></label>
             <input type="range" id="screen" min="1" max="12" step="0.5" value="6" aria-describedby="screenOut">
           </div>
-          <p class="muted" style="font-size:.85rem">Assuming a life of 80 years. Drag to see the toll.</p>
+          <p class="muted" style="font-size:.85rem">Based on an average lifespan of 80 years.</p>
         </div>
         <div class="calc-out">
           <p class="big" aria-live="polite"><span id="phoneYears">14.0</span><span class="y"> years</span></p>
@@ -727,14 +773,14 @@ table.cmp{width:100%;border-collapse:collapse;min-width:620px}
         <div class="plans" role="radiogroup" aria-label="Choose a product">
           <button class="plan is-on" data-plan="disc" role="radio" aria-checked="true">
             <span class="radio" aria-hidden="true"></span>
-            <span><span class="pname">Unit Disc</span><span class="pmeta">Lowest price · the steel disc</span></span>
-            <span class="price"><span class="now">60 €</span><span class="was">90 €</span></span>
+            <span><span class="pname">Unit Disc</span></span>
+            <span class="price"><span class="from">from</span><span class="now">60 €</span><span class="was">90 €</span></span>
             <span class="ribbon tag">Lowest price</span>
           </button>
           <button class="plan" data-plan="base" role="radio" aria-checked="false">
             <span class="radio" aria-hidden="true"></span>
-            <span><span class="pname">Unit Disc + Base</span><span class="pmeta">Best value · disc with a weighted base</span></span>
-            <span class="price"><span class="now">80 €</span><span class="was">110 €</span></span>
+            <span><span class="pname">Unit Disc + Base</span></span>
+            <span class="price"><span class="from">from</span><span class="now">80 €</span><span class="was">110 €</span></span>
             <span class="ribbon tag">Best value</span>
           </button>
           <p class="muted" style="font-size:.85rem;display:flex;align-items:center;gap:8px;padding-top:4px;color:var(--on-coal-3)">
@@ -789,17 +835,17 @@ table.cmp{width:100%;border-collapse:collapse;min-width:620px}
       <div class="sec-head">
         <span class="overline">Compare</span>
         <h2 class="h2 balance">How Norma compares.</h2>
-        <p class="lead">Norma versus Apple Screen Time and the alternatives.</p>
       </div>
       <div class="cmp-wrap">
         <table class="cmp">
-          <caption class="sr">Comparison of Norma with Screen Time and focus apps across features, material, and price.</caption>
+          <caption class="sr">Comparison of Norma with Screen Time, focus apps, and the alternatives across features, material, and price.</caption>
           <thead>
             <tr>
               <th scope="col">&nbsp;</th>
               <th scope="col" class="col-norma">Norma</th>
               <th scope="col">Screen Time</th>
               <th scope="col">Focus apps</th>
+              <th scope="col">The alternatives</th>
             </tr>
           </thead>
           <tbody>
@@ -808,36 +854,49 @@ table.cmp{width:100%;border-collapse:collapse;min-width:620px}
               <td class="col-norma"><span class="ic yes" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 13l4 4L19 7"/></svg></span><span class="sr">Yes</span></td>
               <td><span class="ic no" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></span><span class="sr">No</span></td>
               <td><span class="ic no" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></span><span class="sr">No</span></td>
+              <td class="col-alt"><span class="ic yes" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 13l4 4L19 7"/></svg></span><span class="sr">Yes</span></td>
             </tr>
             <tr>
               <th scope="row">One scan blocks your Mac too</th>
               <td class="col-norma"><span class="ic yes" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 13l4 4L19 7"/></svg></span><span class="sr">Yes</span></td>
               <td><span class="ic no" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></span><span class="sr">No</span></td>
               <td><span class="ic no" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></span><span class="sr">No</span></td>
+              <td class="col-alt"><span class="ic no" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></span><span class="sr">No</span></td>
             </tr>
             <tr>
               <th scope="row">Optional leaderboard</th>
               <td class="col-norma"><span class="ic yes" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 13l4 4L19 7"/></svg></span><span class="sr">Yes</span></td>
               <td><span class="ic no" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></span><span class="sr">No</span></td>
               <td><span class="ic no" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></span><span class="sr">No</span></td>
+              <td class="col-alt"><span class="ic no" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></span><span class="sr">No</span></td>
             </tr>
             <tr>
               <th scope="row">Streaks &amp; achievements</th>
               <td class="col-norma"><span class="ic yes" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 13l4 4L19 7"/></svg></span><span class="sr">Yes</span></td>
               <td><span class="ic no" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></span><span class="sr">No</span></td>
               <td><span class="ic yes" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 13l4 4L19 7"/></svg></span><span class="sr">Yes</span></td>
+              <td class="col-alt"><span class="ic no" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></span><span class="sr">No</span></td>
+            </tr>
+            <tr>
+              <th scope="row">No subscription</th>
+              <td class="col-norma"><span class="ic yes" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 13l4 4L19 7"/></svg></span><span class="sr">Yes</span></td>
+              <td><span class="ic yes" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 13l4 4L19 7"/></svg></span><span class="sr">Yes</span></td>
+              <td><span class="ic no" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></span><span class="sr">No</span></td>
+              <td class="col-alt"><span class="ic yes" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 13l4 4L19 7"/></svg></span><span class="sr">Yes</span></td>
             </tr>
             <tr>
               <th scope="row">Material</th>
               <td class="col-norma">Stainless steel</td>
               <td>—</td>
-              <td>Plastic</td>
+              <td>—</td>
+              <td class="col-alt">Plastic</td>
             </tr>
             <tr>
               <th scope="row">Price</th>
               <td class="col-norma">60 €, once</td>
               <td>Free</td>
               <td>4 €–18 €/mo</td>
+              <td class="col-alt">63 €–70 €</td>
             </tr>
           </tbody>
         </table>
@@ -855,7 +914,7 @@ table.cmp{width:100%;border-collapse:collapse;min-width:620px}
       <div class="faq">
         <details>
           <summary>What does Norma actually do? <span class="pm" aria-hidden="true">+</span></summary>
-          <div class="ans">Norma is a stainless steel NFC disc. Scan it with your iPhone and the distracting apps you choose disappear — until you scan again. No subscription, no battery, no charging. A physical focus tool to cut screen time and stay present.</div>
+          <div class="ans">Norma blocks the apps you select and their notifications. When you scan the Unit Disc with your iPhone, the apps you chose become inaccessible and their notifications stop — scan again to restore access.</div>
         </details>
         <details>
           <summary>Does it work on Android? <span class="pm" aria-hidden="true">+</span></summary>
@@ -867,7 +926,7 @@ table.cmp{width:100%;border-collapse:collapse;min-width:620px}
         </details>
         <details>
           <summary>How does it connect to my phone? <span class="pm" aria-hidden="true">+</span></summary>
-          <div class="ans">Norma uses NFC. To activate it, place the top of your iPhone — near the camera area — against the disc. Heavy or thick cases can sometimes interfere with the signal and make the connection a little weaker.</div>
+          <div class="ans">Norma uses NFC. To activate it, place the top of your iPhone — near the camera area — against the disc. Heavy or thick cases can sometimes interfere with the signal and make the connection a little weaker; that’s normal.</div>
         </details>
         <details>
           <summary>Will it slow down my phone or drain the battery? <span class="pm" aria-hidden="true">+</span></summary>
@@ -895,7 +954,7 @@ table.cmp{width:100%;border-collapse:collapse;min-width:620px}
         </details>
         <details>
           <summary>Is checkout secure? <span class="pm" aria-hidden="true">+</span></summary>
-          <div class="ans">Yes. Checkout is encrypted end-to-end, your card details are never seen or stored by us, and you can pay securely by card or Apple Pay. Your information stays yours.</div>
+          <div class="ans">Completely. Checkout runs on Shopify — one of the most trusted commerce platforms in the world. Your payment is encrypted end-to-end, your card details are never seen or stored by us, and you can pay securely by card or Apple Pay. Your information stays yours.</div>
         </details>
       </div>
     </div>
@@ -916,7 +975,7 @@ table.cmp{width:100%;border-collapse:collapse;min-width:620px}
       <article class="jfeature">
         <div class="media"><img src="https://picsum.photos/seed/norma-what/720/500" alt="The Norma steel disc resting on a desk." loading="lazy" width="720" height="500"></div>
         <div>
-          <div class="jmeta"><span class="tag">Focus</span><span>Jun 18, 2026</span><span>·</span><span>6 min read</span></div>
+          <div class="jmeta"><span class="tag">How it works</span><span>·</span><span>3 min read</span></div>
           <h3>What is Norma?</h3>
           <p>Norma is a stainless-steel disc that blocks the apps you choose when you scan it with your iPhone. Here’s what it is, how it works, and why focus works better as an object.</p>
           <p style="margin-top:18px"><a href="#journal" class="btn btn-primary">Read</a></p>
@@ -927,17 +986,22 @@ table.cmp{width:100%;border-collapse:collapse;min-width:620px}
         <a class="jitem" href="#journal">
           <span class="cat">Focus</span>
           <span class="t">How to stop infinite scrolling on your iPhone (so it actually sticks).</span>
-          <span class="rt">5 min read</span>
+          <span class="rt">Jun 18, 2026</span>
         </a>
         <a class="jitem" href="#journal">
-          <span class="cat">Attention</span>
+          <span class="cat">How it works</span>
           <span class="t">Why your iPhone says ‘Notifications Silenced’ — and when to want it.</span>
-          <span class="rt">4 min read</span>
+          <span class="rt">Jun 18, 2026</span>
         </a>
         <a class="jitem" href="#journal">
           <span class="cat">Comparisons</span>
           <span class="t">Norma vs Brick vs Opal: which screen-time tool actually holds?</span>
-          <span class="rt">8 min read</span>
+          <span class="rt">Jun 18, 2026</span>
+        </a>
+        <a class="jitem" href="#journal">
+          <span class="cat">How it works</span>
+          <span class="t">The steel disc: why focus works better as an object.</span>
+          <span class="rt">Jun 18, 2026</span>
         </a>
       </div>
     </div>
@@ -951,25 +1015,36 @@ table.cmp{width:100%;border-collapse:collapse;min-width:620px}
       </div>
       <span class="overline">The steel disc</span>
       <h2 class="h2 balance" style="margin-top:14px;max-width:18ch;margin-inline:auto">One disc. Built to outlast every app.</h2>
-      <p class="lead" style="margin:18px auto 32px;text-align:center;max-width:42ch">Machined from solid stainless steel — cold, weighted, and permanent. Why focus works better as an object.</p>
-      <a href="#order" class="btn btn-primary">Get your Norma</a>
+      <p class="lead" style="margin:18px auto 32px;text-align:center;max-width:42ch">Machined from solid stainless steel — cold, weighted, and permanent.</p>
+      <div class="steel-cta-buy">
+        <a href="#order" class="btn btn-primary">Get your Norma</a>
+        <span class="steel-cta-price">— 60 €</span>
+      </div>
     </div>
   </section>
 
 </main>
 
-<footer class="foot">
+<footer class="foot coal">
   <div class="wrap">
     <div class="foot-top">
       <div class="foot-brand">
         <div class="wm">norma</div>
         <p>A physical boundary for your attention.</p>
-        <a href="#order" class="btn btn-ghost" style="margin-top:20px">Join</a>
+        <div class="foot-join">
+          <a href="#order" class="btn btn-ghost">Join</a>
+          <span class="nav-lang" aria-hidden="true">EN</span>
+        </div>
       </div>
       <nav class="foot-col" aria-label="Explore">
         <h4>Explore</h4>
+        <a href="#how">How it works</a>
         <a href="#features">Features</a>
         <a href="#order">Shop</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+      <nav class="foot-col" aria-label="Product">
+        <h4>Product</h4>
         <a href="#mac">Norma for Mac</a>
         <a href="#order">Download app</a>
         <a href="#order">For teams</a>
@@ -985,6 +1060,7 @@ table.cmp{width:100%;border-collapse:collapse;min-width:620px}
         <h4>Support</h4>
         <a href="#faq">Email</a>
         <a href="#journal">Instagram</a>
+        <a href="#journal">X</a>
       </nav>
     </div>
     <div class="foot-bottom">
@@ -1059,6 +1135,51 @@ table.cmp{width:100%;border-collapse:collapse;min-width:620px}
   baseToggle.addEventListener('click',function(){ state.base=!state.base; render(); });
   document.getElementById('config').addEventListener('submit',function(e){ e.preventDefault(); });
   render();
+
+  // ----- feature explorer (tablist) -----
+  var tabs=[].slice.call(document.querySelectorAll('.feat-tab'));
+  var fT=document.getElementById('featTitle'), fD=document.getElementById('featDesc'), fP=document.getElementById('featPanel');
+  function selTab(t){
+    tabs.forEach(function(x){ x.setAttribute('aria-selected','false'); x.tabIndex=-1; });
+    t.setAttribute('aria-selected','true'); t.tabIndex=0;
+    fT.textContent=t.dataset.title; fD.textContent=t.dataset.desc;
+    fP.setAttribute('aria-labelledby',t.id);
+  }
+  tabs.forEach(function(t,i){
+    t.tabIndex = t.getAttribute('aria-selected')==='true' ? 0 : -1;
+    t.addEventListener('click',function(){ selTab(t); });
+    t.addEventListener('keydown',function(e){
+      var j=null;
+      if(e.key==='ArrowDown'||e.key==='ArrowRight') j=(i+1)%tabs.length;
+      else if(e.key==='ArrowUp'||e.key==='ArrowLeft') j=(i-1+tabs.length)%tabs.length;
+      else if(e.key==='Home') j=0; else if(e.key==='End') j=tabs.length-1;
+      if(j!==null){ e.preventDefault(); selTab(tabs[j]); tabs[j].focus(); }
+    });
+  });
+
+  // ----- stat count-up (matches the real page's 0 → value reveal) -----
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var counters=[].slice.call(document.querySelectorAll('.big[data-count]'));
+  function setVal(el,v){ var sfx=el.dataset.suffix?'<span style="font-size:.5em">'+el.dataset.suffix+'</span>':''; el.innerHTML=v+sfx; }
+  function run(el){
+    var target=+el.dataset.count;
+    if(reduce){ setVal(el,target); return; }
+    var start=null, dur=1100;
+    function step(ts){
+      if(!start) start=ts;
+      var p=Math.min(1,(ts-start)/dur);
+      var e=1-Math.pow(1-p,3);
+      setVal(el, Math.round(target*e));
+      if(p<1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(ents){
+      ents.forEach(function(en){ if(en.isIntersecting){ run(en.target); io.unobserve(en.target); } });
+    },{threshold:.4});
+    counters.forEach(function(c){ io.observe(c); });
+  } else { counters.forEach(function(c){ setVal(c,+c.dataset.count); }); }
 })();
 </script>
 </body>
