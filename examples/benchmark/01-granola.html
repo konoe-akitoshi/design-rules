@@ -7,22 +7,28 @@
 <meta name="description" content="Notes, actions and memory. Without a meeting bot. Granola is the AI notepad for people in back-to-back meetings." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
-  /* ===== Sampled tokens (granola.ai) ===== */
+  /* ===== Sampled tokens (granola.ai identity) ===== */
   :root{
-    --paper:#fcfcf8;        /* warm near-white paper */
+    --paper:#fcfcf8;        /* warm near-white paper ground */
     --ink:#292929;          /* warm near-black */
     --ink-2:#484844;        /* warm dark secondary */
-    --muted:#666666;        /* muted text (≈5.6:1 on paper) */
+    --muted:#666660;        /* muted text (≥5.5:1 on paper/alt) */
     --line:#dedede;         /* hairline */
-    --line-2:#d9d9d9;       /* stronger hairline */
-    --olive:#5b6f00;        /* primary accent / CTA */
-    --olive-ink:#465600;    /* CTA hover (darker) */
-    --lime:#b2c248;         /* sub accent: section ground */
+    --line-2:#d1d1cc;       /* stronger hairline */
+    --card:#fffefb;         /* window face (no pure white) */
+
+    --olive:#5b6f00;        /* primary accent / CTA (sampled) */
+    /* state colors are DERIVED from the base, not hand-picked hex */
+    --olive-ink:#485800;                                     /* fallback */
+    --olive-ink:oklch(from var(--olive) calc(l * 0.86) c h); /* hover = darker step */
+    --olive-sunk:#eef0e0;                                    /* fallback */
+    --olive-sunk:color-mix(in oklab, var(--olive) 10%, var(--card));
+
+    --lime:#b2c248;         /* sub accent: one section ground only (sampled) */
     --dark:#292929;         /* dark band ground */
-    --alt:#f7f7f2;          /* light alt ground */
-    --white:#ffffff;
+    --alt:#f7f4ed;          /* light alt ground (sampled §8) */
     /* macOS window controls (sampled) */
     --tl-red:#ff736a; --tl-yellow:#febc2e; --tl-green:#19c332;
 
@@ -33,7 +39,6 @@
     --r-card:28px;
     --r-panel:16px;
     --r-inner:10px;
-    --r-chip:8px;
 
     --maxw:1200px;
     --gut:clamp(20px,5vw,64px);
@@ -44,6 +49,7 @@
   body{
     margin:0;
     font-family:var(--sans);
+    font-optical-sizing:auto;
     background:var(--paper);
     color:var(--ink);
     line-height:1.55;
@@ -56,11 +62,16 @@
   img{max-width:100%;display:block}
   a{color:inherit;text-decoration:none}
   h1,h2,h3,h4,p,figure,blockquote{margin:0}
+  h1,h2,h3{text-wrap:balance}
+  p{text-wrap:pretty}
   ul{margin:0;padding:0;list-style:none}
   button{font-family:inherit}
 
-  :focus-visible{outline:3px solid var(--olive);outline-offset:3px;border-radius:4px}
+  :focus-visible{outline:2px solid var(--olive);outline-offset:2px;border-radius:4px}
   .on-dark :focus-visible,.on-lime :focus-visible{outline-color:var(--paper)}
+
+  .skip{position:absolute;left:-9999px;top:8px;z-index:100;background:var(--olive);color:var(--paper);padding:8px 16px;border-radius:8px;font-weight:600}
+  .skip:focus-visible{left:8px}
 
   .wrap{max-width:var(--maxw);margin-inline:auto;padding-inline:var(--gut);min-width:0}
   .section{padding-block:clamp(64px,9vw,128px)}
@@ -72,30 +83,29 @@
     letter-spacing:-0.022em;
     line-height:.93;
   }
-  .eyebrow{
-    font-size:13px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
-    color:var(--muted);
-  }
+  .avail{font-size:13px;color:var(--muted);letter-spacing:.01em;font-variant-numeric:tabular-nums}
 
   /* ===== Buttons ===== */
   .btn{
     display:inline-flex;align-items:center;justify-content:center;gap:8px;
     font-weight:600;font-size:16px;line-height:1;
     border-radius:var(--r-pill);
-    padding:13px 26px;            /* asymmetric 1:2 */
+    padding:12px 24px;            /* asymmetric 1:2 */
+    min-height:48px;
     border:1px solid transparent;
     cursor:pointer;transition:background-color .18s ease,color .18s ease,border-color .18s ease;
     white-space:nowrap;
   }
   .btn-primary{background:var(--olive);color:var(--paper)}
-  .btn-primary:hover{background:var(--olive-ink)}
   .btn-ghost{background:transparent;color:var(--ink);border-color:var(--line-2)}
-  .btn-ghost:hover{border-color:var(--ink);background:rgba(41,41,41,.04)}
   .on-dark .btn-ghost{color:var(--paper);border-color:rgba(252,252,248,.4)}
-  .on-dark .btn-ghost:hover{border-color:var(--paper);background:rgba(252,252,248,.08)}
-  .btn-sm{padding:9px 24px;font-size:15px}  /* CTA pill 9px 24px (sampled) */
-
-  .avail{font-size:13px;color:var(--muted);letter-spacing:.01em}
+  .btn-sm{padding:8px 20px;font-size:15px;min-height:40px}
+  .btn .lab,.phase-tabs .lab{display:inline-block;transform:translateY(-1px)} /* optical cap-height correction */
+  @media (hover:hover){
+    .btn-primary:hover{background:var(--olive-ink)}
+    .btn-ghost:hover{border-color:var(--ink);background:rgba(41,41,41,.04)}
+    .on-dark .btn-ghost:hover{border-color:var(--paper);background:rgba(252,252,248,.08)}
+  }
 
   /* ===== Header ===== */
   .site-header{
@@ -105,15 +115,17 @@
     border-bottom:1px solid var(--line);
   }
   .nav{display:flex;align-items:center;gap:24px;height:64px}
-  .brand{display:inline-flex;align-items:center;gap:9px;font-family:var(--serif);font-size:23px;font-weight:500;letter-spacing:-0.02em}
+  .brand{display:inline-flex;align-items:center;gap:8px;font-family:var(--serif);font-size:23px;font-weight:500;letter-spacing:-0.02em}
   .brand .glyph{width:22px;height:22px;border-radius:7px;background:var(--olive);display:inline-block;position:relative;flex:none}
   .brand .glyph::after{content:"";position:absolute;inset:6px 6px auto 6px;height:2px;border-radius:2px;background:var(--paper);box-shadow:0 4px 0 var(--paper),0 8px 0 var(--paper)}
   .nav-links{display:flex;align-items:center;gap:4px;margin-inline:auto}
   .nav-links a{padding:8px 12px;border-radius:8px;font-size:15px;font-weight:500;color:var(--ink-2);transition:background-color .15s,color .15s}
-  .nav-links a:hover{background:rgba(41,41,41,.05);color:var(--ink)}
-  .nav-cta{display:flex;align-items:center;gap:10px}
-  .nav-cta .link{font-size:15px;font-weight:600;padding:8px 6px;color:var(--ink)}
-  .nav-cta .link:hover{color:var(--olive)}
+  .nav-cta{display:flex;align-items:center;gap:12px}
+  .nav-cta .link{font-size:15px;font-weight:600;padding:8px 12px;color:var(--ink);transition:color .15s}
+  @media (hover:hover){
+    .nav-links a:hover{background:rgba(41,41,41,.05);color:var(--ink)}
+    .nav-cta .link:hover{color:var(--olive)}
+  }
 
   .nav-toggle{display:none;width:44px;height:44px;align-items:center;justify-content:center;background:transparent;border:1px solid var(--line-2);border-radius:10px;cursor:pointer;margin-left:auto}
   .nav-toggle span,.nav-toggle span::before,.nav-toggle span::after{display:block;width:18px;height:2px;background:var(--ink);border-radius:2px;position:relative}
@@ -121,24 +133,34 @@
   .nav-toggle span::after{content:"";position:absolute;top:6px}
 
   /* ===== Hero ===== */
-  .hero{padding-top:clamp(40px,7vw,84px);text-align:center}
+  .hero{padding-top:clamp(40px,7vw,80px);text-align:center}
   .hero h1{font-size:clamp(44px,7.4vw,85px);max-width:14ch;margin-inline:auto;letter-spacing:-0.027em}
-  .hero .sub{margin:22px auto 0;max-width:34ch;font-size:clamp(18px,2.3vw,24px);color:var(--ink-2);line-height:1.35}
+  .hero .sub{margin:24px auto 0;max-width:34ch;font-size:clamp(18px,2.3vw,24px);color:var(--ink-2);line-height:1.35}
   .hero .sub b{font-weight:500;color:var(--ink)}
-  .hero-cta{display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:30px}
+  .hero-cta{display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:32px}
 
-  /* ===== Product mockup (signature artifact) ===== */
+  /* One-shot load reveal (Brand A: concentrate motion in a single staggered entrance) */
+  @media (prefers-reduced-motion: no-preference){
+    .reveal{opacity:0;animation:rise .4s cubic-bezier(0,0,.2,1) forwards}
+    .reveal.d1{animation-delay:.06s}
+    .reveal.d2{animation-delay:.12s}
+    .reveal.d3{animation-delay:.2s}
+    @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  }
+
+  /* ===== Product notepad window (signature artifact) ===== */
   .stage{margin-top:clamp(40px,6vw,72px)}
   .window{
-    background:var(--white);
+    background:var(--card);
     border:1px solid var(--line);
     border-radius:var(--r-card);
     box-shadow:0 1px 0 rgba(41,41,41,.04),0 24px 48px -28px rgba(41,41,41,.28);
     overflow:hidden;
     text-align:left;
     max-width:880px;margin-inline:auto;
+    position:relative;
   }
-  .titlebar{display:flex;align-items:center;gap:8px;padding:13px 18px;border-bottom:1px solid var(--line);background:var(--paper)}
+  .titlebar{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--paper)}
   .lights{display:flex;gap:8px}
   .lights i{width:12px;height:12px;border-radius:50%;display:block}
   .lights i:nth-child(1){background:var(--tl-red)}
@@ -147,37 +169,58 @@
   .titlebar .tt{font-size:13px;color:var(--muted);margin-inline:auto;padding-right:48px}
   .notepad{display:grid;grid-template-columns:1fr;gap:0}
   @media(min-width:760px){.notepad{grid-template-columns:200px 1fr}}
-  .np-side{border-right:1px solid var(--line);padding:20px 18px;background:var(--paper);display:none}
+  .np-side{border-right:1px solid var(--line);padding:20px 16px;background:var(--paper);display:none}
   @media(min-width:760px){.np-side{display:block}}
-  .np-side .lbl{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
-  .np-side ul li{font-size:14px;color:var(--ink-2);padding:7px 9px;border-radius:8px}
-  .np-side ul li.active{background:rgba(91,111,0,.1);color:var(--olive);font-weight:600}
-  .np-main{padding:26px clamp(20px,3vw,34px)}
-  .np-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:6px}
-  .np-title{font-family:var(--serif);font-size:26px;font-weight:500;letter-spacing:-0.02em}
-  .np-meta{font-size:13px;color:var(--muted);margin-bottom:22px}
-  .badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--olive);background:rgba(91,111,0,.1);border-radius:var(--r-pill);padding:5px 12px;white-space:nowrap}
+  .np-side .lbl{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+  .np-side ul li{font-size:14px;color:var(--ink-2);padding:8px 12px;border-radius:8px}
+  .np-side ul li.active{background:var(--olive-sunk);color:var(--olive);font-weight:600}
+  .np-main{padding:24px clamp(20px,3vw,32px)}
+  @media(min-width:760px){.np-main{padding-bottom:96px}} /* reserve room so the PiP never covers note text */
+  .np-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:8px}
+  .np-title{font-family:var(--serif);font-size:26px;font-weight:500;letter-spacing:-0.02em;line-height:1.15}
+  .np-meta{font-size:13px;color:var(--muted);margin-bottom:20px;font-variant-numeric:tabular-nums}
+  .badge{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--olive);background:var(--olive-sunk);border-radius:var(--r-pill);padding:4px 12px;white-space:nowrap}
   .badge::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--olive)}
   .note-sec{margin-bottom:20px}
-  .note-sec h4{font-size:15px;font-weight:700;margin-bottom:9px;letter-spacing:-0.01em}
-  .note-sec li{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;color:var(--ink-2);padding:3px 0}
-  .note-sec li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--line-2);margin-top:9px;flex:none}
+  .note-sec .nh{font-size:15px;font-weight:700;margin-bottom:8px;letter-spacing:-0.01em}
+  .note-sec li{display:flex;gap:8px;align-items:flex-start;font-size:15px;color:var(--ink-2);padding:3px 0}
+  .note-sec li::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--line-2);margin-top:8px;flex:none}
   .note-sec li.todo::before{width:13px;height:13px;border-radius:4px;border:1.5px solid var(--olive);background:transparent;margin-top:3px}
 
-  /* ===== Feature callouts row ===== */
-  .callouts{display:grid;gap:clamp(20px,3vw,32px);grid-template-columns:1fr;margin-top:clamp(40px,6vw,64px)}
-  @media(min-width:760px){.callouts{grid-template-columns:repeat(3,1fr)}}
-  .callout .ico{width:38px;height:38px;border-radius:11px;background:rgba(91,111,0,.1);color:var(--olive);display:grid;place-items:center;margin-bottom:14px}
-  .callout p{font-size:16px;color:var(--ink-2);max-width:30ch}
+  /* meeting PiP inside the notepad (sampled: video tile floats over the note) */
+  .pip{position:absolute;right:16px;bottom:16px;width:148px;border-radius:12px;background:var(--dark);color:var(--paper);padding:8px 12px;box-shadow:0 8px 24px -12px rgba(41,41,41,.5);display:none}
+  @media(min-width:760px){.pip{display:block}}
+  .pip .row{display:flex;align-items:center;gap:8px}
+  .pip .dot{width:24px;height:24px;border-radius:50%;background:var(--lime);color:var(--ink);font-size:11px;font-weight:700;display:grid;place-items:center;flex:none}
+  .pip .dot+.dot{background:var(--tl-yellow)}
+  .pip .who{font-size:12px;line-height:1.3;color:rgba(252,252,248,.86)}
+  .pip .st{display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(252,252,248,.66);margin-top:8px;font-variant-numeric:tabular-nums}
+  .pip .st::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--tl-red)}
+
+  /* ===== §1 Effortless notes: demo window + vertical feature stack ===== */
+  .section-head{max-width:none}
+  h2.h-lg{font-size:clamp(34px,5vw,60px);max-width:16ch} /* ch of the heading's own size */
+  .vh{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+  .effort{display:grid;gap:clamp(32px,5vw,56px);margin-top:clamp(32px,5vw,56px);grid-template-columns:1fr;align-items:start}
+  @media(min-width:920px){.effort{grid-template-columns:1.2fr 0.8fr}}
+  .demo{background:var(--card);border:1px solid var(--line);border-radius:var(--r-panel);overflow:hidden;box-shadow:0 16px 32px -24px rgba(41,41,41,.25)}
+  .demo .titlebar{padding:12px 16px}
+  .demo-body{padding:20px clamp(16px,2.4vw,28px) 24px}
+  .seg{display:inline-flex;border:1px solid var(--line-2);border-radius:var(--r-pill);padding:3px 4px;margin-bottom:16px}
+  .seg span{font-size:13px;font-weight:600;padding:4px 16px;border-radius:var(--r-pill);color:var(--muted)}
+  .seg span.on{background:var(--olive);color:var(--paper)}
+  .raw{font-size:14px;color:var(--muted);border-left:2px solid var(--line-2);padding:4px 12px;margin-bottom:16px;font-style:italic}
+  .callouts{display:flex;flex-direction:column}
+  .callout{display:flex;gap:16px;align-items:flex-start;padding:20px 0;border-top:1px solid var(--line)}
+  .callout:first-child{border-top:0;padding-top:0}
+  .callout .ico{width:40px;height:40px;border-radius:11px;background:var(--olive-sunk);color:var(--olive);display:grid;place-items:center;flex:none}
+  .callout p{font-size:17px;color:var(--ink-2);max-width:30ch}
   .callout b{color:var(--ink);font-weight:600}
 
-  .section-head{max-width:20ch}
-  h2.h-lg{font-size:clamp(34px,5vw,60px)}
-
-  /* ===== For the doers (dark band) ===== */
+  /* ===== §2 For the doers (dark band) ===== */
   .band-dark{background:var(--dark);color:var(--paper)}
   .doers h2{font-family:var(--serif);font-weight:400;letter-spacing:-0.025em;line-height:.9;font-size:clamp(56px,12vw,160px);text-align:center}
-  .trusted{text-align:center;color:rgba(252,252,248,.66);font-size:14px;letter-spacing:.04em;margin-top:clamp(40px,6vw,72px)}
+  .trusted{text-align:center;color:rgba(252,252,248,.66);font-size:15px;letter-spacing:.04em;margin-top:clamp(40px,6vw,72px)}
   .logowall{margin-top:28px;overflow:hidden;
     -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
             mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);}
@@ -185,118 +228,151 @@
   .logo-track span{font-family:var(--serif);font-size:clamp(20px,2.4vw,30px);font-weight:500;color:rgba(252,252,248,.82);letter-spacing:-0.01em;white-space:nowrap}
   @keyframes marquee{to{transform:translateX(-50%)}}
 
-  /* ===== Granola helps you (serif intro) ===== */
+  /* ===== §3 Granola helps you (serif intro) ===== */
   .helps{text-align:center}
   .helps h2{font-family:var(--serif);font-weight:400;letter-spacing:-0.025em;line-height:1.0;font-size:clamp(34px,5.6vw,72px);margin-inline:auto;max-width:16ch}
   .helps h2 em{font-style:italic;color:var(--olive)}
 
-  /* ===== Before / In / After tabs ===== */
+  /* ===== §4 Before / In / After (tabs + product mocks) ===== */
   .phases{display:grid;gap:clamp(28px,4vw,56px)}
   .phase-tabs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
   .phase-tabs button{
     border:1px solid var(--line-2);background:transparent;color:var(--ink-2);
-    border-radius:var(--r-pill);padding:10px 20px;font-size:15px;font-weight:600;cursor:pointer;
+    border-radius:var(--r-pill);padding:12px 20px;min-height:44px;font-size:15px;font-weight:600;cursor:pointer;
     transition:background-color .18s,color .18s,border-color .18s;
   }
   .phase-tabs button[aria-selected="true"]{background:var(--olive);color:var(--paper);border-color:var(--olive)}
+  @media (hover:hover){
+    .phase-tabs button:not([aria-selected="true"]):hover{border-color:var(--ink);color:var(--ink)}
+  }
   .phase-panel{display:grid;gap:32px;align-items:center;grid-template-columns:1fr}
   @media(min-width:880px){.phase-panel{grid-template-columns:0.85fr 1.15fr}}
   .phase-panel[hidden]{display:none}
-  .phase-copy h3{font-family:var(--serif);font-weight:500;font-size:clamp(28px,3.6vw,42px);letter-spacing:-0.02em;line-height:1.05;margin-bottom:14px}
+  .phase-copy h3{font-family:var(--serif);font-weight:500;font-size:clamp(28px,3.6vw,42px);letter-spacing:-0.02em;line-height:1.05;margin-bottom:16px}
   .phase-copy p{font-size:18px;color:var(--ink-2);max-width:40ch}
-  .phase-art{border-radius:var(--r-card);width:100%;height:auto;border:1px solid var(--line)}
 
-  /* ===== Perfect meeting memory (lime) ===== */
+  .mini{background:var(--card);border:1px solid var(--line);border-radius:var(--r-panel);overflow:hidden;box-shadow:0 16px 32px -24px rgba(41,41,41,.25)}
+  .mini .mt{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--paper);font-size:13px;color:var(--muted)}
+  .mini .mt::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--olive);flex:none}
+  .mini .mb{padding:20px clamp(16px,2.4vw,28px) 24px}
+  .mini .bt{font-family:var(--serif);font-size:20px;font-weight:500;letter-spacing:-0.015em;margin-bottom:4px}
+  .mini .bm{font-size:13px;color:var(--muted);margin-bottom:16px;font-variant-numeric:tabular-nums}
+  .mini .gl{font-size:12px;font-weight:600;letter-spacing:.02em;color:var(--olive);margin-bottom:8px}
+  .mini ul li{display:flex;gap:8px;align-items:flex-start;font-size:15px;color:var(--ink-2);padding:3px 0}
+  .mini ul li::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--line-2);margin-top:8px;flex:none}
+  .mini ul li.todo::before{width:13px;height:13px;border-radius:4px;border:1.5px solid var(--olive);background:transparent;margin-top:3px}
+  .mini ul li.done::before{width:13px;height:13px;border-radius:4px;border:1.5px solid var(--olive);background:var(--olive);margin-top:3px}
+  .mini ul li.done{color:var(--muted);text-decoration:line-through}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+  .chips span{font-size:13px;font-weight:600;color:var(--ink-2);background:var(--paper);border:1px solid var(--line);border-radius:var(--r-pill);padding:3px 12px}
+
+  /* ===== §5 Perfect meeting memory (lime) ===== */
   .band-lime{background:var(--lime);color:var(--ink)}
   .memory{display:grid;gap:clamp(32px,5vw,64px);align-items:center;grid-template-columns:1fr}
   @media(min-width:920px){.memory{grid-template-columns:1fr 1fr}}
   .memory h2{font-family:var(--serif);font-weight:400;letter-spacing:-0.025em;line-height:.92;font-size:clamp(52px,8vw,120px)}
-  .memory .tag{font-weight:700;letter-spacing:.02em;margin-bottom:18px;font-size:15px}
-  .chat{background:var(--white);border-radius:var(--r-card);padding:22px;box-shadow:0 24px 48px -30px rgba(41,41,41,.4);max-width:480px}
-  .chat .q{background:var(--olive);color:var(--paper);border-radius:18px 18px 6px 18px;padding:14px 18px;font-size:15.5px;margin-left:auto;max-width:84%;line-height:1.4}
-  .chat .a{display:flex;gap:12px;margin-top:18px}
+  .memory .tag{font-weight:700;letter-spacing:.02em;margin-bottom:16px;font-size:15px}
+  .chat{background:var(--card);border-radius:var(--r-card);padding:20px 24px;box-shadow:0 24px 48px -30px rgba(41,41,41,.4);max-width:480px}
+  .chat .q{background:var(--olive);color:var(--paper);border-radius:18px 18px 6px 18px;padding:12px 16px;font-size:15px;margin-left:auto;max-width:84%;line-height:1.4}
+  .chat .a{display:flex;gap:12px;margin-top:16px}
   .chat .a .av{width:30px;height:30px;border-radius:9px;background:var(--olive);flex:none}
-  .chat .a .bubble{background:var(--paper);border:1px solid var(--line);border-radius:6px 18px 18px 18px;padding:14px 16px;font-size:14.5px;color:var(--ink-2);line-height:1.5}
+  .chat .a .bubble{background:var(--paper);border:1px solid var(--line);border-radius:6px 18px 18px 18px;padding:12px 16px;font-size:15px;color:var(--ink-2);line-height:1.5}
   .chat .a .bubble strong{color:var(--ink)}
-  .chat .input{display:flex;align-items:center;gap:10px;margin-top:18px;border:1px solid var(--line-2);border-radius:var(--r-pill);padding:9px 9px 9px 18px}
-  .chat .input span.ph{color:var(--muted);font-size:15px}
-  .chat .input .send{margin-left:auto;width:34px;height:34px;border-radius:50%;background:var(--olive);display:grid;place-items:center;flex:none}
+  .chat .ask{display:flex;align-items:center;gap:12px;margin-top:16px;border:1px solid var(--line-2);border-radius:var(--r-pill);padding:8px 8px 8px 16px}
+  .chat .ask .ph{color:var(--muted);font-size:16px}
+  .chat .ask .send{margin-left:auto;width:36px;height:36px;border-radius:50%;background:var(--olive);display:grid;place-items:center;flex:none}
 
-  /* ===== Testimonials (dark) ===== */
+  /* ===== §6 Testimonials (dark) ===== */
   .quotes-head{text-align:center;font-family:var(--serif);font-weight:400;letter-spacing:-0.025em;line-height:1;font-size:clamp(34px,5.4vw,66px);max-width:16ch;margin-inline:auto}
   .quotes{margin-top:clamp(40px,6vw,72px);columns:1;column-gap:24px}
   @media(min-width:680px){.quotes{columns:2}}
   @media(min-width:1000px){.quotes{columns:3}}
-  .quote{break-inside:avoid;border:1px solid rgba(252,252,248,.16);border-radius:var(--r-panel);padding:24px 26px;margin-bottom:24px;background:rgba(252,252,248,.03)}
+  .quote{break-inside:avoid;border:1px solid rgba(252,252,248,.16);border-radius:var(--r-panel);padding:20px 24px;margin-bottom:24px;background:rgba(252,252,248,.03)}
   .quote blockquote{font-family:var(--serif);font-weight:400;font-size:21px;line-height:1.32;letter-spacing:-0.01em;color:var(--paper)}
   .quote figcaption{display:flex;align-items:center;gap:12px;margin-top:20px}
-  .quote .av{width:42px;height:42px;border-radius:50%;object-fit:cover;flex:none;filter:grayscale(1) contrast(1.02)}
-  .quote .nm{font-size:14.5px;font-weight:600;color:var(--paper)}
+  .quote .av{width:40px;height:40px;border-radius:50%;object-fit:cover;flex:none;filter:grayscale(1) contrast(1.02)}
+  .quote .nm{font-size:15px;font-weight:600;color:var(--paper)}
   .quote .ti{font-size:13px;color:rgba(252,252,248,.66)}
 
-  /* ===== Works everywhere (catalog) ===== */
+  /* ===== §7 Works everywhere (ruled catalog) ===== */
   .catalog{display:grid;gap:0;border-top:1px solid var(--line)}
-  .feat{display:grid;grid-template-columns:1fr;gap:8px 40px;padding:30px 0;border-bottom:1px solid var(--line)}
+  .feat{display:grid;grid-template-columns:1fr;gap:8px 40px;padding:28px 0;border-bottom:1px solid var(--line)}
   @media(min-width:760px){.feat{grid-template-columns:0.6fr 1fr;align-items:baseline}}
   .feat h3{font-family:var(--serif);font-weight:500;font-size:clamp(22px,2.6vw,30px);letter-spacing:-0.015em;line-height:1.1}
-  .feat p{font-size:17px;color:var(--muted)}
-  .feat .num{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;letter-spacing:.04em;margin-right:8px}
+  .feat p{font-size:17px;color:var(--muted);max-width:56ch}
 
-  /* ===== MCP connector (alt) ===== */
+  /* ===== §8 MCP connector (alt ground) ===== */
   .band-alt{background:var(--alt)}
   .mcp{display:grid;gap:clamp(32px,5vw,64px);align-items:center;grid-template-columns:1fr}
   @media(min-width:920px){.mcp{grid-template-columns:1.05fr 0.95fr}}
-  .mcp h2{font-size:clamp(32px,4.4vw,54px);line-height:1.02;max-width:14ch}
-  .mcp .big{font-size:clamp(20px,2.4vw,26px);color:var(--ink);font-weight:500;margin-top:18px;max-width:26ch}
-  .mcp p.body{color:var(--muted);margin-top:14px;max-width:42ch}
-  .app-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-  .app{background:var(--white);border:1px solid var(--line);border-radius:var(--r-panel);padding:20px 16px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+  .mcp .tag{font-weight:700;letter-spacing:.02em;font-size:15px;color:var(--olive)}
+  .mcp h2{font-size:clamp(32px,4.4vw,54px);line-height:1.02;max-width:14ch;margin-top:12px}
+  .mcp .big{font-size:clamp(20px,2.4vw,26px);color:var(--ink);font-weight:500;margin-top:16px;max-width:26ch}
+  .mcp p.body{color:var(--muted);margin-top:12px;max-width:42ch}
+  .app-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .app{background:var(--card);border:1px solid var(--line);border-radius:var(--r-panel);padding:20px 16px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
   .app .mark{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-family:var(--serif);font-weight:600;font-size:18px;color:var(--paper)}
   .app .nm{font-size:13px;font-weight:600;color:var(--ink-2)}
 
-  /* ===== Final CTA ===== */
+  /* ===== §9 Final CTA ===== */
   .final{text-align:center}
   .final h2{font-size:clamp(40px,6.4vw,84px);max-width:13ch;margin-inline:auto}
   .final p.body{margin:20px auto 0;max-width:40ch;font-size:18px;color:var(--ink-2)}
-  .final-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:30px}
+  .final-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:32px}
 
-  /* ===== Footer ===== */
+  /* ===== §10 Footer ===== */
   .site-footer{background:var(--dark);color:rgba(252,252,248,.72);padding-block:clamp(56px,7vw,88px)}
   .foot-grid{display:grid;gap:36px 24px;grid-template-columns:repeat(2,1fr)}
   @media(min-width:760px){.foot-grid{grid-template-columns:1.4fr repeat(4,1fr)}}
   .foot-brand .brand{color:var(--paper)}
-  .foot-brand p{margin-top:14px;font-size:14px;max-width:26ch;color:rgba(252,252,248,.6)}
-  .foot-col h4{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(252,252,248,.5);margin-bottom:14px;font-weight:600}
-  .foot-col li{margin-bottom:10px}
-  .foot-col a{font-size:14.5px;color:rgba(252,252,248,.78)}
-  .foot-col a:hover{color:var(--paper)}
-  .foot-bottom{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;border-top:1px solid rgba(252,252,248,.14);margin-top:clamp(40px,6vw,64px);padding-top:24px;font-size:13.5px;color:rgba(252,252,248,.6)}
+  .foot-brand p{margin-top:16px;font-size:14px;max-width:26ch;color:rgba(252,252,248,.6)}
+  .foot-col .fh{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(252,252,248,.56);margin:0 0 12px;font-weight:600}
+  .foot-col li{margin-bottom:4px}
+  .foot-col a{font-size:15px;color:rgba(252,252,248,.78);display:inline-block;padding:4px 0;transition:color .15s}
+  .foot-bottom{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;border-top:1px solid rgba(252,252,248,.14);margin-top:clamp(40px,6vw,64px);padding-top:24px;font-size:13px;color:rgba(252,252,248,.6)}
   .foot-bottom nav{display:flex;gap:20px;flex-wrap:wrap}
-  .foot-bottom a:hover{color:var(--paper)}
+  @media (hover:hover){
+    .foot-col a:hover,.foot-bottom a:hover{color:var(--paper)}
+  }
+
+  /* ===== Mobile sticky CTA (thumb zone) ===== */
+  .sticky-cta{
+    position:fixed;left:0;right:0;bottom:0;z-index:40;display:none;
+    padding:12px var(--gut) calc(12px + env(safe-area-inset-bottom));
+    background:color-mix(in srgb,var(--paper) 92%,transparent);
+    backdrop-filter:saturate(140%) blur(10px);
+    border-top:1px solid var(--line);
+  }
+  .sticky-cta .btn{width:100%}
+  @media(max-width:640px){
+    .sticky-cta{display:block}
+    .site-footer{padding-bottom:calc(clamp(56px,7vw,88px) + 72px + env(safe-area-inset-bottom))}
+  }
 
   /* ===== Responsive nav ===== */
   @media(max-width:880px){
     .nav-links,.nav-cta{display:none}
     .nav-toggle{display:flex}
     .site-header.open .nav-links{
-      display:flex;flex-direction:column;align-items:stretch;gap:2px;
+      display:flex;flex-direction:column;align-items:stretch;gap:4px;
       position:absolute;left:0;right:0;top:64px;background:var(--paper);
-      border-bottom:1px solid var(--line);padding:14px var(--gut) 8px;margin:0;
+      padding:16px var(--gut) 8px;margin:0;
     }
-    .site-header.open .nav-links a{padding:12px;font-size:17px}
-    .site-header.open .nav-cta{display:flex;flex-direction:column;align-items:stretch;gap:10px;
-      position:absolute;left:0;right:0;top:calc(64px + 226px);background:var(--paper);
-      padding:0 var(--gut) 22px;border-bottom:1px solid var(--line)}
+    .site-header.open .nav-links a{padding:12px 16px;font-size:17px}
+    .site-header.open .nav-cta{display:flex;flex-direction:column;align-items:stretch;gap:12px;
+      position:absolute;left:0;right:0;top:calc(64px + 244px);background:var(--paper);
+      padding:0 var(--gut) 20px;border-bottom:1px solid var(--line)}
     .site-header.open .nav-cta .btn,.site-header.open .nav-cta .link{width:100%;text-align:center}
   }
 
   @media(prefers-reduced-motion:reduce){
-    *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important}
+    *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;scroll-behavior:auto !important}
     .logo-track{animation:none;transform:none}
   }
 </style>
 </head>
 <body>
+<a class="skip" href="#top">Skip to content</a>
 
 <!-- ============ HEADER ============ -->
 <header class="site-header" id="siteHeader">
@@ -312,7 +388,7 @@
       </div>
       <div class="nav-cta">
         <a class="link" href="#pricing">View pricing</a>
-        <a class="btn btn-primary btn-sm" href="#download">Download for free</a>
+        <a class="btn btn-primary btn-sm" href="#download"><span class="lab">Download for free</span></a>
       </div>
       <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks" aria-label="Open menu"><span aria-hidden="true"></span></button>
     </nav>
@@ -321,18 +397,18 @@
 
 <main id="top">
 
-  <!-- ============ HERO ============ -->
+  <!-- ============ 0 HERO ============ -->
   <section class="section hero wrap" aria-labelledby="hero-h">
-    <h1 id="hero-h" class="display">The AI notepad for back-to-back meetings</h1>
-    <p class="sub"><b>Notes, actions and memory.</b> Without a meeting bot.</p>
-    <div class="hero-cta">
-      <a class="btn btn-primary" href="#download">Download for free</a>
+    <h1 id="hero-h" class="display reveal">The AI notepad for back-to-back meetings</h1>
+    <p class="sub reveal d1"><b>Notes, actions and memory.</b> Without a meeting bot.</p>
+    <div class="hero-cta reveal d2">
+      <a class="btn btn-primary" href="#download"><span class="lab">Download for free</span></a>
       <p class="avail">Available for macOS, Windows, iPhone</p>
     </div>
 
     <!-- signature product artifact -->
-    <div class="stage">
-      <div class="window" role="img" aria-label="Granola notepad showing meeting notes titled Q3 GTM sync, with enhanced sections for ICP Alignment Confirmation, Deal Stalls, Q3 Messaging Rollout and Next Steps.">
+    <div class="stage reveal d3">
+      <div class="window" role="img" aria-label="Granola notepad showing meeting notes titled Q3 GTM sync, with enhanced sections for ICP Alignment Confirmation, Deal Stalls, Q3 Messaging Rollout and Next Steps, and a small picture-in-picture video call tile.">
         <div class="titlebar">
           <span class="lights" aria-hidden="true"><i></i><i></i><i></i></span>
           <span class="tt">Granola — Q3 GTM sync</span>
@@ -350,33 +426,33 @@
           </aside>
           <div class="np-main">
             <div class="np-head">
-              <h3 class="np-title">Q3 GTM sync</h3>
+              <p class="np-title">Q3 GTM sync</p>
               <span class="badge">Enhanced</span>
             </div>
             <p class="np-meta">Today · 9 attendees · 32 min</p>
 
             <div class="note-sec">
-              <h4>ICP Alignment Confirmation</h4>
+              <p class="nh">ICP Alignment Confirmation</p>
               <ul>
                 <li>Mid-market remains the priority segment for Q3</li>
                 <li>Sales and product aligned on qualifying criteria</li>
               </ul>
             </div>
             <div class="note-sec">
-              <h4>Deal Stalls: Sales Input</h4>
+              <p class="nh">Deal Stalls: Sales Input</p>
               <ul>
                 <li>Procurement reviews are the most common blocker</li>
                 <li>Shorter security questionnaire requested</li>
               </ul>
             </div>
             <div class="note-sec">
-              <h4>Q3 Messaging Rollout</h4>
+              <p class="nh">Q3 Messaging Rollout</p>
               <ul>
                 <li>New positioning ships alongside the pricing update</li>
               </ul>
             </div>
             <div class="note-sec">
-              <h4>Next Steps</h4>
+              <p class="nh">Next Steps</p>
               <ul>
                 <li class="todo">Share the revised brief with the GTM channel</li>
                 <li class="todo">Draft the security one-pager</li>
@@ -384,64 +460,97 @@
             </div>
           </div>
         </div>
+        <div class="pip" aria-hidden="true">
+          <div class="row">
+            <span class="dot">PR</span><span class="dot">MA</span>
+            <span class="who">Priya, Marcus<br>+7 others</span>
+          </div>
+          <p class="st">Recording · 32:04</p>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- ============ EFFORTLESS NOTES ============ -->
+  <!-- ============ 1 EFFORTLESS NOTES (demo window + vertical features) ============ -->
   <section class="section wrap" id="notepad" aria-labelledby="eff-h">
     <header class="section-head">
       <h2 id="eff-h" class="display h-lg">Effortless notes, enhanced instantly.</h2>
     </header>
-    <div class="callouts">
-      <div class="callout">
-        <span class="ico" aria-hidden="true">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Z"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
-        </span>
-        <p>Uses your <b>computer audio</b>, so doesn’t invite a bot</p>
+    <div class="effort">
+      <div class="demo" role="img" aria-label="Granola turning a few rough typed words into full enhanced meeting notes for a customer call with Brex.">
+        <div class="titlebar">
+          <span class="lights" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="tt">Customer call — Brex</span>
+        </div>
+        <div class="demo-body">
+          <div class="seg" aria-hidden="true"><span>My notes</span><span class="on">Enhanced</span></div>
+          <p class="raw">you typed: “procurement slow?? — ask abt security review, pricing q’s”</p>
+          <div class="note-sec">
+            <p class="nh">Procurement &amp; Security</p>
+            <ul>
+              <li>Procurement review is the main blocker; legal wants a shorter security questionnaire</li>
+              <li>They asked whether SOC 2 Type II covers subprocessors</li>
+            </ul>
+          </div>
+          <div class="note-sec">
+            <p class="nh">Pricing Questions</p>
+            <ul>
+              <li>Interested in annual billing if seats can flex quarterly</li>
+              <li class="todo">Send updated pricing one-pager by Thursday</li>
+            </ul>
+          </div>
+        </div>
       </div>
-      <div class="callout">
-        <span class="ico" aria-hidden="true">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
-        </span>
-        <p><b>Private by default</b>, easy to share if you choose</p>
-      </div>
-      <div class="callout">
-        <span class="ico" aria-hidden="true">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="13" height="12" rx="2.5"/><path d="m16 10 5-3v10l-5-3"/></svg>
-        </span>
-        <p>Works with <b>Zoom, Google Meet, Teams</b> and every other meeting app</p>
+      <div class="callouts">
+        <div class="callout">
+          <span class="ico" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Z"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+          </span>
+          <p>Uses your <b>computer audio</b>, so doesn’t invite a bot</p>
+        </div>
+        <div class="callout">
+          <span class="ico" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+          </span>
+          <p><b>Private by default</b>, easy to share if you choose</p>
+        </div>
+        <div class="callout">
+          <span class="ico" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="13" height="12" rx="2.5"/><path d="m16 10 5-3v10l-5-3"/></svg>
+          </span>
+          <p>Works with <b>Zoom, Google Meet, Teams</b> and every other meeting app</p>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- ============ FOR THE DOERS (dark) ============ -->
+  <!-- ============ 2 FOR THE DOERS (dark) ============ -->
   <section class="section band-dark on-dark doers" aria-labelledby="doers-h">
     <div class="wrap">
       <h2 id="doers-h" class="display">For the doers</h2>
       <p class="trusted">Trusted by teams we admire</p>
     </div>
-    <div class="logowall" role="img" aria-label="Trusted by teams we admire: PostHog, Intercom, Vercel, Brex, Ramp, Replit, Mercury, Cursor, Bumble, Index Ventures, Vanta, Linear">
+    <div class="logowall" role="img" aria-label="Trusted by teams we admire: Mercury, Cursor, Bumble, Index Ventures, Vanta, Linear, PostHog, Intercom, Vercel, Brex, Ramp, Replit">
       <div class="logo-track" aria-hidden="true">
-        <span>PostHog</span><span>Intercom</span><span>Vercel</span><span>Brex</span><span>Ramp</span><span>Replit</span><span>Mercury</span><span>Cursor</span><span>Bumble</span><span>Index Ventures</span><span>Vanta</span><span>Linear</span>
-        <span>PostHog</span><span>Intercom</span><span>Vercel</span><span>Brex</span><span>Ramp</span><span>Replit</span><span>Mercury</span><span>Cursor</span><span>Bumble</span><span>Index Ventures</span><span>Vanta</span><span>Linear</span>
+        <span>Mercury</span><span>Cursor</span><span>Bumble</span><span>Index Ventures</span><span>Vanta</span><span>Linear</span><span>PostHog</span><span>Intercom</span><span>Vercel</span><span>Brex</span><span>Ramp</span><span>Replit</span>
+        <span>Mercury</span><span>Cursor</span><span>Bumble</span><span>Index Ventures</span><span>Vanta</span><span>Linear</span><span>PostHog</span><span>Intercom</span><span>Vercel</span><span>Brex</span><span>Ramp</span><span>Replit</span>
       </div>
     </div>
   </section>
 
-  <!-- ============ GRANOLA HELPS YOU (serif intro) ============ -->
+  <!-- ============ 3 GRANOLA HELPS YOU (serif intro) ============ -->
   <section class="section wrap helps" aria-labelledby="helps-h">
     <h2 id="helps-h" class="display">Granola helps you <em>before</em>, <em>during</em> and <em>after</em> your meetings.</h2>
   </section>
 
-  <!-- ============ BEFORE / IN / AFTER (tabs) ============ -->
+  <!-- ============ 4 BEFORE / IN / AFTER (tabs + product mocks) ============ -->
   <section class="section wrap" aria-labelledby="phases-h">
-    <h2 id="phases-h" class="display h-lg section-head" style="margin-bottom:clamp(28px,4vw,48px)">Start your meeting prepared</h2>
+    <h2 id="phases-h" class="vh">Before, during and after your meetings</h2>
     <div class="phases">
       <div class="phase-tabs" role="tablist" aria-label="Meeting phases">
-        <button role="tab" id="tab-before" aria-controls="panel-before" aria-selected="true">Before the meeting</button>
-        <button role="tab" id="tab-in" aria-controls="panel-in" aria-selected="false" tabindex="-1">In the meeting</button>
-        <button role="tab" id="tab-after" aria-controls="panel-after" aria-selected="false" tabindex="-1">After the meeting</button>
+        <button role="tab" id="tab-before" aria-controls="panel-before" aria-selected="true"><span class="lab">Before the meeting</span></button>
+        <button role="tab" id="tab-in" aria-controls="panel-in" aria-selected="false" tabindex="-1"><span class="lab">In the meeting</span></button>
+        <button role="tab" id="tab-after" aria-controls="panel-after" aria-selected="false" tabindex="-1"><span class="lab">After the meeting</span></button>
       </div>
 
       <div class="phase-panel" id="panel-before" role="tabpanel" aria-labelledby="tab-before">
@@ -449,15 +558,44 @@
           <h3>Start your meeting prepared</h3>
           <p>Granola syncs with your calendar and preps a Brief before every external meeting: who’s attending, what you discussed last time, and what matters now.</p>
         </div>
-        <img class="phase-art" src="https://picsum.photos/seed/granola-before/720/460" width="720" height="460" alt="A meeting Brief generated before the call, summarising attendees and prior context." loading="lazy" />
+        <div class="mini" role="img" aria-label="A meeting Brief generated before a customer call, listing attendees, what was discussed last time, and open items.">
+          <p class="mt">Brief · ready 10 min before your call</p>
+          <div class="mb">
+            <p class="bt">Customer call — Brex</p>
+            <p class="bm">Today 2:00 PM · Zoom</p>
+            <div class="chips" aria-hidden="true"><span>Priya N.</span><span>Marcus L.</span><span>Dana (Brex)</span></div>
+            <p class="gl">Last time you discussed</p>
+            <ul>
+              <li>Security questionnaire felt too long for their legal team</li>
+              <li>They wanted flexible seats on the annual plan</li>
+            </ul>
+            <p class="gl" style="margin-top:16px">Open items</p>
+            <ul>
+              <li class="todo">Confirm SOC 2 report covers subprocessors</li>
+            </ul>
+          </div>
+        </div>
       </div>
 
       <div class="phase-panel" id="panel-in" role="tabpanel" aria-labelledby="tab-in" hidden>
         <div class="phase-copy">
           <h3>Give your full attention</h3>
-          <p>Don’t choose between listening and taking good notes. Write down as much or as little as you like - Granola uses meeting context to write clear notes, personal to you.</p>
+          <p>Don’t choose between listening and taking good notes. Write down as much or as little as you like — Granola uses meeting context to write clear notes, personal to you.</p>
         </div>
-        <img class="phase-art" src="https://picsum.photos/seed/granola-in/720/460" width="720" height="460" alt="Notes written live during a meeting from sparse user input." loading="lazy" />
+        <div class="mini" role="img" aria-label="Granola during a live meeting: a few rough words typed by the user are expanded into clear notes while it transcribes in the background.">
+          <p class="mt">In the meeting · transcribing in the background</p>
+          <div class="mb">
+            <p class="bt">Q3 GTM sync</p>
+            <p class="bm">Now · 14:22 elapsed</p>
+            <p class="raw">you typed: “mid-market stays priority, procurement blocker”</p>
+            <p class="gl">Granola is filling in</p>
+            <ul>
+              <li>Mid-market remains the priority segment for Q3</li>
+              <li>Procurement reviews are the most common blocker on late-stage deals</li>
+              <li>Sales requested a shorter security questionnaire</li>
+            </ul>
+          </div>
+        </div>
       </div>
 
       <div class="phase-panel" id="panel-after" role="tabpanel" aria-labelledby="tab-after" hidden>
@@ -465,26 +603,40 @@
           <h3>Post-meeting admin, done</h3>
           <p>Notes, action items, and follow-ups are ready the moment the meeting ends, so you can move things forward.</p>
         </div>
-        <img class="phase-art" src="https://picsum.photos/seed/granola-after/720/460" width="720" height="460" alt="Action items and follow-ups ready immediately after the meeting ends." loading="lazy" />
+        <div class="mini" role="img" aria-label="Right after the meeting ends: action items are listed with checkboxes and the notes are ready to share.">
+          <p class="mt">Meeting ended · notes ready</p>
+          <div class="mb">
+            <p class="bt">Q3 GTM sync</p>
+            <p class="bm">Today · 9 attendees · 32 min</p>
+            <p class="gl">Action items</p>
+            <ul>
+              <li class="done">Share the revised brief with the GTM channel</li>
+              <li class="todo">Draft the security one-pager</li>
+              <li class="todo">Follow up with Brex on procurement timing</li>
+            </ul>
+            <p class="gl" style="margin-top:16px">Share</p>
+            <div class="chips" aria-hidden="true"><span>Email recap</span><span>Post to #gtm</span><span>Copy link</span></div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- ============ PERFECT MEETING MEMORY (lime) ============ -->
+  <!-- ============ 5 PERFECT MEETING MEMORY (lime) ============ -->
   <section class="section band-lime on-lime" id="chat" aria-labelledby="mem-h">
     <div class="wrap memory">
       <div>
         <p class="tag">Granola Chat</p>
         <h2 id="mem-h" class="display">Perfect<br>meeting<br>memory</h2>
       </div>
-      <div class="chat" role="img" aria-label="Granola Chat answering the question: What did I promise to do in my meetings this week?">
-        <p class="q">What did I promise to do in my meetings this week?</p>
+      <div class="chat" role="img" aria-label="Granola Chat answering the question: What feedback have I gotten in my 1:1s this month? It summarises feedback drawn from the user's meeting notes.">
+        <p class="q">What feedback have I gotten in my 1:1s this month?</p>
         <div class="a">
           <span class="av" aria-hidden="true"></span>
-          <div class="bubble">Across this week’s meetings you committed to: share the revised <strong>Q3 GTM brief</strong>, draft the <strong>security one-pager</strong>, and follow up with Brex on procurement timing.</div>
+          <div class="bubble">From your four 1:1s this month: Priya praised how you ran the <strong>Q3 GTM sync</strong>, Marcus asked for <strong>earlier visibility on roadmap changes</strong>, and your manager flagged that your <strong>customer follow-ups</strong> have gotten noticeably faster.</div>
         </div>
-        <div class="input">
-          <span class="ph">Ask anything</span>
+        <div class="ask">
+          <span class="ph">Ask anything about your meetings</span>
           <span class="send" aria-hidden="true">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fcfcf8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
           </span>
@@ -493,7 +645,7 @@
     </div>
   </section>
 
-  <!-- ============ TESTIMONIALS (dark) ============ -->
+  <!-- ============ 6 TESTIMONIALS (dark) ============ -->
   <section class="section band-dark on-dark" aria-labelledby="quotes-h">
     <div class="wrap">
       <h2 id="quotes-h" class="quotes-head">Helping busy people through busy days</h2>
@@ -501,35 +653,35 @@
         <figure class="quote">
           <blockquote>“Granola was one of those things that just clicked instantly. It’s seamless and very purpose-built.”</blockquote>
           <figcaption>
-            <img class="av" src="https://picsum.photos/seed/karri/96/96" width="42" height="42" alt="Karri Saarinen" loading="lazy" />
+            <img class="av" src="https://picsum.photos/seed/karri/96/96" width="40" height="40" alt="Karri Saarinen" loading="lazy" />
             <span><span class="nm">Karri Saarinen</span><br><span class="ti">CEO of Linear</span></span>
           </figcaption>
         </figure>
         <figure class="quote">
           <blockquote>“It’s the easiest AI notetaker to start using “out of the box,” and it gets better with more meetings”</blockquote>
           <figcaption>
-            <img class="av" src="https://picsum.photos/seed/olivia/96/96" width="42" height="42" alt="Olivia Moore" loading="lazy" />
+            <img class="av" src="https://picsum.photos/seed/olivia/96/96" width="40" height="40" alt="Olivia Moore" loading="lazy" />
             <span><span class="nm">Olivia Moore</span><br><span class="ti">Partner at Andreessen Horowitz</span></span>
           </figcaption>
         </figure>
         <figure class="quote">
           <blockquote>“It’s actually unbelievable how good Granola is.”</blockquote>
           <figcaption>
-            <img class="av" src="https://picsum.photos/seed/guillermo/96/96" width="42" height="42" alt="Guillermo Rauch" loading="lazy" />
+            <img class="av" src="https://picsum.photos/seed/guillermo/96/96" width="40" height="40" alt="Guillermo Rauch" loading="lazy" />
             <span><span class="nm">Guillermo Rauch</span><br><span class="ti">CEO of Vercel</span></span>
           </figcaption>
         </figure>
         <figure class="quote">
           <blockquote>“If you are in a lot of meetings, this is a gamechanger.”</blockquote>
           <figcaption>
-            <img class="av" src="https://picsum.photos/seed/deedy/96/96" width="42" height="42" alt="Deedy Das" loading="lazy" />
+            <img class="av" src="https://picsum.photos/seed/deedy/96/96" width="40" height="40" alt="Deedy Das" loading="lazy" />
             <span><span class="nm">Deedy Das</span><br><span class="ti">Partner at Menlo Ventures</span></span>
           </figcaption>
         </figure>
         <figure class="quote">
           <blockquote>“Granola generates the best meeting notes of anything I’ve tried so far.”</blockquote>
           <figcaption>
-            <img class="av" src="https://picsum.photos/seed/nat/96/96" width="42" height="42" alt="Nat Friedman" loading="lazy" />
+            <img class="av" src="https://picsum.photos/seed/nat/96/96" width="40" height="40" alt="Nat Friedman" loading="lazy" />
             <span><span class="nm">Nat Friedman</span><br><span class="ti">Investor, former CEO of GitHub</span></span>
           </figcaption>
         </figure>
@@ -537,71 +689,75 @@
     </div>
   </section>
 
-  <!-- ============ WORKS EVERYWHERE (catalog) ============ -->
+  <!-- ============ 7 WORKS EVERYWHERE (ruled catalog) ============ -->
   <section class="section wrap" id="mobile" aria-labelledby="works-h">
     <header class="section-head" style="margin-bottom:clamp(28px,4vw,48px)">
       <h2 id="works-h" class="display h-lg">Works everywhere you do, how you do</h2>
     </header>
     <div class="catalog">
       <article class="feat">
-        <h3><span class="num">01</span>Humans in the room, not bots</h3>
-        <p>Granola doesn’t join your meeting. Instead, it transcribes in the background while you stay present</p>
+        <h3>Humans in the room, not bots</h3>
+        <p>Granola doesn’t join your meeting. Instead, it transcribes in the background while you stay present.</p>
       </article>
       <article class="feat">
-        <h3><span class="num">02</span>Works with all meeting apps</h3>
+        <h3>Works with all meeting apps</h3>
         <p>Zoom, Meet, Teams, Huddles, in-person, on-the-go: capture conversations wherever you have them.</p>
       </article>
       <article class="feat">
-        <h3><span class="num">03</span>Private by default, ready to share</h3>
-        <p>Your notes are just for you. Search them, polish them, analyze them, then send them as you like.</p>
+        <h3>On every device you carry</h3>
+        <p>Mac, Windows and iPhone — walking meetings, conferences or coffee catchups, your notes are with you.</p>
       </article>
       <article class="feat">
-        <h3><span class="num">04</span>Made for in-person meetings too</h3>
-        <p>Walking meetings, conferences or coffee catchups - use the iPhone app to take notes anywhere.</p>
+        <h3>Templates for every meeting type</h3>
+        <p>1:1s, customer calls, interviews, standups: pick a template and Granola structures the notes to match.</p>
       </article>
       <article class="feat">
-        <h3><span class="num">05</span>Syncs with your calendar</h3>
-        <p>Granola integrates with your calendar and automatically detects upcoming meetings. One click, and you’ll have every conversation captured and easy to find.</p>
+        <h3>Private by default, ready to share</h3>
+        <p>Your notes are just for you. Polish them, then send them to Slack, email or your CRM as you like.</p>
+      </article>
+      <article class="feat">
+        <h3>Search across every conversation</h3>
+        <p>Ask across weeks of meetings — decisions, promises and feedback are all one search away.</p>
       </article>
     </div>
   </section>
 
-  <!-- ============ MCP CONNECTOR (alt) ============ -->
+  <!-- ============ 8 MCP CONNECTOR (alt) ============ -->
   <section class="section band-alt" id="enterprise" aria-labelledby="mcp-h">
     <div class="wrap mcp">
       <div>
-        <p class="eyebrow">Granola MCP Connector</p>
-        <h2 id="mcp-h" class="display" style="margin-top:14px">Use your meeting notes anywhere</h2>
+        <p class="tag">Granola MCP Connector</p>
+        <h2 id="mcp-h" class="display">Use your meeting notes anywhere</h2>
         <p class="big">No more copy-pasting meeting transcripts into AI tools.</p>
         <p class="body">Connect Granola in a few clicks and your AI apps become aware of your meeting notes. So you can power what you’re working on with what you talked about.</p>
       </div>
       <div class="app-grid" role="img" aria-label="AI apps that connect to Granola: Claude, OpenAI, Cursor, Replit, Bolt, Figma, Manus, Lovable, v0">
         <div class="app"><span class="mark" style="background:#b8643c" aria-hidden="true">C</span><span class="nm">Claude</span></div>
-        <div class="app"><span class="mark" style="background:#111111" aria-hidden="true">O</span><span class="nm">OpenAI</span></div>
+        <div class="app"><span class="mark" style="background:#131313" aria-hidden="true">O</span><span class="nm">OpenAI</span></div>
         <div class="app"><span class="mark" style="background:#5b6f00" aria-hidden="true">Cu</span><span class="nm">Cursor</span></div>
         <div class="app"><span class="mark" style="background:#df5a32" aria-hidden="true">Re</span><span class="nm">Replit</span></div>
         <div class="app"><span class="mark" style="background:#2563d6" aria-hidden="true">B</span><span class="nm">Bolt</span></div>
         <div class="app"><span class="mark" style="background:#1e1e1e" aria-hidden="true">Fi</span><span class="nm">Figma</span></div>
         <div class="app"><span class="mark" style="background:#484844" aria-hidden="true">M</span><span class="nm">Manus</span></div>
         <div class="app"><span class="mark" style="background:#d2566a" aria-hidden="true">Lo</span><span class="nm">Lovable</span></div>
-        <div class="app"><span class="mark" style="background:#111111" aria-hidden="true">v0</span><span class="nm">v0</span></div>
+        <div class="app"><span class="mark" style="background:#131313" aria-hidden="true">v0</span><span class="nm">v0</span></div>
       </div>
     </div>
   </section>
 
-  <!-- ============ FINAL CTA ============ -->
+  <!-- ============ 9 FINAL CTA ============ -->
   <section class="section wrap final" id="download" aria-labelledby="final-h">
     <h2 id="final-h" class="display">Unlimited meeting notes for free</h2>
     <p class="body">Take as many notes as you’d like. Upgrade to view and work with notes older than 30 days.</p>
     <div class="final-cta">
-      <a class="btn btn-primary" href="#download">Download for free</a>
-      <a class="btn btn-ghost" href="#pricing">View pricing</a>
+      <a class="btn btn-primary" href="#download"><span class="lab">Download for free</span></a>
+      <a class="btn btn-ghost" href="#pricing"><span class="lab">View pricing</span></a>
     </div>
-    <p class="avail" style="margin-top:18px">Available for macOS, Windows, iPhone</p>
+    <p class="avail" style="margin-top:16px">Available for macOS, Windows, iPhone</p>
   </section>
 </main>
 
-<!-- ============ FOOTER ============ -->
+<!-- ============ 10 FOOTER ============ -->
 <footer class="site-footer" id="pricing">
   <div class="wrap">
     <div class="foot-grid">
@@ -609,21 +765,21 @@
         <a class="brand" href="#top" aria-label="Granola home"><span class="glyph" aria-hidden="true"></span>Granola</a>
         <p>The AI notepad for people in back-to-back meetings.</p>
       </div>
-      <nav class="foot-col" aria-label="Features">
-        <h4>Features</h4>
-        <ul><li><a href="#notepad">Notepad</a></li><li><a href="#chat">Chat</a></li><li><a href="#mobile">Mobile</a></li></ul>
-      </nav>
       <nav class="foot-col" aria-label="Product">
-        <h4>Product</h4>
-        <ul><li><a href="#pricing">Pricing</a></li><li><a href="#enterprise">Enterprise</a></li><li><a href="#">AI notepad vs notetaker</a></li><li><a href="#">For sales</a></li><li><a href="#">For product management</a></li><li><a href="#">Explore more…</a></li></ul>
+        <p class="fh">Product</p>
+        <ul><li><a href="#notepad">Notepad</a></li><li><a href="#chat">Chat</a></li><li><a href="#mobile">Mobile</a></li><li><a href="#pricing">Pricing</a></li><li><a href="#enterprise">Enterprise</a></li><li><a href="#">For sales</a></li></ul>
       </nav>
       <nav class="foot-col" aria-label="Company">
-        <h4>Company</h4>
+        <p class="fh">Company</p>
         <ul><li><a href="#">Careers</a></li><li><a href="#">Press</a></li><li><a href="#">Events</a></li><li><a href="#">Startup program</a></li><li><a href="#">Student program</a></li></ul>
       </nav>
       <nav class="foot-col" aria-label="Resources">
-        <h4>Resources</h4>
+        <p class="fh">Resources</p>
         <ul><li><a href="#">Blog</a></li><li><a href="#">Security</a></li><li><a href="#">Help Center</a></li><li><a href="#">Status</a></li><li><a href="#">Affiliates</a></li><li><a href="#">Contact us</a></li></ul>
+      </nav>
+      <nav class="foot-col" aria-label="Connect">
+        <p class="fh">Connect</p>
+        <ul><li><a href="#">X (Twitter)</a></li><li><a href="#">LinkedIn</a></li><li><a href="#">YouTube</a></li><li><a href="#">Instagram</a></li></ul>
       </nav>
     </div>
     <div class="foot-bottom">
@@ -634,6 +790,11 @@
     </div>
   </div>
 </footer>
+
+<!-- Mobile sticky CTA (thumb zone, safe-area aware) -->
+<div class="sticky-cta">
+  <a class="btn btn-primary" href="#download"><span class="lab">Download for free</span></a>
+</div>
 
 <script>
   // Mobile nav disclosure
@@ -650,10 +811,10 @@
     });
   })();
 
-  // Before / In / After tabs (roving tabindex + arrow keys)
+  // Before / In / After tabs (roving tabindex + arrow keys + URL state)
   (function(){
     var tabs=Array.prototype.slice.call(document.querySelectorAll('[role="tab"]'));
-    function select(tab){
+    function select(tab,updateUrl){
       tabs.forEach(function(t){
         var sel=t===tab;
         t.setAttribute('aria-selected',sel?'true':'false');
@@ -661,6 +822,10 @@
         var panel=document.getElementById(t.getAttribute('aria-controls'));
         if(panel){ if(sel){panel.removeAttribute('hidden');} else {panel.setAttribute('hidden','');} }
       });
+      if(updateUrl!==false){
+        // reflect tab state in the URL (deep-linkable, survives reload/share)
+        history.replaceState(null,'','#'+tab.getAttribute('aria-controls'));
+      }
     }
     tabs.forEach(function(tab,i){
       tab.addEventListener('click',function(){select(tab);});
@@ -673,6 +838,12 @@
         if(n){e.preventDefault();select(n);n.focus();}
       });
     });
+    // restore tab state from URL on load
+    var hash=location.hash.replace('#','');
+    if(hash){
+      var t=tabs.filter(function(t){return t.getAttribute('aria-controls')===hash;})[0];
+      if(t){select(t,false);}
+    }
   })();
 </script>
 </body>

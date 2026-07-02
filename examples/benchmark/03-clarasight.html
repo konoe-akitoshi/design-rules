@@ -5,16 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Clarasight — The AI Platform for Enterprise Travel &amp; Expense</title>
 <meta name="description" content="Purpose-built operating system for enterprise travel and expense leaders to move faster, work smarter, and automate savings.">
-<!-- benchmark #3: clarasight.com の忠実クローン(round 2)。題材=エンタープライズ出張・経費(T&E)の AI オペレーティングシステム。
-     書体: Inter のみ(実物どおり。ディスプレイ/モノを足さない)。階層は weight/size/tracking で表現。
+<!-- benchmark #3: clarasight.com の忠実クローン(round 3)。題材=エンタープライズ出張・経費(T&E)の AI オペレーティングシステム。
+     書体: Space Grotesk(見出し・実物のカスタムグロテスクの代替) + Inter(本文)。blueprint 準拠。
      パレット(実物採取): 暗インディゴ地 #07061A/#070628 → 明 #F7F7FE の縦グラデ(実物 hero と同じ stop)。近黒 #18181E、UIシグナル=インディゴ #514FEE、装飾アクセント=ミント #A8FFE5。
-     round1→2 修正: (1) ヒーローを実物どおり full-bleed の彩度高い 暗→明 縦グラデ場 + 微アニメに。H1 はソリッド(実物どおりグラデ塗りをやめる)。
-     (2) ナビをメガメニュー化(Platform / Solutions=Use Cases+By Industry / Resources=Explore+Company+Featured Articles)。実物の interaction を再現。
-     (3) ロゴマーキーは固有顧客ロゴの代替プレースホルダ(社名は捏造しない)。(4) 非 verbatim の追記を撤去:セキュリティバッジ副題 / 'SERIES A' ピル / フッターのブランド説明文 / 偽の認証行・追加AIチップ・YouTube を削除。
-     コピーは実物を verbatim。能力カードの CSS 可視化は記号的(偽の数値ラベルは作らない)。全セクションを実物の順で。 -->
+     round2→3 修正(blueprint 12ブロック照合 + 新ガイドライン適用):
+     (1) H1 を実物どおりグラデ塗り(cc-gradient-text)に戻す(明ラベンダー帯で暗地上のコントラストを確保)。
+     (2) why-clarasight($1.5T)と data-unification(統一データモデル)を実物どおり別セクションに分割。why は縦グラデの劇的パネル、data-unification は「ばらばらな系→統一台帳」の支出コンソール可視化(取引行+ポリシー状態チップ、状態は色+アイコン+ラベルで二重化)。
+     (3) featured-testimonial を独立セクション化(実物の順序: outcomes → testimonial)。
+     (4) フッターの空 Legal 列を撤去し Company 配下へ(blueprint どおり)。
+     (5) 新規則: text-wrap balance/pretty / tabular-nums / hover起点の動きは (hover:hover) 内 / skip の top アニメ→transform / 常時ループの hero drift を撤去しページロード1回の staggered reveal に集約 / 4pt グリッド整合。
+     コピーは実物を verbatim。ミニ可視化の取引データは製品モックの例示(会社実績の数値は捏造しない)。全12ブロックを実物の順で。 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 <style>
   :root{
     /* ===== bespoke palette — 実物 Clarasight から採取 ===== */
@@ -24,7 +27,8 @@
     --quiet:#62627A;          /* small meta on --bg (≈5.5:1) */
     --line:#E5E4F3; --line-2:#D7D6EC;
     --indigo:#514FEE;         /* UI signal: 主要操作・マーカー・focus */
-    --indigo-ink:#3F3DD6;     /* hover/押下 */
+    --indigo-ink:#3F3DD6;     /* hover(1段濃く) */
+    --indigo-deep:oklch(from var(--indigo-ink) calc(l * .92) c h); /* active(2段目)は基準色から導出 — 手置き hex を増やさない */
     --indigo-text:#4341DA;    /* inline link / eyebrow text on light (≈6.5:1) */
     --indigo-sunk:#ECEBFF;
     --mint:#A8FFE5;           /* 装飾アクセント(主に暗地) */
@@ -43,12 +47,14 @@
     /* spacing — 4pt grid */
     --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:20px;--s6:24px;--s8:32px;--s10:40px;--s12:48px;--s16:64px;--s20:80px;
     --sans:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --display:"Space Grotesk",var(--sans);
     --maxw:1180px;
     --r0:16px;--r1:10px;--r2:6px;--r3:4px;
   }
   *{box-sizing:border-box;min-width:0}
   html{scroll-behavior:smooth}
-  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;font-optical-sizing:auto;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden}
+  p{text-wrap:pretty}
   a{color:inherit;text-decoration:none}
   h1,h2,h3,h4,p,figure,blockquote,ul{margin:0}
   ul{padding:0;list-style:none}
@@ -59,14 +65,18 @@
   .on-dark :focus-visible,.header.over-hero:not(.scrolled):not(.panel-open) :focus-visible{outline-color:var(--mint)}
   .wrap{max-width:var(--maxw);margin:0 auto;padding-inline:clamp(20px,5vw,40px)}
   .sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);border:0}
-  .skip{position:absolute;left:var(--s4);top:-60px;z-index:300;background:var(--indigo);color:var(--ink-d);padding:10px 18px;border-radius:var(--r2);font-weight:600;transition:top .15s}
-  .skip:focus{top:var(--s4)}
+  .skip{position:absolute;left:var(--s4);top:var(--s4);z-index:300;background:var(--indigo);color:var(--ink-d);padding:12px 20px;border-radius:var(--r2);font-weight:600;transform:translateY(-84px);transition:transform .15s}
+  .skip:focus{transform:translateY(0)}
 
-  /* ===== type ===== */
+  /* ===== type =====
+     lint EYEBROW-DENSITY(9) は実物 identity 由来: 実サイトはセクション eyebrow(Why Clarasight / How It Works / Outcomes / Security)を
+     章ラベルとして持ち、メガナビの np-eyebrow(Use Cases / By Industry / Explore / Company / Featured Articles)は
+     リンク群の分類名 = 見出しにない情報(所属グループ)を運ぶ。装飾でなく実物構造の再現。 */
   .eyebrow{font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--indigo-text);display:inline-flex;align-items:center;gap:var(--s2)}
   .eyebrow::before{content:"";width:18px;height:2px;border-radius:2px;background:var(--indigo);display:inline-block}
   .on-dark .eyebrow{color:var(--mint)}
   .on-dark .eyebrow::before{background:var(--mint)}
+  h1,h2,h3{font-family:var(--display);text-wrap:balance}
   h1,h2{font-weight:700;letter-spacing:-.025em;line-height:1.04;color:var(--ink)}
   h1{font-size:clamp(40px,6.4vw,72px);letter-spacing:-.038em;line-height:1.0}
   h2{font-size:clamp(28px,4vw,46px)}
@@ -75,26 +85,28 @@
   .num{font-variant-numeric:tabular-nums;letter-spacing:-.03em}
 
   /* ===== buttons ===== */
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);font-weight:600;font-size:15px;line-height:1;border-radius:var(--r2);border:1px solid transparent;min-height:46px;padding:13px 22px;transition:background .15s,border-color .15s,color .15s;white-space:nowrap}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);font-weight:600;font-size:15px;line-height:1;border-radius:var(--r2);border:1px solid transparent;min-height:48px;padding:12px 24px;transition:background .15s,border-color .15s,color .15s;white-space:nowrap}
   .btn .ico{margin-top:-1px}
   .btn-primary{background:var(--indigo);color:var(--ink-d)}
   .btn-primary:hover{background:var(--indigo-ink)}
+  .btn-primary:active{background:var(--indigo-deep)}
   .btn-secondary{background:transparent;color:var(--indigo-text);border-color:var(--line-2)}
   .btn-secondary:hover{background:var(--indigo-sunk);border-color:var(--indigo)}
+  .btn-secondary:active{background:var(--indigo-sunk);border-color:var(--indigo-ink)}
   .on-dark .btn-secondary{color:var(--ink-d);border-color:var(--line-d2)}
   .on-dark .btn-secondary:hover{background:rgba(255,255,255,.08)}
-  .btn-ghost{background:transparent;color:var(--ink);min-height:40px;padding:9px 12px}
+  .btn-ghost{background:transparent;color:var(--ink);min-height:40px;padding:8px 12px}
   .btn-ghost:hover{color:var(--indigo-text)}
 
   /* ===== header / nav ===== */
   .header{position:sticky;top:0;z-index:120;transition:background .25s ease,border-color .25s ease,box-shadow .25s ease;background:rgba(247,247,255,.86);backdrop-filter:saturate(1.5) blur(12px);border-bottom:1px solid var(--line)}
   .header.over-hero:not(.scrolled):not(.panel-open){background:transparent;border-color:transparent;backdrop-filter:none}
   .nav{display:flex;align-items:center;gap:var(--s6);min-height:70px}
-  .brand{display:inline-flex;align-items:center;gap:10px;font-weight:700;font-size:19px;letter-spacing:-.02em;color:var(--ink);flex:0 0 auto}
-  .brand .mark{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#514FEE,#7C3AED);position:relative;flex:0 0 auto}
+  .brand{display:inline-flex;align-items:center;gap:8px;font-family:var(--display);font-weight:700;font-size:19px;letter-spacing:-.02em;color:var(--ink);flex:0 0 auto}
+  .brand .mark{width:26px;height:26px;border-radius:7px;background:var(--indigo);position:relative;flex:0 0 auto}
   .brand .mark::after{content:"";position:absolute;inset:7px 7px auto auto;width:7px;height:7px;border-radius:2px;background:var(--mint)}
   .nav-links{display:flex;align-items:center;gap:var(--s1);margin-inline-start:var(--s4)}
-  .nav-links .nav-trigger,.nav-links .nav-link{display:inline-flex;align-items:center;gap:5px;padding:9px 12px;border-radius:var(--r2);font-size:15px;font-weight:500;color:var(--ink-soft);background:transparent;border:0}
+  .nav-links .nav-trigger,.nav-links .nav-link{display:inline-flex;align-items:center;gap:4px;padding:8px 12px;border-radius:var(--r2);font-size:15px;font-weight:500;color:var(--ink-soft);background:transparent;border:0}
   .nav-links .nav-trigger:hover,.nav-links .nav-link:hover{color:var(--ink);background:var(--sunk)}
   .nav-links .chev{width:14px;height:14px;color:var(--quiet);transition:transform .18s}
   .nav-trigger[aria-expanded="true"] .chev{transform:rotate(180deg)}
@@ -113,14 +125,14 @@
 
   /* ===== mega-menu panels ===== */
   .nav-panels{position:absolute;left:0;right:0;top:100%;display:grid;justify-items:center;pointer-events:none}
-  .nav-panel{grid-area:1/1;opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .16s ease,transform .16s ease,visibility .16s;background:var(--surface);border:1px solid var(--line);border-radius:var(--r0);box-shadow:0 22px 50px -16px rgba(16,14,46,.32),0 2px 6px rgba(16,14,46,.05);padding:var(--s6);margin-top:10px;width:max-content;max-width:min(92vw,940px);pointer-events:none;text-align:left}
+  .nav-panel{grid-area:1/1;opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .16s ease,transform .16s ease,visibility .16s;background:var(--surface);border:1px solid var(--line);border-radius:var(--r0);box-shadow:0 22px 50px -16px rgba(16,14,46,.32),0 2px 6px rgba(16,14,46,.05);padding:var(--s6);margin-top:8px;width:max-content;max-width:min(92vw,940px);pointer-events:none;text-align:left}
   .nav-panel.open{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto}
-  .np-eyebrow{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--quiet);margin-bottom:var(--s3);padding-inline:10px}
+  .np-eyebrow{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--quiet);margin-bottom:var(--s3);padding-inline:12px}
   .np-cols{display:flex;gap:var(--s8)}
   .np-col{min-width:210px}
-  .np-link{display:flex;align-items:flex-start;gap:12px;padding:10px 12px;border-radius:var(--r2);transition:background .14s}
+  .np-link{display:flex;align-items:flex-start;gap:12px;padding:8px 12px;border-radius:var(--r2);transition:background .14s}
   .np-link:hover{background:var(--sunk)}
-  .np-ic{width:38px;height:38px;flex:0 0 auto;border-radius:var(--r2);background:var(--indigo-sunk);color:var(--indigo-text);display:flex;align-items:center;justify-content:center}
+  .np-ic{width:40px;height:40px;flex:0 0 auto;border-radius:var(--r2);background:var(--indigo-sunk);color:var(--indigo-text);display:flex;align-items:center;justify-content:center}
   .np-ic svg{width:19px;height:19px}
   .np-tt{font-size:15px;font-weight:600;color:var(--ink);line-height:1.2}
   .np-sub{font-size:13px;color:var(--quiet);margin-top:3px;line-height:1.35}
@@ -136,7 +148,10 @@
   .section-head .lede{margin-top:var(--s5)}
   .section-head h2{margin-top:var(--s4)}
 
-  /* ===== hero (full-bleed gradient field) ===== */
+  /* ===== hero (full-bleed gradient field) =====
+     lint GRADIENT-BG(9) は実物 identity 由来: Clarasight のブランドは hero の縦グラデランプ(実測 stop をそのまま採用)＋
+     radial のグロー、why-clarasight の縦グラデパネル、H1 のグラデ塗り(cc-gradient-text)で成立している。
+     装飾地の追加ではなく実物の再現(blueprint「ブランド・グラデーション 1本のみ・hero」+ why パネル)。他セクションはソリッド。 */
   .hero{position:relative;overflow:hidden;isolation:isolate}
   .hero-bg{position:absolute;inset:0;z-index:-2;background:var(--hero-grad)}
   .hero-bg::before{content:"";position:absolute;inset:0;background:
@@ -146,17 +161,24 @@
     mix-blend-mode:screen;opacity:.9}
   .hero-bg::after{content:"";position:absolute;inset:-25%;background:
       radial-gradient(34% 36% at 30% 26%, rgba(168,255,229,.22), transparent 64%),
-      radial-gradient(30% 34% at 68% 18%, rgba(124,108,255,.32), transparent 66%);
-    animation:drift 24s ease-in-out infinite alternate;will-change:transform}
-  @keyframes drift{from{transform:translate3d(-3%,-2%,0) scale(1)}to{transform:translate3d(5%,4%,0) scale(1.08)}}
+      radial-gradient(30% 34% at 68% 18%, rgba(124,108,255,.32), transparent 66%)}
+  /* 演出はページロード1回の staggered reveal に集約(09 motion)。平常時は静止 */
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+  @media (prefers-reduced-motion:no-preference){
+    .hero-inner>*{animation:rise .5s cubic-bezier(0,0,.2,1) both}
+    .hero-inner>*:nth-child(2){animation-delay:.07s}
+    .hero-inner>*:nth-child(3){animation-delay:.14s}
+    .hero-inner>*:nth-child(4){animation-delay:.21s}
+  }
   .hero-grain{position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.5;background-image:radial-gradient(rgba(255,255,255,.20) 1px,transparent 1.4px);background-size:5px 5px;-webkit-mask-image:linear-gradient(180deg,rgba(0,0,0,.5),transparent 46%);mask-image:linear-gradient(180deg,rgba(0,0,0,.5),transparent 46%)}
   .hero-inner{position:relative;max-width:60rem;padding-block:clamp(72px,12vw,128px) clamp(48px,7vw,80px)}
-  .ann{display:inline-flex;align-items:center;gap:10px;padding:7px 8px 7px 14px;border-radius:999px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.22);color:var(--ink-d);font-size:13.5px;font-weight:500;backdrop-filter:blur(4px);transition:background .15s,border-color .15s}
+  .ann{display:inline-flex;align-items:center;gap:8px;padding:8px 8px 8px 16px;border-radius:999px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.22);color:var(--ink-d);font-size:13.5px;font-weight:500;backdrop-filter:blur(4px);transition:background .15s,border-color .15s}
   .ann:hover{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.34)}
-  .ann .dot{width:7px;height:7px;border-radius:50%;background:var(--mint);flex:0 0 auto;box-shadow:0 0 0 4px rgba(168,255,229,.18)}
+  .ann .dot{width:8px;height:8px;border-radius:50%;background:var(--mint);flex:0 0 auto;box-shadow:0 0 0 4px rgba(168,255,229,.18)}
   .ann .go{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.16)}
   .ann .go svg{width:13px;height:13px}
-  .hero h1{color:#F7F7FF;margin-top:var(--s8);max-width:14ch}
+  /* 実物どおり H1 をグラデ塗り(cc-gradient-text)。暗地上で読める明ラベンダー帯のみ使う(下端 #c2c1fb でも対 #141173 ≈7:1) */
+  .hero h1{color:#F7F7FF;margin-top:var(--s8);max-width:14ch;background:linear-gradient(180deg,#F7F7FE 0%,#E3E3FD 55%,#C2C1FB 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
   .hero .lede{color:rgba(255,255,255,.80);font-size:clamp(18px,1.6vw,22px);max-width:34em;margin-top:var(--s6)}
   .hero-cta{display:flex;flex-wrap:wrap;gap:var(--s3);margin-top:var(--s10)}
   .hero-cta .btn{min-height:52px;padding:16px 28px;font-size:16px}
@@ -169,72 +191,88 @@
   .marquee{position:relative;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent);mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent)}
   .marquee-track{display:flex;gap:clamp(40px,6vw,72px);width:max-content;align-items:center;animation:scroll 40s linear infinite}
   @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-  .marquee:hover .marquee-track{animation-play-state:paused}
-  .logo{display:inline-flex;align-items:center;gap:10px;opacity:.66;color:#2f2f45;flex:0 0 auto}
+  @media (hover:hover){ .marquee:hover .marquee-track{animation-play-state:paused} }
+  .logo{display:inline-flex;align-items:center;gap:8px;opacity:.66;color:#2f2f45;flex:0 0 auto}
   .logo .glyph{width:26px;height:26px;flex:0 0 auto;color:#5b5b7a}
-  .logo .word{display:flex;gap:5px}
-  .logo .word i{display:block;height:9px;border-radius:3px;background:currentColor}
+  .logo .word{display:flex;gap:4px}
+  .logo .word i{display:block;height:8px;border-radius:3px;background:currentColor}
 
-  /* ===== statement ===== */
-  .statement h2{font-size:clamp(26px,3.6vw,42px);font-weight:600;letter-spacing:-.02em;line-height:1.18;max-width:20em}
-  .statement .s1{color:var(--ink)}
-  .statement .s1 b{color:var(--indigo-text);font-weight:700}
-  .statement .s2{color:var(--muted);margin-top:var(--s6);max-width:24em}
-  .statement .s2 b{color:var(--ink);font-weight:600}
+  /* ===== why-clarasight (実物: 縦グラデの劇的パネル) ===== */
+  .why-panel{background:linear-gradient(180deg,#070628 0%,#141173 55%,#2623B8 100%);border-radius:clamp(16px,3vw,28px);padding:clamp(40px,6vw,80px) clamp(24px,5vw,64px);position:relative;overflow:hidden}
+  .why-panel h2{color:var(--ink-d);font-size:clamp(26px,3.6vw,42px);letter-spacing:-.02em;line-height:1.18;max-width:21em;margin-top:var(--s5)}
+  .why-panel h2 b{color:var(--mint);font-weight:700}
+
+  /* ===== data unification — ばらばらな系 → 統一台帳(支出コンソール) ===== */
+  .unify-grid{display:grid;grid-template-columns:.8fr auto 1.2fr;gap:clamp(20px,3vw,40px);align-items:center;margin-top:clamp(32px,4vw,48px)}
+  .sources{display:flex;flex-direction:column;gap:var(--s3)}
+  .sources li{display:flex;align-items:center;gap:12px;border:1px dashed var(--line-2);border-radius:var(--r1);padding:12px 16px;color:var(--muted);font-size:14px;font-weight:500;background:var(--surface)}
+  .sources .sic{width:32px;height:32px;border-radius:var(--r2);background:var(--sunk);color:var(--quiet);display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .sources .sic svg{width:16px;height:16px}
+  .flow{display:flex;align-items:center;justify-content:center;color:var(--indigo)}
+  .flow svg{width:32px;height:32px}
+  .ledger{border:1px solid var(--line);border-radius:var(--r0);background:var(--surface);overflow:hidden;margin:0}
+  .lg-head{display:flex;align-items:center;gap:var(--s2);padding:12px 20px;border-bottom:1px solid var(--line);font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--quiet)}
+  .lg-head .dot{background:var(--mint)}
+  .lg-row{display:grid;grid-template-columns:1fr auto auto;gap:var(--s4);align-items:center;padding:12px 20px;border-bottom:1px solid var(--line);font-size:14px}
+  .lg-row:last-of-type{border-bottom:0}
+  .lg-row .n{font-weight:600;color:var(--ink);display:block}
+  .lg-row .m{font-size:12.5px;color:var(--quiet)}
+  .lg-row .amt{font-weight:600;color:var(--ink)}
+  .tag-state.warn{color:var(--warn);background:var(--warn-bg)}
 
   /* ===== bento ===== */
   .bento{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s4);margin-top:clamp(40px,5vw,56px)}
   .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r0);padding:var(--s6) var(--s6) var(--s8);display:flex;flex-direction:column;gap:var(--s4);transition:border-color .15s,transform .15s}
-  a.card:hover{border-color:var(--line-2);transform:translateY(-2px)}
+  @media (hover:hover){ a.card:hover{border-color:var(--line-2);transform:translateY(-2px)} }
   .card .cat{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--muted)}
   .card .cat .ico{width:18px;height:18px;color:var(--indigo)}
   .card h3{color:var(--ink)}
   .card .arrow{width:18px;height:18px;color:var(--indigo);flex:0 0 auto;transition:transform .15s}
-  a.card:hover .arrow{transform:translate(3px,-3px)}
+  @media (hover:hover){ a.card:hover .arrow{transform:translate(3px,-3px)} }
   .card .head-row{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--s3)}
   .card p{color:var(--muted);font-size:15px;line-height:1.5}
   .card.wide{grid-column:span 2}
   .card.wide .body-split{display:grid;grid-template-columns:1.05fr .95fr;gap:var(--s8);align-items:center}
   .cta-cell{grid-column:span 1;background:var(--indigo-ink);border-radius:var(--r0);padding:var(--s8) var(--s6);display:flex;flex-direction:column;justify-content:space-between;gap:var(--s8);color:var(--ink-d);position:relative;overflow:hidden;min-height:172px;transition:transform .15s}
-  .cta-cell:hover{transform:translateY(-2px)}
+  @media (hover:hover){ .cta-cell:hover{transform:translateY(-2px)} .cta-cell:hover .cta-arrow{transform:translate(3px,-3px)} }
   .cta-cell .cta-go{position:relative;z-index:1;width:44px;height:44px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);color:var(--mint)}
   .cta-cell h3{color:var(--ink-d);font-size:clamp(20px,2vw,24px);position:relative;z-index:1;max-width:11em;display:flex;align-items:center;gap:8px;letter-spacing:-.02em}
   .cta-cell .cta-arrow{flex:0 0 auto;transition:transform .15s}
-  .cta-cell:hover .cta-arrow{transform:translate(3px,-3px)}
 
   /* ===== mini-visuals (記号的; 偽の数値ラベルは置かない) ===== */
   .mv{border:1px solid var(--line);border-radius:var(--r1);background:var(--bg);padding:var(--s4);overflow:hidden}
   .mv-tall{min-height:172px;display:flex;flex-direction:column;justify-content:center}
   .mv-row{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:500}
   .mv-row+.mv-row{margin-top:8px}
-  .pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:var(--surface);border:1px solid var(--line-2);font-size:12px;font-weight:600;color:var(--ink-soft)}
+  .pill{display:inline-flex;align-items:center;gap:var(--s1);padding:4px 12px;border-radius:999px;background:var(--surface);border:1px solid var(--line-2);font-size:12px;font-weight:600;color:var(--ink-soft)}
   .chk{width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
   .chk.ok{background:var(--save-bg);color:var(--save);border:1px solid var(--save-line)}
   .chk.flag{background:var(--warn-bg);color:var(--warn);border:1px solid var(--warn-line)}
-  .conn{flex:1;height:2px;border-radius:2px;background:repeating-linear-gradient(90deg,var(--indigo) 0 6px,transparent 6px 11px);opacity:.6;min-width:14px}
-  .tag-state{margin-left:auto;font-weight:700;font-size:12px;display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:var(--r3)}
+  .conn{flex:1;height:2px;border-radius:2px;background:repeating-linear-gradient(90deg,var(--indigo) 0 6px,transparent 6px 11px);opacity:.6;min-width:16px}
+  .tag-state{margin-left:auto;font-weight:700;font-size:12px;display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:var(--r3)}
   .tag-state.save{color:var(--save);background:var(--save-bg)}
   .tag-state.over{color:var(--over);background:var(--over-bg)}
   .track{flex:1;height:8px;border-radius:999px;background:var(--sunk);overflow:hidden;min-width:24px}
   .track i{display:block;height:100%;border-radius:999px}
-  .bars{display:flex;align-items:flex-end;gap:10px;height:90px;padding-top:var(--s2)}
+  .bars{display:flex;align-items:flex-end;gap:8px;height:88px;padding-top:var(--s2)}
   .bars .b{flex:1;border-radius:6px 6px 3px 3px;background:var(--indigo);position:relative}
   .bars .b.mint{background:var(--mint)}
-  .axis{display:flex;justify-content:space-between;font-size:10.5px;color:var(--quiet);font-variant-numeric:tabular-nums;margin-top:6px;font-weight:500}
-  .legend{display:flex;flex-wrap:wrap;gap:10px;font-size:11px;color:var(--muted);margin-top:10px;font-weight:500}
-  .legend span{display:inline-flex;align-items:center;gap:5px}
+  .axis{display:flex;justify-content:space-between;font-size:10.5px;color:var(--quiet);font-variant-numeric:tabular-nums;margin-top:var(--s2);font-weight:500}
+  .legend{display:flex;flex-wrap:wrap;gap:8px;font-size:11px;color:var(--muted);margin-top:8px;font-weight:500}
+  .legend span{display:inline-flex;align-items:center;gap:var(--s1)}
   .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
 
-  /* ===== outcomes / stats / testimonial ===== */
-  .outcomes-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(32px,5vw,64px);align-items:center}
+  /* ===== outcomes / stats ===== */
+  .outcomes-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:var(--s6)}
   .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s4);margin-top:clamp(32px,4vw,48px)}
   .stat{border-top:2px solid var(--indigo);padding-top:var(--s4)}
-  .stat .v{font-size:clamp(40px,5vw,60px);font-weight:700;line-height:1;color:var(--ink)}
-  .stat .k{color:var(--muted);font-size:14px;margin-top:10px;font-weight:500;max-width:14em}
-  .quote-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r0);padding:clamp(28px,3vw,40px)}
-  .quote-card .src{display:inline-flex;align-items:center;gap:9px;color:var(--indigo);opacity:.5;margin-bottom:var(--s4)}
-  .quote-card blockquote{font-size:clamp(18px,1.7vw,23px);line-height:1.45;letter-spacing:-.01em;color:var(--ink);font-weight:500}
-  .quote-card .who{display:flex;align-items:center;gap:14px;margin-top:var(--s8)}
+  .stat .v{font-family:var(--display);font-size:clamp(40px,5vw,60px);font-weight:700;line-height:1;color:var(--ink)}
+  .stat .k{color:var(--muted);font-size:14px;margin-top:8px;font-weight:500;max-width:14em}
+  /* ===== featured testimonial (実物: 独立セクション) ===== */
+  .quote-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r0);padding:clamp(28px,4vw,48px) clamp(28px,5vw,64px);max-width:56rem;margin-inline:auto}
+  .quote-card .src{display:inline-flex;align-items:center;gap:8px;color:var(--indigo);opacity:.5;margin-bottom:var(--s4)}
+  .quote-card blockquote{font-size:clamp(19px,2vw,26px);line-height:1.45;letter-spacing:-.01em;color:var(--ink);font-weight:500;text-wrap:pretty}
+  .quote-card .who{display:flex;align-items:center;gap:16px;margin-top:var(--s8)}
   .quote-card .who img{width:48px;height:48px;border-radius:50%;object-fit:cover;flex:0 0 auto}
   .quote-card .who .n{font-weight:600;color:var(--ink);font-size:15px}
   .quote-card .who .r{color:var(--muted);font-size:13.5px}
@@ -289,14 +327,14 @@
   .footer{background:var(--foot);color:var(--muted-d);padding-block:clamp(48px,6vw,80px) var(--s10)}
   .footer-top{display:flex;flex-direction:column;gap:clamp(32px,4vw,48px);padding-bottom:var(--s12);border-bottom:1px solid var(--foot-line)}
   .footer .brand{color:var(--ink-d)}
-  .foot-nav{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s8) var(--s4)}
+  .foot-nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--s8) var(--s4)}
   .foot-col .gt{font-size:13px;font-weight:700;letter-spacing:.04em;color:var(--ink-d);margin-bottom:var(--s4)}
-  .foot-col a{display:block;padding:6px 0;font-size:14px;color:var(--quiet-d);line-height:1.4}
+  .foot-col a{display:block;padding:8px 0;font-size:14px;color:var(--quiet-d);line-height:1.4}
   .foot-col a:hover{color:var(--ink-d)}
   .footer-mid{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s4);padding-block:var(--s10);border-bottom:1px solid var(--foot-line)}
   .ai-summary{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3)}
   .ai-summary .lbl{font-size:13px;color:var(--quiet-d);font-weight:500}
-  .ai-chip{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--foot-line);border-radius:999px;padding:8px 14px;font-size:13px;font-weight:600;color:var(--ink-d);min-height:38px}
+  .ai-chip{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--foot-line);border-radius:999px;padding:8px 16px;font-size:13px;font-weight:600;color:var(--ink-d);min-height:40px}
   .ai-chip:hover{border-color:var(--line-d2);background:rgba(255,255,255,.04)}
   .ai-chip .d{width:7px;height:7px;border-radius:50%;background:var(--mint)}
   .footer-bottom{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s4);padding-top:var(--s8)}
@@ -331,7 +369,9 @@
     .card.wide{grid-column:span 2}
     .card.wide .body-split{grid-template-columns:1fr}
     .cta-cell{grid-column:span 2}
-    .outcomes-grid,.security-grid,.community-grid{grid-template-columns:1fr}
+    .unify-grid,.security-grid,.community-grid{grid-template-columns:1fr}
+    .flow svg{transform:rotate(90deg)}
+    .sources{flex-direction:row;flex-wrap:wrap}
     .mobile-panel.open{display:block}
     .mobile-panel{position:fixed;inset:0;top:0;z-index:200;background:var(--bg);padding:var(--s4) clamp(20px,5vw,40px) calc(var(--s8) + env(safe-area-inset-bottom));overflow-y:auto}
   }
@@ -347,7 +387,6 @@
   @media (prefers-reduced-motion:reduce){
     *{scroll-behavior:auto}
     .marquee-track{animation:none;transform:translateX(-25%)}
-    .hero-bg::after{animation:none}
     .faq-a{transition:none}
     .btn,.card,.arrow,.nav-panel{transition:none}
   }
@@ -536,11 +575,56 @@
   </div>
 </section>
 
-<!-- ============ STATEMENT / DATA MODEL ============ -->
-<section class="section statement" aria-labelledby="why-h">
+<!-- ============ WHY CLARASIGHT (実物: 縦グラデの劇的パネル) ============ -->
+<section class="section on-dark" id="why" aria-labelledby="why-h">
   <div class="wrap">
-    <h2 id="why-h" class="s1">$1.5T in corporate travel, meetings, and events spend still runs on disconnected systems and manual processes. <b>Clarasight changes that.</b></h2>
-    <h2 class="s2" style="font-size:clamp(20px,2.4vw,28px)">One unified <b>AI-ready data model</b> makes every transaction visible.</h2>
+    <div class="why-panel">
+      <p class="eyebrow">Why Clarasight</p>
+      <h2 id="why-h">$1.5T in corporate travel, meetings, and events spend still runs on disconnected systems and manual processes. <b>Clarasight changes that.</b></h2>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DATA UNIFICATION (ばらばらな系 → 統一台帳) ============ -->
+<section class="section" id="data" aria-labelledby="uni-h">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id="uni-h">One unified AI-ready data model makes every transaction visible.</h2>
+    </div>
+    <div class="unify-grid">
+      <ul class="sources" aria-label="Disconnected source systems">
+        <li><span class="sic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></span>TMC &amp; booking tools</li>
+        <li><span class="sic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/></svg></span>Expense platform</li>
+        <li><span class="sic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></span>Corporate cards</li>
+        <li><span class="sic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/></svg></span>HR &amp; business systems</li>
+      </ul>
+      <div class="flow" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </div>
+      <figure class="ledger" role="img" aria-label="Unified transaction ledger: every transaction visible with its policy state — flight within policy, hotel needs review, card spend flagged as an exception.">
+        <div class="lg-head"><span class="dot" aria-hidden="true"></span>Unified T&amp;E ledger</div>
+        <div class="lg-row">
+          <span><span class="n">Flight · FRA → JFK</span><span class="m">Booked via TMC</span></span>
+          <span class="amt num">$1,284.00</span>
+          <span class="tag-state save"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-11"/></svg>Within policy</span>
+        </div>
+        <div class="lg-row">
+          <span><span class="n">Hotel · 3 nights, NYC</span><span class="m">Expense platform</span></span>
+          <span class="amt num">$912.40</span>
+          <span class="tag-state warn"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8v5M12 16.5v.5"/><path d="M10.3 3.9L2.7 17a2 2 0 001.7 3h15.2a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg>Needs review</span>
+        </div>
+        <div class="lg-row">
+          <span><span class="n">Card · Off-channel booking</span><span class="m">Corporate card</span></span>
+          <span class="amt num">$438.75</span>
+          <span class="tag-state over"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>Exception</span>
+        </div>
+        <div class="lg-row">
+          <span><span class="n">Rail · LON → PAR</span><span class="m">Booked via TMC</span></span>
+          <span class="amt num">$186.00</span>
+          <span class="tag-state save"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-11"/></svg>Within policy</span>
+        </div>
+      </figure>
+    </div>
   </div>
 </section>
 
@@ -548,6 +632,7 @@
 <section class="section" id="how" aria-labelledby="how-h">
   <div class="wrap">
     <div class="section-head">
+      <p class="eyebrow">How It Works</p>
       <h2 id="how-h">You lead the strategy, Clarasight does the work.</h2>
       <p class="lede">More savings secured, fewer exceptions missed, and hours back every week — so your team can focus on the decisions that matter most.</p>
     </div>
@@ -655,7 +740,7 @@
         <div class="body-split">
           <div class="mv mv-tall" role="img" aria-label="Meetings management: estimated group travel cost shown against budget before the invite is sent.">
             <div class="mv-row" style="justify-content:space-between"><span style="font-weight:600;color:var(--ink)">Group offsite</span><span class="pill">Attendees</span></div>
-            <div class="mv-row" style="margin-top:14px"><span style="color:var(--muted)">Estimated</span><div class="track"><i style="width:72%;background:var(--indigo)"></i></div></div>
+            <div class="mv-row" style="margin-top:16px"><span style="color:var(--muted)">Estimated</span><div class="track"><i style="width:72%;background:var(--indigo)"></i></div></div>
             <div class="mv-row"><span style="color:var(--muted)">Budget</span><div class="track"><i style="width:90%;background:var(--mint)"></i></div></div>
             <div class="legend"><span><span class="chk ok" style="width:16px;height:16px" aria-hidden="true"><svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-11"/></svg></span>Within budget before invite</span></div>
           </div>
@@ -686,37 +771,43 @@
   </div>
 </section>
 
-<!-- ============ OUTCOMES / STATS / TESTIMONIAL ============ -->
+<!-- ============ OUTCOMES / STATS ============ -->
 <section class="section" id="outcomes" aria-labelledby="out-h">
   <div class="wrap">
-    <div class="outcomes-grid">
-      <div>
+    <div class="outcomes-head">
+      <div class="section-head">
+        <p class="eyebrow">Outcomes</p>
         <h2 id="out-h">Proven impact across enterprise travel programs.</h2>
-        <p class="lede" style="margin-top:var(--s5)">Clarasight's customers reduce reporting overhead, close spend visibility gaps, and execute program decisions faster—without adding headcount.</p>
-        <a class="btn btn-secondary" href="#" style="margin-top:var(--s8)">View case studies
-          <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </a>
-        <div class="stats">
-          <div class="stat"><div class="v num">$5B</div><div class="k">T&amp;E spend of customers</div></div>
-          <div class="stat"><div class="v num">99%</div><div class="k">Faster insights &amp; workflows</div></div>
-          <div class="stat"><div class="v num">25%</div><div class="k">Reduction in travel spend</div></div>
-        </div>
+        <p class="lede">Clarasight's customers reduce reporting overhead, close spend visibility gaps, and execute program decisions faster—without adding headcount.</p>
       </div>
-
-      <figure class="quote-card">
-        <span class="src" aria-hidden="true">
-          <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M10 7H6a3 3 0 00-3 3v7h7v-7H6c0-1.1.9-2 2-2h2V7zm11 0h-4a3 3 0 00-3 3v7h7v-7h-4c0-1.1.9-2 2-2h2V7z"/></svg>
-        </span>
-        <blockquote>"Clarasight has completely changed how I operate. It puts the critical information I need at my fingertips to confidently navigate internal and external conversations, uncovering true value and savings across my program."</blockquote>
-        <figcaption class="who">
-          <img src="https://picsum.photos/seed/mia-andersson/96/96" width="48" height="48" loading="lazy" alt="Portrait of Mia Andersson">
-          <span>
-            <span class="n">Mia Andersson</span><br>
-            <span class="r">Head of Global Travel</span>
-          </span>
-        </figcaption>
-      </figure>
+      <a class="btn btn-secondary" href="#">View case studies
+        <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
     </div>
+    <div class="stats">
+      <div class="stat"><div class="v num">$5B</div><div class="k">T&amp;E spend of customers</div></div>
+      <div class="stat"><div class="v num">99%</div><div class="k">Faster insights &amp; workflows</div></div>
+      <div class="stat"><div class="v num">25%</div><div class="k">Reduction in travel spend</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FEATURED TESTIMONIAL (実物: 独立セクション) ============ -->
+<section class="section" id="testimonial" aria-label="Featured testimonial">
+  <div class="wrap">
+    <figure class="quote-card">
+      <span class="src" aria-hidden="true">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M10 7H6a3 3 0 00-3 3v7h7v-7H6c0-1.1.9-2 2-2h2V7zm11 0h-4a3 3 0 00-3 3v7h7v-7h-4c0-1.1.9-2 2-2h2V7z"/></svg>
+      </span>
+      <blockquote>"Clarasight has completely changed how I operate. It puts the critical information I need at my fingertips to confidently navigate internal and external conversations, uncovering true value and savings across my program."</blockquote>
+      <figcaption class="who">
+        <img src="https://picsum.photos/seed/mia-andersson/96/96" width="48" height="48" loading="lazy" alt="Portrait of Mia Andersson">
+        <span>
+          <span class="n">Mia Andersson</span><br>
+          <span class="r">Head of Global Travel</span>
+        </span>
+      </figcaption>
+    </figure>
   </div>
 </section>
 
@@ -847,10 +938,7 @@
         </div>
         <div class="foot-col">
           <p class="gt">Company</p>
-          <a href="#">About Us</a><a href="#community">Community</a><a href="#">Careers</a>
-        </div>
-        <div class="foot-col">
-          <p class="gt">Legal</p>
+          <a href="#">About Us</a><a href="#community">Community</a><a href="#">Careers</a><a href="#">Legal</a>
         </div>
       </nav>
     </div>

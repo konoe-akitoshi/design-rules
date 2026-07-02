@@ -7,28 +7,28 @@
 <meta name="description" content="Generate professional product shots, lifestyle images, and videos instantly with AI. Transform your catalog with on-brand visual assets in seconds." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Geist:wght@400;500;600&display=swap" rel="stylesheet" />
 <style>
 /* ============ tokens ============
-   Sampled inline from ref: accent #F94A00, accent-2 #FD7B03, white #FFFFFF.
-   ground #0E0D0B given by subject. Neutral ramp + radii derived from the warm-black
-   guideline ramp (real surface tints/radii live in external Webflow CSS, not sampleable). */
+   Sampled inline from ref: accent F94A00 (punch orange), accent-2 FD7B03; ink = off-white.
+   Ground = warm near-black given by subject. Neutral ramp per guideline dark-derivation rules
+   (ground L 8-12%, elevation = lightness steps, alpha-white hairlines). */
 :root{
   --ground:#0E0D0B; --surface:#181612; --raised:#221F19;
   --line:rgba(255,255,255,.10); --line-strong:rgba(255,255,255,.18);
   --ink:#F2EEE6; --muted:#B7AEA1; --quiet:#8C8377;
-  --accent:#F94A00; --accent-2:#FD7B03; --accent-text:#F94A00;
+  --accent:#F94A00; --accent-2:#FD7B03; --accent-text:#FD7B03;
   --on-accent:#0E0D0B; --focus:#FD7B03;
   --img-filter:saturate(.92) contrast(1.02) brightness(.98);
   --maxw:1180px;
-  --r-panel:16px; --r-card:14px; --r-img:10px; --r-tag:999px;
+  --r-panel:16px; --r-card:10px; --r-img:10px; --r-btn:6px; --r-tag:999px;
 }
 html[data-theme="light"]{
-  --ground:#F4F0E6; --surface:#FBF8F1; --raised:#FFFFFF;
+  --ground:#F4F0E6; --surface:#FBF8F1; --raised:#FDFBF4;
   --line:rgba(26,23,18,.14); --line-strong:rgba(26,23,18,.24);
   --ink:#1A1712; --muted:#5C544A; --quiet:#6E6557;
-  --accent:#F94A00; --accent-2:#D63E00; --accent-text:#B5360A;
-  --on-accent:#FFFFFF; --focus:#B5360A;
+  --accent:#F94A00; --accent-2:#FD7B03; --accent-text:#B5360A;
+  --on-accent:#1A1712; --focus:#B5360A;
   --img-filter:saturate(.94) contrast(1.01);
 }
 *,*::before,*::after{box-sizing:border-box}
@@ -43,31 +43,34 @@ body{
 img{max-width:100%; display:block}
 a{color:inherit; text-decoration:none}
 button{font:inherit; color:inherit; cursor:pointer; background:none; border:0}
-h1,h2,h3{margin:0; font-weight:600; letter-spacing:-0.03em; line-height:1.02}
-p{margin:0}
+h1,h2,h3{
+  margin:0; font-family:"Bricolage Grotesque","Geist",sans-serif;
+  font-weight:800; font-optical-sizing:auto; letter-spacing:-0.03em; line-height:1.02;
+  text-wrap:balance;
+}
+p{margin:0; text-wrap:pretty}
 :where(a,button,summary,input,[tabindex]):focus-visible{
   outline:2px solid var(--focus); outline-offset:3px; border-radius:4px;
 }
 .wrap{max-width:var(--maxw); margin-inline:auto; padding-inline:24px; width:100%}
 .eyebrow{
-  font-size:.74rem; text-transform:uppercase; letter-spacing:.15em;
+  font-size:.75rem; text-transform:uppercase; letter-spacing:.15em;
   color:var(--quiet); font-weight:500; display:inline-flex; align-items:center; gap:8px;
 }
 .eyebrow::before{content:""; width:6px; height:6px; border-radius:999px; background:var(--accent)}
 .fmark{width:1em; height:1em; display:block}
+.num{font-variant-numeric:tabular-nums}
 
 /* ============ buttons ============ */
 .btn{
   display:inline-flex; align-items:center; justify-content:center; gap:8px;
-  min-height:48px; padding:12px 22px; border-radius:var(--r-tag);
-  font-weight:500; font-size:.95rem; letter-spacing:-0.01em; white-space:nowrap;
+  min-height:48px; padding:12px 24px; border-radius:var(--r-tag);
+  font-weight:500; font-size:.9375rem; letter-spacing:-0.01em; white-space:nowrap;
   transition:transform .18s ease, background-color .18s ease, color .18s ease, border-color .18s ease;
 }
 .btn-primary{background:var(--accent); color:var(--on-accent); font-weight:600}
-.btn-primary:hover{background:var(--accent-2); transform:translateY(-1px)}
-.btn-primary span{transform:translateY(-1px)}
-.icon-link{display:inline-flex; align-items:center; justify-content:center; width:44px; height:44px; border-radius:999px; border:1px solid var(--line); color:var(--ink)}
-.icon-link:hover{border-color:var(--accent)}
+.btn-primary span{transform:translateY(-1px)} /* optical: cap-height correction */
+.icon-link{display:inline-flex; align-items:center; justify-content:center; width:44px; height:44px; border-radius:999px; border:1px solid var(--line); color:var(--ink); transition:border-color .18s ease, color .18s ease}
 .icon-link svg{width:20px; height:20px}
 
 /* ============ header ============ */
@@ -77,23 +80,21 @@ header{
   backdrop-filter:saturate(1.2) blur(14px);
   border-bottom:1px solid var(--line);
 }
-.hdr{display:flex; align-items:center; gap:16px; min-height:68px; padding-block:10px}
-.brand{display:inline-flex; align-items:center; gap:9px; font-weight:600; font-size:1.06rem; letter-spacing:-0.04em; color:var(--ink)}
+.hdr{display:flex; align-items:center; gap:16px; min-height:68px; padding-block:8px}
+.brand{display:inline-flex; align-items:center; gap:8px; font-weight:600; font-size:1.06rem; letter-spacing:-0.04em; color:var(--ink)}
 .brand .mark{width:23px; height:23px; border-radius:7px; background:var(--accent); display:grid; place-items:center; color:var(--on-accent)}
 .brand .mark svg{width:15px; height:15px}
 .hdr-center{display:flex; align-items:center; gap:8px; margin-inline:auto}
-.menu-btn{display:inline-flex; align-items:center; gap:10px; min-height:44px; padding:8px 16px; border:1px solid var(--line); border-radius:999px; font-size:.9rem; font-weight:500}
-.menu-btn:hover{border-color:var(--line-strong)}
+.menu-btn{display:inline-flex; align-items:center; gap:8px; min-height:44px; padding:8px 16px; border:1px solid var(--line); border-radius:999px; font-size:.9rem; font-weight:500; transition:border-color .18s ease}
 .menu-btn .bars{display:inline-flex; flex-direction:column; gap:4px; width:16px}
 .menu-btn .bars i{height:1.5px; background:var(--ink); border-radius:2px; display:block}
-.theme-btn{width:40px; height:40px; border:1px solid var(--line); border-radius:999px; display:inline-grid; place-items:center; color:var(--ink)}
-.theme-btn:hover{border-color:var(--line-strong)}
+.theme-btn{width:40px; height:40px; border:1px solid var(--line); border-radius:999px; display:inline-grid; place-items:center; color:var(--ink); transition:border-color .18s ease}
 .theme-btn svg{width:17px; height:17px}
 .theme-btn .moon{display:none}
 html[data-theme="dark"] .theme-btn .sun{display:none}
 html[data-theme="dark"] .theme-btn .moon{display:block}
-.prc{font-size:.74rem; color:var(--quiet); letter-spacing:.04em; font-variant-numeric:tabular-nums; padding-inline:4px; align-self:center}
-.hdr-right{display:flex; align-items:center; gap:10px}
+.prc{font-size:.75rem; color:var(--quiet); letter-spacing:.04em; font-variant-numeric:tabular-nums; padding-inline:4px; align-self:center}
+.hdr-right{display:flex; align-items:center; gap:8px}
 @media (max-width:760px){
   .prc,.theme-btn{display:none}
   .hdr-right .btn-primary{display:none}
@@ -114,33 +115,30 @@ html[data-theme="dark"] .theme-btn .moon{display:block}
 .menu-close svg{width:18px; height:18px}
 .menu-group{padding-block:20px; border-top:1px solid var(--line)}
 .menu-group:first-of-type{border-top:0}
-.menu-label{font-size:.7rem; text-transform:uppercase; letter-spacing:.16em; color:var(--quiet); margin-bottom:14px; font-weight:500}
+.menu-label{font-size:.7rem; text-transform:uppercase; letter-spacing:.16em; color:var(--quiet); margin-bottom:12px; font-weight:500}
 .menu-list{display:flex; flex-direction:column; gap:4px}
 .menu-list.row{flex-direction:row; flex-wrap:wrap; gap:8px 20px}
-.menu-list a{padding:8px 2px; font-size:1.35rem; letter-spacing:-0.02em; min-height:44px; display:flex; align-items:center; color:var(--ink)}
+.menu-list a{padding:8px 2px; font-size:1.35rem; letter-spacing:-0.02em; min-height:44px; display:flex; align-items:center; color:var(--ink); transition:color .18s ease}
 .menu-group.small .menu-list a{font-size:1rem; color:var(--muted)}
-.menu-list a:hover{color:var(--accent-text)}
 .menu-cta{display:flex; align-items:center; gap:12px; margin-top:auto; padding-top:20px; border-top:1px solid var(--line)}
 .menu-cta .btn-primary{flex:1}
 
 /* ============ hero ============ */
 .hero{position:relative; overflow:hidden; min-height:min(94vh,880px); display:flex; flex-direction:column}
-.hero__inner{position:relative; z-index:2; flex:1; display:flex; flex-direction:column; align-items:center; text-align:center; justify-content:center; gap:30px; padding-block:66px 24px}
-.hero h1{font-size:clamp(2.7rem,8.6vw,6.6rem); letter-spacing:-0.045em; max-width:13ch; line-height:.95}
-.hero h1 .lite{font-weight:300; letter-spacing:-0.05em}
-.hero__upload{display:inline-flex; align-items:center; gap:12px; padding:13px 22px 13px 16px; border:1.5px dashed var(--line-strong); border-radius:14px; background:color-mix(in srgb,var(--surface) 60%, transparent); color:var(--muted); font-size:.95rem}
+.hero__inner{position:relative; z-index:2; flex:1; display:flex; flex-direction:column; align-items:center; text-align:center; justify-content:center; gap:32px; padding-block:64px 24px}
+.hero h1{font-size:clamp(2.7rem,8.6vw,6.6rem); letter-spacing:-0.04em; max-width:13ch; line-height:.95}
+.hero h1 .lite{font-weight:200; letter-spacing:-0.045em}
+.hero__upload{display:inline-flex; align-items:center; gap:12px; padding:12px 24px 12px 16px; border:1.5px dashed var(--line-strong); border-radius:14px; background:color-mix(in srgb,var(--surface) 60%, transparent); color:var(--muted); font-size:.9375rem}
 .hero__upload svg{width:20px; height:20px; color:var(--accent); flex:none}
 .hero__cats{width:100%; max-width:760px; overflow:hidden; -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent); mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
 .hero__cats ul{display:flex; gap:0; list-style:none; margin:0; padding:0; width:max-content; animation:ticker 22s linear infinite}
-.hero__cats li{display:flex; align-items:center; gap:34px; padding-right:34px; color:var(--muted); font-size:.95rem; letter-spacing:.01em; white-space:nowrap}
+.hero__cats li{display:flex; align-items:center; gap:32px; padding-right:32px; color:var(--muted); font-size:.9375rem; letter-spacing:.01em; white-space:nowrap}
 .hero__cats li::after{content:""; width:5px; height:5px; border-radius:999px; background:var(--accent); opacity:.85}
 @keyframes ticker{to{transform:translateX(-50%)}}
 .hero__scroll-wrap{display:flex; justify-content:center; position:relative; z-index:2}
-.hero__scroll{display:inline-flex; align-items:center; gap:8px; color:var(--quiet); font-size:.74rem; text-transform:uppercase; letter-spacing:.16em; padding-bottom:26px; min-height:44px}
-.hero__scroll:hover{color:var(--ink)}
-.hero__scroll svg{width:14px; height:14px; color:var(--accent); animation:nudge 1.8s ease-in-out infinite}
-@keyframes nudge{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
-.hero__stamp{position:absolute; left:24px; bottom:22px; z-index:2; font-size:.74rem; color:var(--quiet); letter-spacing:.04em}
+.hero__scroll{display:inline-flex; align-items:center; gap:8px; color:var(--quiet); font-size:.75rem; text-transform:uppercase; letter-spacing:.16em; padding-bottom:24px; min-height:44px; transition:color .18s ease}
+.hero__scroll svg{width:14px; height:14px; color:var(--accent)}
+.hero__stamp{position:absolute; left:24px; bottom:24px; z-index:2; font-size:.75rem; color:var(--quiet); letter-spacing:.04em; font-variant-numeric:tabular-nums}
 
 /* 3D perspective carousel ring (mirrors hero__carousel__0deg…315deg) */
 .scene{position:absolute; inset:0; z-index:1; display:grid; place-items:center; pointer-events:none; perspective:1500px; perspective-origin:50% 44%}
@@ -153,7 +151,14 @@ html[data-theme="dark"] .theme-btn .moon{display:block}
 .ring figure{position:absolute; inset:0; margin:0; transform:rotateY(var(--a)) translateZ(var(--r))}
 .ring img{width:100%; height:100%; object-fit:cover; border-radius:var(--r-img); border:1px solid var(--line); filter:var(--img-filter) brightness(.8) saturate(.7); opacity:.92}
 .hero__veil{position:absolute; inset:0; z-index:1; pointer-events:none;
-  background:radial-gradient(58% 54% at 50% 44%, color-mix(in srgb,var(--ground) 30%,transparent) 0%, var(--ground) 76%)}
+  background:radial-gradient(58% 54% at 50% 44%, color-mix(in srgb,var(--ground) 30%,transparent) 0%, var(--ground) 76%)} /* legibility scrim over ring, not decor */
+
+/* page-load reveal: the one concentrated flourish (hero only) */
+@media (prefers-reduced-motion: no-preference){
+  .rise{opacity:0; transform:translateY(16px); animation:rise .6s cubic-bezier(0,0,.2,1) forwards}
+  .rise.d1{animation-delay:.08s}.rise.d2{animation-delay:.16s}.rise.d3{animation-delay:.24s}
+  @keyframes rise{to{opacity:1; transform:translateY(0)}}
+}
 
 /* ============ section scaffolding ============ */
 section{position:relative}
@@ -163,34 +168,53 @@ section{position:relative}
 .h2{font-size:clamp(2rem,4.6vw,3.4rem); letter-spacing:-0.035em; line-height:1.0}
 .lede{color:var(--muted); font-size:1.05rem; max-width:48ch}
 
-/* ============ what / capabilities ============ */
+/* ============ what (intro band) ============ */
 .what .h2{max-width:18ch}
-.features{display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:48px}
-@media (max-width:900px){.features{grid-template-columns:1fr 1fr}}
-@media (max-width:600px){.features{grid-template-columns:1fr}}
-.feature{
-  display:flex; flex-direction:column; background:var(--surface);
-  border:1px solid var(--line); border-radius:var(--r-card); overflow:hidden; min-width:0;
-  transition:border-color .2s ease, transform .2s ease;
+
+/* ============ ai (three feature blocks, stacked like ref ai__top/left/right) ============ */
+.ai{border-top:1px solid var(--line)}
+.ai__block{padding-block:clamp(48px,8vw,96px)}
+.ai__block + .ai__block{border-top:1px solid var(--line)}
+.ai__head{display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:clamp(28px,4vw,40px)}
+.ai__tag{display:inline-flex; align-items:center; gap:8px; color:var(--ink); font-size:.9rem; font-weight:500; letter-spacing:.01em}
+.ai__tag::before{content:""; width:6px; height:6px; border-radius:999px; background:var(--accent); flex:none}
+.ai__grid{display:grid; grid-template-columns:minmax(0,5fr) minmax(0,7fr); gap:clamp(24px,5vw,72px); align-items:end}
+.ai__block.flip .ai__grid > .ai__txt{order:2}
+@media (max-width:840px){
+  .ai__grid{grid-template-columns:1fr; gap:28px; align-items:start}
+  .ai__block.flip .ai__grid > .ai__txt{order:0}
 }
-.feature:hover{border-color:var(--line-strong); transform:translateY(-2px)}
-.feature__media{position:relative; aspect-ratio:4/5; overflow:hidden; border-bottom:1px solid var(--line)}
-.feature__media img{width:100%; height:100%; object-fit:cover; filter:var(--img-filter)}
-.feature__tag{position:absolute; top:14px; left:14px; display:inline-flex; align-items:center; gap:7px; padding:5px 12px; border-radius:999px; background:rgba(14,13,11,.66); backdrop-filter:blur(6px); color:#F2EEE6; font-size:.74rem; font-weight:500; letter-spacing:.01em}
-.feature__tag::before{content:""; width:5px; height:5px; border-radius:999px; background:var(--accent)}
-.feature__play{position:absolute; right:14px; bottom:14px; width:52px; height:52px; border-radius:999px; background:var(--accent); color:var(--on-accent); display:grid; place-items:center; box-shadow:0 4px 18px rgba(14,13,11,.4)}
-.feature__play svg{width:20px; height:20px; transform:translateX(2px)} /* optical: nudge triangle toward apex */
-.feature__body{padding:22px 24px 24px; display:flex; flex-direction:column; gap:12px; flex:1}
-.feature__body h3{font-size:1.42rem; letter-spacing:-0.03em; line-height:1.06}
-.feature__body p{color:var(--muted); font-size:.98rem}
-.feature__cta{margin-top:auto; padding-top:8px}
-.feature__cta .icon-link{width:42px; height:42px; color:var(--muted)}
-.feature__cta .icon-link:hover{color:var(--accent-text)}
-.feature__cta .icon-link svg{width:18px; height:18px}
+.ai__txt h3{font-size:clamp(1.7rem,3.6vw,2.6rem); letter-spacing:-0.03em; line-height:1.02}
+.ai__txt p{margin-top:16px; color:var(--muted); font-size:1rem; max-width:44ch}
+figure{margin:0}
+.ai .shot{position:relative; overflow:hidden; border-radius:var(--r-img); border:1px solid var(--line)}
+.ai .shot img{width:100%; height:100%; object-fit:cover; filter:var(--img-filter)}
+.shot figcaption{position:absolute; left:8px; bottom:8px; padding:4px 12px; border-radius:999px; background:rgba(14,13,11,.66); backdrop-filter:blur(6px); color:#F2EEE6; font-size:.75rem; font-weight:500; letter-spacing:.01em; max-width:calc(100% - 16px)}
+/* feature 1 — input → output demo + alt looks (the "re-shot" claim, demonstrated) */
+.demo{display:grid; grid-template-columns:minmax(0,2fr) auto minmax(0,3fr); gap:16px; align-items:center}
+.demo .in{aspect-ratio:1; align-self:end}
+.demo .out{aspect-ratio:4/5}
+.demo__arrow{color:var(--accent); display:grid; place-items:center}
+.demo__arrow svg{width:28px; height:28px}
+.alts{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:8px}
+.alts .shot{aspect-ratio:3/4}
+@media (max-width:600px){.alts{grid-template-columns:repeat(2,1fr)}}
+/* feature 2 — packshot collage (left tall / middle stack / right tall) */
+.collage{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) minmax(0,1fr); gap:8px}
+.collage .tall{aspect-ratio:3/4; align-self:center}
+.collage__mid{display:grid; gap:8px}
+.collage__mid .shot{aspect-ratio:5/4}
+@media (max-width:600px){.collage{grid-template-columns:1fr 1fr}.collage__mid{grid-column:span 2; grid-template-columns:1fr 1fr}}
+/* feature 3 — video tiles with play affordance + duration */
+.reels{display:grid; grid-template-columns:repeat(3,1fr); gap:8px}
+.reels .shot{aspect-ratio:3/4}
+.reel__play{position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:52px; height:52px; border-radius:999px; background:var(--accent); color:var(--on-accent); display:grid; place-items:center}
+.reel__play svg{width:20px; height:20px; transform:translateX(2px)} /* optical: nudge triangle toward apex */
+@media (max-width:600px){.reels{grid-template-columns:1fr 1fr}.reels .shot:last-child{display:none}}
 
 /* ============ how ============ */
 .how{border-top:1px solid var(--line)}
-.how__grid{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:clamp(28px,6vw,72px); align-items:center; margin-top:44px}
+.how__grid{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:clamp(28px,6vw,72px); align-items:center; margin-top:48px}
 @media (max-width:780px){.how__grid{grid-template-columns:1fr; gap:24px}}
 .how__left h2{font-size:clamp(2.6rem,6vw,4.6rem); letter-spacing:-0.045em; line-height:.96}
 .how__left .btn{margin-top:28px}
@@ -199,10 +223,10 @@ section{position:relative}
   mask-image:linear-gradient(180deg,transparent,#000 26%,#000 74%,transparent)}
 .how__loop{display:flex; flex-direction:column; animation:hloop 7.5s linear infinite}
 .how__loop ul{list-style:none; margin:0; padding:0; display:flex; flex-direction:column}
-.how__loop li{height:var(--ln); display:flex; align-items:center; font-size:clamp(2.2rem,5vw,4rem); letter-spacing:-0.04em; line-height:1; color:var(--ink); font-weight:600; white-space:nowrap}
+.how__loop li{height:var(--ln); display:flex; align-items:center; font-family:"Bricolage Grotesque","Geist",sans-serif; font-optical-sizing:auto; font-size:clamp(2.2rem,5vw,4rem); letter-spacing:-0.04em; line-height:1; color:var(--ink); font-weight:800; white-space:nowrap}
 @keyframes hloop{to{transform:translateY(-50%)}}
 .trusted{margin-top:clamp(56px,9vw,96px); padding-top:40px; border-top:1px solid var(--line); display:grid; grid-template-columns:minmax(0,180px) minmax(0,1fr); gap:32px; align-items:center}
-@media (max-width:680px){.trusted{grid-template-columns:1fr; gap:18px}}
+@media (max-width:680px){.trusted{grid-template-columns:1fr; gap:16px}}
 .logo-marquee{overflow:hidden; -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent); mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
 .logo-marquee ul{display:flex; align-items:center; gap:48px; list-style:none; margin:0; padding:0; width:max-content; animation:ticker 30s linear infinite}
 .logo-marquee li{flex:none; color:var(--quiet); opacity:.85}
@@ -213,26 +237,25 @@ section{position:relative}
 .list__head{display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-end; gap:20px}
 .list__head h2{font-size:clamp(2.4rem,5.4vw,4.4rem); letter-spacing:-0.045em; line-height:.98; max-width:16ch}
 .list__head p{color:var(--muted); max-width:30ch; font-size:1rem}
-.steps{margin-top:52px; display:grid; gap:14px}
+.steps{margin-top:48px; display:grid; gap:16px}
 .step{
   display:grid; grid-template-columns:auto minmax(0,1fr) minmax(0,260px); gap:clamp(20px,4vw,56px); align-items:center;
-  padding:26px 28px; border:1px solid var(--line); border-radius:var(--r-card); background:var(--surface);
+  padding:24px 32px; border:1px solid var(--line); border-radius:var(--r-card); background:var(--surface);
   transition:border-color .2s ease;
 }
-.step:hover{border-color:var(--line-strong)}
-@media (max-width:840px){.step{grid-template-columns:1fr; gap:18px}}
-.step__num{display:flex; align-items:baseline; gap:10px}
-.step__num .n{font-size:clamp(2.4rem,5vw,3.6rem); font-weight:600; letter-spacing:-0.05em; line-height:1; color:var(--accent-text)}
+@media (max-width:840px){.step{grid-template-columns:1fr; gap:16px; padding:20px 24px}}
+.step__num{display:flex; align-items:baseline; gap:8px}
+.step__num .n{font-family:"Bricolage Grotesque","Geist",sans-serif; font-optical-sizing:auto; font-variant-numeric:tabular-nums; font-size:clamp(2.4rem,5vw,3.6rem); font-weight:800; letter-spacing:-0.05em; line-height:1; color:var(--accent-text)}
 .step__num .code{font-size:.8rem; color:var(--quiet); letter-spacing:.05em}
 .step__main h3{font-size:clamp(1.4rem,2.6vw,2rem); letter-spacing:-0.03em; line-height:1.04}
-.step__main .info-tag{margin-top:14px; display:inline-flex; align-items:center; gap:8px; padding:6px 13px; border-radius:999px; border:1px solid var(--line-strong); color:var(--ink); font-size:.82rem; font-weight:500}
+.step__main .info-tag{margin-top:12px; display:inline-flex; align-items:center; gap:8px; padding:4px 12px; border-radius:999px; border:1px solid var(--line-strong); color:var(--ink); font-size:.8rem; font-weight:500}
 .step__main .info-tag svg{width:14px; height:14px; color:var(--accent); flex:none}
 .step__aside{display:flex; gap:16px; align-items:center; min-width:0}
-.step__thumb{flex:none; width:84px; aspect-ratio:1; border-radius:var(--r-img); overflow:hidden; border:1px solid var(--line)}
+.step__thumb{flex:none; width:84px; aspect-ratio:1; border-radius:var(--r-btn); overflow:hidden; border:1px solid var(--line)}
 .step__thumb img{width:100%; height:100%; object-fit:cover; filter:var(--img-filter)}
 .step__copy{min-width:0}
-.step__copy .desc{color:var(--muted); font-size:.94rem}
-.step__copy .sub{margin-top:8px; font-size:.76rem; text-transform:uppercase; letter-spacing:.1em; color:var(--quiet)}
+.step__copy .desc{color:var(--muted); font-size:.9375rem}
+.step__copy .sub{margin-top:8px; font-size:.75rem; text-transform:uppercase; letter-spacing:.1em; color:var(--quiet)}
 
 /* ============ faq ============ */
 .faq{border-top:1px solid var(--line)}
@@ -241,37 +264,51 @@ section{position:relative}
 .faq__item summary{
   list-style:none; cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:24px;
   padding:24px 4px; font-size:clamp(1.05rem,2vw,1.32rem); letter-spacing:-0.02em; font-weight:500; min-height:48px;
+  text-wrap:balance;
 }
 .faq__item summary::-webkit-details-marker{display:none}
-.faq__icon{flex:none; width:30px; height:30px; border-radius:999px; border:1px solid var(--line-strong); display:grid; place-items:center; position:relative; transition:border-color .2s ease}
+.faq__icon{flex:none; width:32px; height:32px; border-radius:999px; border:1px solid var(--line-strong); display:grid; place-items:center; position:relative; transition:border-color .2s ease}
 .faq__item[open] .faq__icon{border-color:var(--accent)}
 .faq__icon::before,.faq__icon::after{content:""; position:absolute; background:var(--accent); border-radius:2px}
 .faq__icon::before{width:12px; height:2px}
 .faq__icon::after{width:2px; height:12px; transition:transform .2s ease}
 .faq__item[open] .faq__icon::after{transform:scaleY(0)}
-.faq__answer{padding:0 4px 26px; color:var(--muted); max-width:62ch; font-size:1rem}
+.faq__answer{padding:0 4px 24px; color:var(--muted); max-width:62ch; font-size:1rem}
 
 /* ============ footer ============ */
 footer{border-top:1px solid var(--line); padding-block:64px calc(40px + env(safe-area-inset-bottom)); background:var(--surface)}
 .foot__top{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.4fr); gap:48px}
 @media (max-width:760px){.foot__top{grid-template-columns:1fr; gap:36px}}
-.foot__brand{display:inline-flex; align-items:center; gap:10px; font-weight:600; font-size:1.5rem; letter-spacing:-0.04em; color:var(--ink)}
+.foot__brand{display:inline-flex; align-items:center; gap:8px; font-weight:600; font-size:1.5rem; letter-spacing:-0.04em; color:var(--ink)}
 .foot__brand .mark{width:28px; height:28px; border-radius:8px; display:grid; place-items:center; background:var(--accent); color:var(--on-accent)}
 .foot__brand .mark svg{width:18px; height:18px}
 .foot__cols{display:grid; grid-template-columns:1fr 1fr; gap:32px}
-.foot__col{display:flex; flex-direction:column; gap:22px}
-.foot__list{display:flex; flex-direction:column; gap:10px}
-.foot__list a{font-size:1.05rem; letter-spacing:-0.02em; color:var(--ink); padding-block:3px; width:fit-content}
-.foot__list.small a{font-size:.92rem; color:var(--muted)}
-.foot__list a:hover{color:var(--accent-text)}
-.foot__bottom{margin-top:56px; padding-top:24px; border-top:1px solid var(--line); display:flex; flex-wrap:wrap; gap:8px 24px; justify-content:space-between; color:var(--quiet); font-size:.82rem}
+.foot__col{display:flex; flex-direction:column; gap:20px}
+.foot__list{display:flex; flex-direction:column; gap:8px}
+.foot__list a{font-size:1.05rem; letter-spacing:-0.02em; color:var(--ink); padding-block:4px; width:fit-content; transition:color .18s ease}
+.foot__list.small a{font-size:.9rem; color:var(--muted)}
+.foot__bottom{margin-top:56px; padding-top:24px; border-top:1px solid var(--line); display:flex; flex-wrap:wrap; gap:8px 24px; justify-content:space-between; color:var(--quiet); font-size:.8rem; font-variant-numeric:tabular-nums}
+
+/* ============ hover (pointer devices only) ============ */
+@media (hover:hover){
+  .btn-primary:hover{background:var(--accent-2); transform:translateY(-1px)}
+  .icon-link:hover{border-color:var(--accent); color:var(--accent-text)}
+  .menu-btn:hover,.theme-btn:hover{border-color:var(--line-strong)}
+  .menu-list a:hover{color:var(--accent-text)}
+  .hero__scroll:hover{color:var(--ink)}
+  .step:hover{border-color:var(--line-strong)}
+  .foot__list a:hover{color:var(--accent-text)}
+}
+
+/* theme switch: suppress transitions for the frame of the flip */
+html.no-trans *,html.no-trans *::before,html.no-trans *::after{transition:none !important}
 
 @media (prefers-reduced-motion:reduce){
-  .ring,.ring img,.hero__cats ul,.logo-marquee ul,.hero__scroll svg,.how__loop{animation:none !important}
+  .ring,.ring img,.hero__cats ul,.logo-marquee ul,.how__loop{animation:none !important}
   .ring{transform:rotateY(-18deg)}
   .how__right{height:auto}
   .how__loop ul.dup{display:none}
-  .btn,.feature,.step{transition:none}
+  .btn,.step,.icon-link,.menu-panel,.menu-scrim{transition:none}
 }
 </style>
 </head>
@@ -368,87 +405,114 @@ footer{border-top:1px solid var(--line); padding-block:64px calc(40px + env(safe
     <div class="hero__veil" aria-hidden="true"></div>
 
     <div class="wrap hero__inner">
-      <h1>Your catalog, <span class="lite">instantly re-shot.</span></h1>
+      <h1 class="rise">Your catalog, <span class="lite">instantly re-shot.</span></h1>
 
-      <div class="hero__cats" aria-label="Shot types">
+      <div class="hero__cats rise d1" aria-label="Shot types">
         <ul>
           <li>PDPs</li><li>UGC</li><li>Lifestyle shots</li><li>Ads</li><li>Stories</li><li>Street style</li>
           <li>PDPs</li><li>UGC</li><li>Lifestyle shots</li><li>Ads</li><li>Stories</li><li>Street style</li>
         </ul>
       </div>
 
-      <div class="hero__upload">
+      <div class="hero__upload rise d2">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
         <span>Upload or drop your assets</span>
       </div>
     </div>
 
     <div class="wrap hero__scroll-wrap">
-      <a class="hero__scroll" href="#what-is-fourmula">scroll down
+      <a class="hero__scroll rise d3" href="#what-is-fourmula">scroll down
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 5v14M12 19l-5-5M12 19l5-5"/></svg>
       </a>
     </div>
     <span class="hero__stamp">© 20**</span>
   </section>
 
-  <!-- ============ WHAT / CAPABILITIES ============ -->
+  <!-- ============ WHAT (intro band) ============ -->
   <section class="band what" id="what-is-fourmula">
     <div class="wrap">
       <div class="split">
         <p class="eyebrow">What you can do</p>
         <h2 class="h2">On-brand visuals.<br />Made by AI.</h2>
       </div>
+    </div>
+  </section>
 
-      <div class="features">
-        <article class="feature" id="pdp">
-          <div class="feature__media">
-            <span class="feature__tag">AI Fashion Photoshoot</span>
-            <img src="https://picsum.photos/seed/4mla-fashion/720/900" width="720" height="900" loading="lazy" alt="Person wearing an oversized green jacket, white t-shirt, plaid skirt, and black tights standing against an industrial-style concrete wall." />
-          </div>
-          <div class="feature__body">
+  <!-- ============ AI (three feature blocks, stacked) ============ -->
+  <section class="ai">
+    <div class="wrap">
+
+      <article class="ai__block" id="pdp">
+        <div class="ai__head">
+          <p class="ai__tag">AI Fashion Photoshoot</p>
+          <a class="icon-link" href="https://app.fourmula.ai/start" aria-label="Start an AI fashion photoshoot">
+            <svg class="fmark" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><rect x="13.7" y="3.6" width="4.4" height="5.1" rx="1"/><rect x="13.7" y="22.5" width="4.4" height="5.1" rx="1"/><rect x="3.9" y="13.7" width="5.1" height="4.4" rx="1"/><rect x="23" y="13.7" width="5.1" height="4.4" rx="1"/></svg>
+          </a>
+        </div>
+        <div class="ai__grid">
+          <div class="ai__txt">
             <h3>Studio-quality, without the studio.</h3>
             <p>Upload one product and get all the angles, looks and moods you need for PDPs and campaigns—without booking a studio.</p>
-            <div class="feature__cta">
-              <a class="icon-link" href="https://app.fourmula.ai/start" aria-label="Start an AI fashion photoshoot">
-                <svg class="fmark" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><rect x="13.7" y="3.6" width="4.4" height="5.1" rx="1"/><rect x="13.7" y="22.5" width="4.4" height="5.1" rx="1"/><rect x="3.9" y="13.7" width="5.1" height="4.4" rx="1"/><rect x="23" y="13.7" width="5.1" height="4.4" rx="1"/></svg>
-              </a>
+          </div>
+          <div>
+            <div class="demo" role="img" aria-label="One flat product photo of a green jacket is transformed into a styled on-model campaign shot.">
+              <figure class="shot in"><img src="https://picsum.photos/seed/4mla-flatlay/400/400" width="400" height="400" loading="lazy" alt="" /><figcaption>One upload</figcaption></figure>
+              <span class="demo__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h16M20 12l-6-6M20 12l-6 6"/></svg></span>
+              <figure class="shot out"><img src="https://picsum.photos/seed/4mla-fashion/720/900" width="720" height="900" loading="lazy" alt="" /><figcaption>Campaign look</figcaption></figure>
+            </div>
+            <div class="alts" role="img" aria-label="Four alternative angles and looks generated from the same jacket.">
+              <figure class="shot"><img src="https://picsum.photos/seed/4mla-look1/300/400" width="300" height="400" loading="lazy" alt="" /></figure>
+              <figure class="shot"><img src="https://picsum.photos/seed/4mla-look2/300/400" width="300" height="400" loading="lazy" alt="" /></figure>
+              <figure class="shot"><img src="https://picsum.photos/seed/4mla-look3/300/400" width="300" height="400" loading="lazy" alt="" /></figure>
+              <figure class="shot"><img src="https://picsum.photos/seed/4mla-look4/300/400" width="300" height="400" loading="lazy" alt="" /></figure>
             </div>
           </div>
-        </article>
+        </div>
+      </article>
 
-        <article class="feature" id="products">
-          <div class="feature__media">
-            <span class="feature__tag">AI Product Shots</span>
-            <img src="https://picsum.photos/seed/4mla-soap/720/900" width="720" height="900" loading="lazy" alt="Dark green liquid soap dispenser bottle labeled 'FOURMULA' with a black pump and a leafy plant branch beside it." />
-          </div>
-          <div class="feature__body">
+      <article class="ai__block flip" id="products">
+        <div class="ai__head">
+          <p class="ai__tag">AI Product Shots</p>
+          <a class="icon-link" href="https://app.fourmula.ai/start" aria-label="Start AI product shots">
+            <svg class="fmark" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><rect x="13.7" y="3.6" width="4.4" height="5.1" rx="1"/><rect x="13.7" y="22.5" width="4.4" height="5.1" rx="1"/><rect x="3.9" y="13.7" width="5.1" height="4.4" rx="1"/><rect x="23" y="13.7" width="5.1" height="4.4" rx="1"/></svg>
+          </a>
+        </div>
+        <div class="ai__grid">
+          <div class="ai__txt">
             <h3>Your product, new scenes on demand.</h3>
             <p>Drop a product photo and we build clean packshots and styled lifestyle scenes around it.</p>
-            <div class="feature__cta">
-              <a class="icon-link" href="https://app.fourmula.ai/start" aria-label="Start AI product shots">
-                <svg class="fmark" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><rect x="13.7" y="3.6" width="4.4" height="5.1" rx="1"/><rect x="13.7" y="22.5" width="4.4" height="5.1" rx="1"/><rect x="3.9" y="13.7" width="5.1" height="4.4" rx="1"/><rect x="23" y="13.7" width="5.1" height="4.4" rx="1"/></svg>
-              </a>
+          </div>
+          <div class="collage" role="img" aria-label="A Fourmula soap bottle rendered as a clean packshot and in four styled lifestyle scenes.">
+            <figure class="shot tall"><img src="https://picsum.photos/seed/4mla-soap/450/600" width="450" height="600" loading="lazy" alt="" /><figcaption>Packshot</figcaption></figure>
+            <div class="collage__mid">
+              <figure class="shot"><img src="https://picsum.photos/seed/4mla-bath/500/400" width="500" height="400" loading="lazy" alt="" /><figcaption>Bathroom scene</figcaption></figure>
+              <figure class="shot"><img src="https://picsum.photos/seed/4mla-shelf/500/400" width="500" height="400" loading="lazy" alt="" /><figcaption>Shelf scene</figcaption></figure>
             </div>
+            <figure class="shot tall"><img src="https://picsum.photos/seed/4mla-serum/450/600" width="450" height="600" loading="lazy" alt="" /><figcaption>Lifestyle</figcaption></figure>
           </div>
-        </article>
+        </div>
+      </article>
 
-        <article class="feature" id="video">
-          <div class="feature__media">
-            <span class="feature__tag">AI Video Production</span>
-            <img src="https://picsum.photos/seed/4mla-arkena/720/900" width="720" height="900" loading="lazy" alt="Close-up of a tilted perfume bottle labeled '4MLA Arkena Eau De Parfum' with amber-coloured liquid inside, set against a warm-toned background." />
-            <span class="feature__play" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
-          </div>
-          <div class="feature__body">
+      <article class="ai__block" id="video">
+        <div class="ai__head">
+          <p class="ai__tag">AI Video Production</p>
+          <a class="icon-link" href="https://app.fourmula.ai/start" aria-label="Start AI video production">
+            <svg class="fmark" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><rect x="13.7" y="3.6" width="4.4" height="5.1" rx="1"/><rect x="13.7" y="22.5" width="4.4" height="5.1" rx="1"/><rect x="3.9" y="13.7" width="5.1" height="4.4" rx="1"/><rect x="23" y="13.7" width="5.1" height="4.4" rx="1"/></svg>
+          </a>
+        </div>
+        <div class="ai__grid">
+          <div class="ai__txt">
             <h3>Campaign-ready video in minutes.</h3>
             <p>Create on-brand clips for Reels, TikTok and ads without a shoot.</p>
-            <div class="feature__cta">
-              <a class="icon-link" href="https://app.fourmula.ai/start" aria-label="Start AI video production">
-                <svg class="fmark" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><rect x="13.7" y="3.6" width="4.4" height="5.1" rx="1"/><rect x="13.7" y="22.5" width="4.4" height="5.1" rx="1"/><rect x="3.9" y="13.7" width="5.1" height="4.4" rx="1"/><rect x="23" y="13.7" width="5.1" height="4.4" rx="1"/></svg>
-              </a>
-            </div>
           </div>
-        </article>
-      </div>
+          <div class="reels" role="img" aria-label="Three vertical video clips of the 4MLA perfume line, ready for Reels, TikTok and ads.">
+            <figure class="shot"><img src="https://picsum.photos/seed/4mla-arkena/450/600" width="450" height="600" loading="lazy" alt="" /><span class="reel__play" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span><figcaption class="num">Reel · 0:06</figcaption></figure>
+            <figure class="shot"><img src="https://picsum.photos/seed/4mla-silvane/450/600" width="450" height="600" loading="lazy" alt="" /><figcaption class="num">TikTok · 0:09</figcaption></figure>
+            <figure class="shot"><img src="https://picsum.photos/seed/4mla-adclip/450/600" width="450" height="600" loading="lazy" alt="" /><figcaption class="num">Ad · 0:15</figcaption></figure>
+          </div>
+        </div>
+      </article>
+
     </div>
   </section>
 
@@ -535,7 +599,7 @@ footer{border-top:1px solid var(--line); padding-block:64px calc(40px + env(safe
         <article class="step">
           <div class="step__num"><span class="n">03</span><span class="code">(CB)</span></div>
           <div class="step__main">
-            <h3>Choose ones the best.</h3>
+            <h3>Choose the best ones.</h3>
             <span class="info-tag">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="7" height="16" rx="1.5"/><rect x="14" y="4" width="7" height="16" rx="1.5"/></svg>
               Side-by-side comparison
@@ -629,7 +693,7 @@ footer{border-top:1px solid var(--line); padding-block:64px calc(40px + env(safe
           </div>
           <div class="foot__list small">
             <a href="https://www.instagram.com/fourmula.ai?igsh=bm1oOWsyN3UwZjBi">Instagram</a>
-            <a href="#">Facebook</a>
+            <a href="#">Linkedin</a>
             <a href="#">Youtube</a>
           </div>
         </div>
@@ -645,7 +709,12 @@ footer{border-top:1px solid var(--line); padding-block:64px calc(40px + env(safe
 <script>
 (function(){
   var root=document.documentElement, tBtn=document.getElementById('themeToggle');
-  function setTheme(t){root.setAttribute('data-theme',t); tBtn.setAttribute('aria-pressed', t==='light');}
+  function setTheme(t){
+    root.classList.add('no-trans');            /* suppress transitions during theme flip */
+    root.setAttribute('data-theme',t);
+    tBtn.setAttribute('aria-pressed', t==='light');
+    requestAnimationFrame(function(){requestAnimationFrame(function(){root.classList.remove('no-trans');});});
+  }
   tBtn.addEventListener('click',function(){
     setTheme(root.getAttribute('data-theme')==='dark'?'light':'dark');
   });

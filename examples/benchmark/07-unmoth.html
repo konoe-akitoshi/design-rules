@@ -11,45 +11,51 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Faculty+Glyphic&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Faculty+Glyphic&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <style>
 /* ============================================================
    Unmoth — bespoke dark palette derived from the real site.
-   Accent = neon green #1bfa53 (the ONE UI signal colour).
-   Ground = cool near-black #08090a (not pure #000).
-   Ink    = cool near-white #f4f5f7 (not pure #fff).
-   Fonts: Faculty Glyphic (display) / Geist (body) / Geist Mono (labels).
+   Ground   = cool near-black 08090A (real; never pure black).
+   Ink      = warm near-white F4F3F0 (real; never pure white).
+   Accent   = whisper champagne #C9A86C — ONE warm point of light
+              in the dark ("invisible → unforgettable"). All state
+              colours are DERIVED from it (color-mix), never a
+              second hand-picked hex.
+   Fonts: Faculty Glyphic (display, single 400) / Geist (body).
    ============================================================ */
 :root{
-  /* neutrals (cool) */
-  --bg:           #08090a;
-  --surface:      #121314;
-  --raised:       #1a1c1d;
-  --line:         rgba(255,255,255,.09);
-  --line-strong:  rgba(255,255,255,.18);
-  --ink:          #f4f5f7;   /* cool near-white, 18.3:1 on bg */
-  --muted:        #b4b6b9;   /* secondary body, 9.8:1 */
-  --quiet:        #86888b;   /* labels/meta, 5.6:1 — safe at <=14px */
+  color-scheme: dark;
 
-  /* the single accent */
-  --accent:       #1bfa53;   /* neon green, 14:1 on bg */
-  --accent-ink:   #15c63f;   /* hover/pressed */
-  --on-accent:    #08090a;   /* near-black text on green, 14:1 */
+  /* neutrals (cool near-black ramp, real values) */
+  --bg:           #08090a;
+  --surface:      #121314;               /* +1 elevation step (lightness) */
+  --line:         rgba(255,255,255,.09); /* hairline ≈ real #262727 */
+  --line-strong:  rgba(255,255,255,.18);
+  --ink:          #f4f3f0;   /* headings, ~18:1 on bg */
+  --body:         #c7c6c1;   /* body copy, ~11.5:1 */
+  --quiet:        #8e8e8b;   /* secondary, ~6:1 — body-safe */
+  --label:        #7c7c79;   /* uppercase labels, ~4.7:1 (real #5C5D5E lifted for a11y) */
+
+  /* the single accent + derived states (no second hex) */
+  --accent:       #c9a86c;                                        /* ~8.8:1 on bg */
+  --accent-hover: color-mix(in oklab, var(--accent) 82%, white);  /* hover: lighter = MORE contrast on dark */
+  --accent-dim:   color-mix(in oklab, var(--accent) 24%, var(--bg));
+  --on-accent:    #08090a;
 
   /* type */
   --display: "Faculty Glyphic", "Times New Roman", Georgia, serif;
-  --body:    "Geist", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --mono:    "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --sans:    "Geist", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 
   /* spacing (4pt grid) */
   --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s6:24px; --s8:32px;
   --s12:48px; --s16:64px; --s24:96px;
 
-  /* radius — matches real site (8 / 12) */
+  /* radius */
   --r-panel:12px;
   --r-ctrl:8px;
   --r-chip:4px;
+  --r-pill:999px;
 
   --maxw:1240px;
   --pad: clamp(20px, 5vw, 64px);
@@ -62,9 +68,11 @@ html{ -webkit-text-size-adjust:100%; scroll-behavior:smooth; }
 body{
   margin:0;
   background:var(--bg);
-  color:var(--ink);
-  font-family:var(--body);
+  color:var(--body);
+  font-family:var(--sans);
+  font-optical-sizing:auto;
   font-size:17px;
+  font-weight:300;
   line-height:1.6;
   letter-spacing:-.01em;
   -webkit-font-smoothing:antialiased;
@@ -73,83 +81,96 @@ body{
 }
 img{ max-width:100%; display:block; }
 a{ color:inherit; text-decoration:none; }
+h1,h2,h3{ text-wrap:balance; }
+p{ text-wrap:pretty; }
 
 /* focus visibility (a11y floor) */
 :focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:2px; }
 
+/* skip link — animates transform only (never `top`) */
 .skip{
-  position:absolute; left:var(--s4); top:-60px; z-index:200;
+  position:fixed; left:var(--s4); top:var(--s4); z-index:200;
   background:var(--accent); color:var(--on-accent);
-  padding:10px 18px; border-radius:var(--r-ctrl); font-weight:600;
-  transition:top .15s ease;
+  padding:12px 20px; border-radius:var(--r-ctrl); font-weight:600;
+  transform:translateY(calc(-100% - 24px));
+  transition:transform .15s cubic-bezier(0,0,.2,1);
 }
-.skip:focus{ top:var(--s4); }
+.skip:focus{ transform:translateY(0); }
+@media (prefers-reduced-motion: reduce){ .skip{ transition:none; } }
 
 /* ---------- layout helpers ---------- */
 .wrap{ width:100%; max-width:var(--maxw); margin-inline:auto; padding-inline:var(--pad); }
 .section{ padding-block: clamp(72px, 11vw, 144px); }
 .section + .section{ border-top:1px solid var(--line); }
 
-.eyebrow{
+/* index label — carries the real chapter index 001–006 (quiet, no accent) */
+.index-label{
   display:flex; align-items:baseline; gap:var(--s3);
-  font-family:var(--mono); font-size:12px; font-weight:500;
-  letter-spacing:.14em; text-transform:uppercase;
-  color:var(--accent);
+  font-size:12px; font-weight:500;
+  letter-spacing:.16em; text-transform:uppercase;
+  color:var(--label);
   margin:0 0 var(--s8);
 }
-.eyebrow .num{ color:var(--quiet); letter-spacing:.1em; }
-.eyebrow::before{
-  content:""; width:8px; height:8px; border-radius:50%;
-  background:var(--accent); align-self:center;
-}
+.index-label .num{ font-variant-numeric:tabular-nums; color:var(--quiet); }
 
-/* ---------- buttons ---------- */
+/* ---------- buttons — real identity: transparent hairline pill ---------- */
 .btn{
   display:inline-flex; align-items:center; justify-content:center; gap:var(--s2);
-  min-height:48px; padding:13px 24px;            /* asymmetric 1:~1.85 */
-  font-family:var(--body); font-size:15px; font-weight:600; letter-spacing:-.01em;
-  border-radius:var(--r-ctrl); border:1px solid transparent;
-  cursor:pointer; transition:background .18s ease, border-color .18s ease, color .18s ease;
+  min-height:48px; padding:12px 24px;            /* asymmetric 1:2 */
+  font-family:var(--sans); font-size:15px; font-weight:500; letter-spacing:-.01em;
+  border-radius:var(--r-pill);
+  background:transparent; color:var(--ink);
+  border:1px solid var(--line-strong);
+  cursor:pointer;
+  transition:border-color .16s cubic-bezier(0,0,.2,1), color .16s cubic-bezier(0,0,.2,1);
 }
-.btn-primary{ background:var(--accent); color:var(--on-accent); }
-.btn-primary:hover{ background:var(--accent-ink); }
-.btn-ghost{ background:transparent; color:var(--ink); border-color:var(--line-strong); }
-.btn-ghost:hover{ background:var(--surface); border-color:var(--accent); }
-.btn .arr{ transform:translateY(0); transition:transform .18s ease; }
-.btn:hover .arr{ transform:translate(2px,-1px); }
-@media (prefers-reduced-motion: reduce){ .btn,.btn .arr{ transition:none; } }
+.btn:active{ transform:translateY(1px); }
+.btn .arr{ transition:transform .16s cubic-bezier(0,0,.2,1); }
+@media (hover: hover){
+  .btn:hover{ border-color:var(--accent); color:var(--accent-hover); }
+  .btn:hover .arr{ transform:translateX(2px); }
+}
+@media (prefers-reduced-motion: reduce){ .btn,.btn .arr{ transition:none; } .btn:active{ transform:none; } }
+
+/* text links (footer / inline) */
+.tlink{ transition:color .15s cubic-bezier(0,0,.2,1); }
+@media (hover: hover){ .tlink:hover{ color:var(--ink); } }
+@media (prefers-reduced-motion: reduce){ .tlink{ transition:none; } }
 
 /* ============================================================
    HEADER / NAV
    ============================================================ */
 .site-header{
   position:sticky; top:0; z-index:100;
-  background:color-mix(in srgb, var(--bg) 86%, transparent);
+  background:color-mix(in srgb, var(--bg) 88%, transparent);
   backdrop-filter:saturate(140%) blur(10px);
   border-bottom:1px solid var(--line);
 }
 .nav{
   display:flex; align-items:center; justify-content:space-between;
-  gap:var(--s6); min-height:68px; padding-block:10px;
+  gap:var(--s6); min-height:68px; padding-block:12px;
 }
 .brand{
-  display:inline-flex; align-items:center; gap:10px;
-  font-family:var(--display); font-size:21px; letter-spacing:-.01em; color:var(--ink);
+  display:inline-flex; align-items:center; gap:8px;
+  font-family:var(--display); font-weight:400; font-size:21px; letter-spacing:-.01em; color:var(--ink);
 }
-.brand .mark{
-  width:13px; height:13px; border-radius:50%;
-  background:var(--accent); box-shadow:0 0 14px color-mix(in srgb, var(--accent) 60%, transparent);
-}
+/* orbit mark: hairline ring, one lit point */
+.brand .mark{ flex:none; width:16px; height:16px; }
+.brand .mark circle.orbit{ fill:none; stroke:var(--line-strong); stroke-width:1; }
+.brand .mark circle.spark{ fill:var(--accent); }
+
 .nav-links{
   display:flex; align-items:center; gap:4px; list-style:none; margin:0; padding:0;
 }
 .nav-links a{
   display:inline-flex; align-items:center; min-height:40px; padding:0 12px;
-  font-size:14px; color:var(--muted); border-radius:var(--r-chip);
-  transition:color .15s ease;
+  font-size:14px; font-weight:400; color:var(--quiet); border-radius:var(--r-chip);
+  transition:color .15s cubic-bezier(0,0,.2,1);
 }
-.nav-links a:hover{ color:var(--ink); }
+@media (hover: hover){ .nav-links a:hover{ color:var(--ink); } }
+@media (prefers-reduced-motion: reduce){ .nav-links a{ transition:none; } }
 .nav-actions{ display:flex; align-items:center; gap:var(--s3); }
+.nav-actions .btn{ min-height:44px; padding:8px 20px; }
 
 .nav-toggle{
   display:none; align-items:center; justify-content:center;
@@ -158,46 +179,80 @@ a{ color:inherit; text-decoration:none; }
 }
 .nav-toggle svg{ width:20px; height:20px; }
 
-/* mobile disclosure panel */
+/* mobile disclosure panel — instant open/close (no layout animation) */
 .nav-panel{ display:none; }
 
 @media (max-width: 900px){
   .nav-links, .nav-actions .btn{ display:none; }
   .nav-toggle{ display:inline-flex; }
-  .nav-panel{
-    display:block; max-height:0; overflow:hidden; visibility:hidden;
-    border-top:1px solid var(--line);
-    transition:max-height .28s ease, visibility 0s linear .28s;
-  }
-  .nav-panel[data-open="true"]{ max-height:560px; visibility:visible; transition:max-height .28s ease; }
+  .nav-panel{ display:block; border-top:1px solid var(--line); }
+  .nav-panel[hidden]{ display:none; }
   .nav-panel ul{ list-style:none; margin:0; padding:var(--s4) 0 var(--s6); }
   .nav-panel a:not(.btn){
     display:flex; align-items:center; min-height:52px; padding:0 4px;
     font-size:18px; color:var(--ink); border-bottom:1px solid var(--line);
   }
   .nav-panel .btn{ display:inline-flex; margin-top:var(--s4); width:100%; }
-  @media (prefers-reduced-motion: reduce){ .nav-panel{ transition:none; } }
 }
 
 /* ============================================================
-   HERO
+   HERO — near-empty centre, one point of light
    ============================================================ */
-.hero{ padding-block: clamp(72px, 13vw, 168px) clamp(64px,9vw,120px); }
+.hero{
+  padding-block: clamp(88px, 14vw, 184px) clamp(64px,9vw,120px);
+  display:flex; flex-direction:column; align-items:center; text-align:center;
+}
+/* focal orbit glyph — the one lit point in the dark */
+.hero .glyph{ width:88px; height:88px; margin-bottom:clamp(28px,4vw,44px); }
+.hero .glyph .orbit{ fill:none; stroke:var(--line-strong); stroke-width:1; }
+.hero .glyph .orbit2{ fill:none; stroke:var(--line); stroke-width:1; }
+.hero .glyph .spark{ fill:var(--accent); }
+.hero .glyph .halo{ fill:var(--accent-dim); }
+
 .hero h1{
   font-family:var(--display); font-weight:400;
-  font-size:clamp(44px, 8.6vw, 108px); line-height:.97; letter-spacing:-.03em;
-  margin:0; max-width:14ch; color:var(--ink);
+  font-size:clamp(44px, 8.4vw, 104px); line-height:1.02; letter-spacing:-.03em;
+  margin:0; max-width:15ch; color:var(--ink);
 }
 .hero .lede{
-  margin:clamp(24px,4vw,40px) 0 0; max-width:36ch;
-  font-size:clamp(19px,2.4vw,26px); line-height:1.4; letter-spacing:-.015em;
-  color:var(--muted); font-weight:300;
+  margin:clamp(20px,3vw,32px) 0 0; max-width:36ch;
+  font-size:clamp(18px,2.2vw,24px); line-height:1.4; letter-spacing:-.015em;
+  color:var(--quiet); font-weight:300;
 }
-.hero .lede .hl{ color:var(--accent); font-weight:500; }
-.hero-cta{ display:flex; flex-wrap:wrap; gap:var(--s3); margin-top:clamp(32px,5vw,52px); }
+.hero-cta{ display:flex; flex-wrap:wrap; justify-content:center; gap:var(--s3); margin-top:clamp(32px,5vw,52px); }
+
+/* availability status — dot + label (never colour alone) */
+.status{
+  display:inline-flex; align-items:center; gap:var(--s2);
+  margin-top:clamp(24px,4vw,40px);
+  font-size:13px; font-weight:400; letter-spacing:.04em; color:var(--quiet);
+}
+.status .dot{ width:7px; height:7px; border-radius:50%; background:var(--accent); }
+
+/* page-load reveal — the ONE staged animation (brand A: concentrate the
+   flourish at load; everything after is still). transform/opacity only. */
+@media (prefers-reduced-motion: no-preference){
+  .hero .reveal{ opacity:0; transform:translateY(12px); animation:rise .5s cubic-bezier(0,0,.2,1) forwards; }
+  .hero .reveal.d1{ animation-delay:.08s; }
+  .hero .reveal.d2{ animation-delay:.16s; }
+  .hero .reveal.d3{ animation-delay:.24s; }
+  .hero .reveal.d4{ animation-delay:.32s; }
+  @keyframes rise{ to{ opacity:1; transform:translateY(0); } }
+}
 
 /* ============================================================
-   WORK / USE CASES
+   MANIFESTO — one centred serif sentence
+   ============================================================ */
+.manifesto{ text-align:center; }
+.manifesto p{
+  font-family:var(--display); font-weight:400;
+  font-size:clamp(26px, 4.6vw, 56px); line-height:1.18; letter-spacing:-.02em;
+  color:var(--ink); margin:0 auto; max-width:24ch; text-wrap:balance;
+}
+.manifesto .dark{ color:var(--quiet); }
+
+/* ============================================================
+   001 WORK / USE CASES
    ============================================================ */
 .cases{ display:grid; gap:clamp(40px,7vw,96px); }
 .case > header{
@@ -207,9 +262,11 @@ a{ color:inherit; text-decoration:none; }
 }
 .case h3{
   font-family:var(--display); font-weight:400;
-  font-size:clamp(26px,3.4vw,40px); letter-spacing:-.02em; line-height:1; margin:0;
+  font-size:clamp(26px,3.4vw,40px); letter-spacing:-.02em; line-height:1.1; margin:0; color:var(--ink);
 }
-.case .case-tag{ font-family:var(--mono); font-size:12px; letter-spacing:.12em; color:var(--quiet); text-transform:uppercase; }
+.case .case-tag{
+  font-size:12px; font-weight:500; letter-spacing:.14em; color:var(--label); text-transform:uppercase;
+}
 .case-media{ display:grid; gap:clamp(12px,1.6vw,20px); }
 .case-media.two{ grid-template-columns:1.4fr 1fr; }
 .case-media.three{ grid-template-columns:repeat(3,1fr); }
@@ -218,13 +275,13 @@ a{ color:inherit; text-decoration:none; }
   width:100%; height:100%; aspect-ratio:4/3; object-fit:cover;
   border-radius:var(--r-panel); border:1px solid var(--line);
   background:var(--surface);
-  filter:saturate(.92) contrast(1.02);
+  filter:saturate(.85) contrast(1.04) brightness(.92);
 }
 .case-media .ix{
   position:absolute; left:12px; bottom:12px;
-  font-family:var(--mono); font-size:11px; letter-spacing:.1em;
-  color:var(--ink); background:color-mix(in srgb, var(--bg) 70%, transparent);
-  border:1px solid var(--line); padding:4px 9px; border-radius:var(--r-chip);
+  font-size:11px; font-weight:500; letter-spacing:.1em; font-variant-numeric:tabular-nums;
+  color:var(--ink); background:color-mix(in srgb, var(--bg) 72%, transparent);
+  border:1px solid var(--line); padding:4px 8px; border-radius:var(--r-chip);
   backdrop-filter:blur(4px);
 }
 .work-more{ margin-top:clamp(40px,6vw,72px); }
@@ -233,14 +290,13 @@ a{ color:inherit; text-decoration:none; }
 }
 
 /* ============================================================
-   SERVICES — index / catalogue (not a 3-col feature grid)
+   002 SERVICES — numbered index (not a 3-col feature grid)
    ============================================================ */
 .services-head{
   font-family:var(--display); font-weight:400;
-  font-size:clamp(28px,4.4vw,56px); line-height:1.08; letter-spacing:-.02em;
-  margin:0 0 clamp(40px,6vw,72px); max-width:18ch; color:var(--ink);
+  font-size:clamp(28px,4.4vw,56px); line-height:1.12; letter-spacing:-.02em;
+  margin:0 0 clamp(40px,6vw,72px); max-width:20ch; color:var(--ink);
 }
-.services-head .hl{ color:var(--accent); }
 .svc-list{
   list-style:none; margin:0; padding:0;
   border-top:1px solid var(--line);
@@ -249,90 +305,120 @@ a{ color:inherit; text-decoration:none; }
 .svc-list li{
   break-inside:avoid;
   display:flex; align-items:baseline; gap:var(--s4);
-  padding:18px 0; border-bottom:1px solid var(--line);
-  font-size:clamp(17px,1.7vw,20px); color:var(--ink); letter-spacing:-.01em;
+  padding:16px 0 12px; border-bottom:1px solid var(--line);   /* asymmetric: optical baseline */
+  font-size:clamp(17px,1.7vw,20px); font-weight:400; color:var(--ink); letter-spacing:-.01em;
 }
-.svc-list li .n{ font-family:var(--mono); font-size:12px; color:var(--accent); letter-spacing:.08em; min-width:2.4em; }
+.svc-list li .n{
+  font-size:12px; font-weight:500; letter-spacing:.08em; font-variant-numeric:tabular-nums;
+  color:var(--label); min-width:2.4em;
+}
 @media (max-width:680px){ .svc-list{ columns:1; } }
 
 /* ============================================================
-   PROCESS
+   MARQUEE — quiet ticker of case names (info: the client index)
    ============================================================ */
+.marquee{ padding-block:clamp(40px,6vw,64px); border-top:1px solid var(--line); overflow:hidden; }
+.marquee .lane{
+  display:flex; width:max-content; gap:clamp(40px,6vw,80px);
+  mask-image:linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-image:linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.marquee ul{
+  display:flex; align-items:center; gap:clamp(40px,6vw,80px);
+  list-style:none; margin:0; padding:0; flex:none;
+}
+.marquee li{
+  font-family:var(--display); font-weight:400;
+  font-size:clamp(20px,2.4vw,28px); letter-spacing:-.01em; color:var(--quiet); white-space:nowrap;
+}
+.marquee li::after{ content:""; display:inline-block; width:5px; height:5px; border-radius:50%;
+  background:var(--line-strong); vertical-align:middle; margin-left:clamp(40px,6vw,80px); }
+@media (prefers-reduced-motion: no-preference){
+  .marquee .lane{ animation:tick 36s linear infinite; }
+  @keyframes tick{ to{ transform:translateX(calc(-50% - clamp(20px,3vw,40px))); } }
+}
+
+/* ============================================================
+   003 PROCESS — 3 stages
+   ============================================================ */
+.process-head{
+  font-family:var(--display); font-weight:400;
+  font-size:clamp(32px,5.5vw,72px); line-height:1.06; letter-spacing:-.025em;
+  margin:0 0 clamp(48px,7vw,88px); max-width:16ch; color:var(--ink);
+}
 .steps{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(20px,3vw,40px); }
-.step{ min-width:0; }
+.step{ min-width:0; border-top:1px solid var(--line); padding-top:var(--s6); }
 .step .k{
-  font-family:var(--mono); font-size:12px; letter-spacing:.12em; color:var(--quiet);
-  text-transform:uppercase; display:block; margin-bottom:var(--s4);
+  display:block; margin-bottom:var(--s4);
+  font-size:12px; font-weight:500; letter-spacing:.14em; font-variant-numeric:tabular-nums;
+  color:var(--label); text-transform:uppercase;
 }
 .step h3{
   font-family:var(--display); font-weight:400;
   font-size:clamp(22px,2.6vw,30px); letter-spacing:-.02em; margin:0 0 var(--s3); color:var(--ink);
 }
-.step p{ margin:0; color:var(--muted); font-size:16px; max-width:34ch; }
+.step p{ margin:0; color:var(--quiet); font-size:16px; font-weight:300; max-width:34ch; }
 @media (max-width:760px){ .steps{ grid-template-columns:1fr; gap:var(--s8); } }
 
-/* day ruler */
-.ruler{
-  margin-top:clamp(48px,7vw,88px); position:relative; height:64px;
-}
-.ruler .track{
-  position:absolute; left:0; right:0; top:18px; height:1px; background:var(--line-strong);
-}
-.ruler .tick{
-  position:absolute; top:14px; transform:translateX(-50%);
-  display:flex; flex-direction:column; align-items:center; gap:10px;
-}
-.ruler .dot{ width:9px; height:9px; border-radius:50%; background:var(--accent); }
-.ruler .tick:not(.mile) .dot{ background:var(--quiet); width:7px; height:7px; }
-.ruler .lab{ font-family:var(--mono); font-size:12px; letter-spacing:.08em; color:var(--quiet); }
-.ruler .tick.mile .lab{ color:var(--ink); }
-.ruler .cap{
-  position:absolute; right:0; top:-6px; font-family:var(--mono); font-size:11px;
-  letter-spacing:.12em; text-transform:uppercase; color:var(--quiet);
-}
-
 /* ============================================================
-   TIMELINE (statement)
+   004 TIMELINE — statement + 14-day rail
    ============================================================ */
 .timeline-head{
   font-family:var(--display); font-weight:400;
-  font-size:clamp(32px,5.5vw,72px); line-height:1.02; letter-spacing:-.025em;
-  margin:0; max-width:16ch; color:var(--ink);
+  font-size:clamp(30px,4.8vw,64px); line-height:1.1; letter-spacing:-.02em;
+  margin:0; max-width:22ch; color:var(--ink);
 }
-.timeline-body{
-  margin:clamp(24px,4vw,40px) 0 0; max-width:42ch;
-  font-size:clamp(18px,2vw,22px); line-height:1.5; color:var(--muted); font-weight:300;
+.timeline-head .match{ color:var(--quiet); }
+
+/* day rail */
+.rail{ margin-top:clamp(56px,8vw,96px); position:relative; height:72px; }
+.rail .track{ position:absolute; left:0; right:0; top:22px; height:1px; background:var(--line-strong); }
+.rail .cap{
+  position:absolute; right:0; top:-8px;
+  font-size:11px; font-weight:500; letter-spacing:.14em; text-transform:uppercase; color:var(--label);
 }
+.rail .tick{
+  position:absolute; top:18px; transform:translateX(-50%);
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+}
+.rail .dot{ width:7px; height:7px; border-radius:50%; background:var(--quiet); }
+.rail .lab{
+  font-size:12px; font-weight:400; letter-spacing:.08em; font-variant-numeric:tabular-nums; color:var(--quiet);
+}
+.rail .tick.final .dot{ width:9px; height:9px; background:var(--accent); }   /* the one lit point: day 14 */
+.rail .tick.final .lab{ color:var(--ink); font-weight:500; }
 
 /* ============================================================
-   PRICING
+   005 PRICING — single offer
    ============================================================ */
 .price-grid{ display:grid; grid-template-columns:1.05fr 1fr; gap:clamp(32px,5vw,72px); align-items:start; }
 .price-intro h3{
   font-family:var(--display); font-weight:400;
-  font-size:clamp(30px,4.4vw,52px); letter-spacing:-.02em; line-height:1.02; margin:0 0 var(--s4); color:var(--ink);
+  font-size:clamp(30px,4.4vw,52px); letter-spacing:-.02em; line-height:1.06; margin:0 0 var(--s3); color:var(--ink);
 }
-.price-intro .sub{ font-family:var(--mono); font-size:13px; letter-spacing:.06em; color:var(--accent); margin:0 0 var(--s6); }
-.price-intro p{ margin:0; color:var(--muted); max-width:46ch; }
+.price-intro .sub{
+  font-size:13px; font-weight:500; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--label); margin:0 0 var(--s6);
+}
+.price-intro p{ margin:0; color:var(--body); max-width:46ch; }
 .price-card{
   background:var(--surface); border:1px solid var(--line);
-  border-radius:var(--r-panel); padding:clamp(24px,3vw,36px);
+  border-radius:var(--r-panel); padding:24px 32px 32px;        /* asymmetric */
 }
 .spec{ list-style:none; margin:0 0 var(--s8); padding:0; }
 .spec li{
   display:flex; align-items:center; justify-content:space-between; gap:var(--s4);
   padding:16px 0; border-bottom:1px solid var(--line);
 }
-.spec li:first-child{ border-top:1px solid var(--line); }
-.spec .lbl{ font-family:var(--mono); font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--quiet); }
-.spec .val{ font-size:17px; font-weight:500; color:var(--ink); text-align:right; }
+.spec .lbl{ font-size:12px; font-weight:500; letter-spacing:.12em; text-transform:uppercase; color:var(--label); }
+.spec .val{ font-size:17px; font-weight:500; font-variant-numeric:tabular-nums; color:var(--ink); text-align:right; }
 .price-card .btn{ width:100%; }
 @media (max-width:820px){ .price-grid{ grid-template-columns:1fr; gap:var(--s12); } }
 
 /* ============================================================
-   FAQ
+   006 FAQ — 5 questions (real)
    ============================================================ */
-.faq{ border-top:1px solid var(--line); }
+.faq{ border-top:1px solid var(--line); max-width:880px; }
 .faq details{ border-bottom:1px solid var(--line); }
 .faq summary{
   list-style:none; cursor:pointer;
@@ -343,49 +429,69 @@ a{ color:inherit; text-decoration:none; }
 }
 .faq summary::-webkit-details-marker{ display:none; }
 .faq summary .pm{
-  flex:none; width:26px; height:26px; position:relative; color:var(--accent);
-  transition:transform .2s ease;
+  flex:none; width:26px; height:26px; position:relative; color:var(--quiet);
+  transition:color .15s cubic-bezier(0,0,.2,1);
 }
+@media (hover: hover){ .faq summary:hover .pm{ color:var(--accent); } }
 .faq summary .pm::before,.faq summary .pm::after{
   content:""; position:absolute; left:50%; top:50%; background:currentColor;
 }
-.faq summary .pm::before{ width:14px; height:2px; transform:translate(-50%,-50%); }
-.faq summary .pm::after{ width:2px; height:14px; transform:translate(-50%,-50%); transition:opacity .2s ease; }
+.faq summary .pm::before{ width:14px; height:1.5px; transform:translate(-50%,-50%); }
+.faq summary .pm::after{ width:1.5px; height:14px; transform:translate(-50%,-50%); transition:opacity .15s cubic-bezier(0,0,.2,1); }
 .faq details[open] summary .pm::after{ opacity:0; }
-.faq .answer{ padding:0 0 clamp(20px,2.6vw,28px); max-width:62ch; color:var(--muted); font-size:16px; }
+.faq .answer{ padding:0 0 clamp(20px,2.6vw,28px); max-width:62ch; color:var(--body); font-size:16px; font-weight:300; }
 @media (prefers-reduced-motion: reduce){ .faq summary .pm,.faq summary .pm::after{ transition:none; } }
 
 /* ============================================================
-   FOOTER
+   FOOTER — final CTA + columns
    ============================================================ */
-.site-footer{ border-top:1px solid var(--line); padding-block:clamp(56px,8vw,96px) clamp(32px,5vw,48px); }
+.site-footer{ border-top:1px solid var(--line); }
+.foot-cta{
+  padding-block:clamp(72px,10vw,128px);
+  display:flex; flex-direction:column; align-items:center; text-align:center;
+  border-bottom:1px solid var(--line);
+}
+.foot-cta h2{
+  font-family:var(--display); font-weight:400;
+  font-size:clamp(32px,5.5vw,72px); line-height:1.06; letter-spacing:-.025em;
+  margin:0 0 clamp(28px,4vw,44px); max-width:18ch; color:var(--ink);
+}
+.foot-body{ padding-block:clamp(56px,8vw,96px) clamp(32px,5vw,48px); }
 .foot-top{ display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:clamp(32px,5vw,64px); }
 .foot-brand .brand{ font-size:26px; }
-.foot-brand p{ margin:var(--s4) 0 0; color:var(--quiet); max-width:34ch; font-size:15px; }
+.foot-brand .brand .mark{ width:18px; height:18px; }
+.foot-brand p{ margin:var(--s4) 0 0; color:var(--quiet); max-width:34ch; font-size:15px; font-weight:300; }
 .foot-col h2{
-  display:flex; align-items:baseline; gap:var(--s3);
-  font-family:var(--mono); font-size:12px; font-weight:500; letter-spacing:.12em;
-  text-transform:uppercase; color:var(--quiet); margin:0 0 var(--s6);
+  font-size:12px; font-weight:500; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--label); margin:0 0 var(--s6);
 }
-.foot-col h2 .n{ color:var(--accent); }
 .foot-col ul{ list-style:none; margin:0; padding:0; }
-.foot-col li{ margin:0; }
 .foot-col a{
-  display:inline-flex; align-items:center; min-height:36px; color:var(--muted);
-  font-size:16px; transition:color .15s ease;
+  display:inline-flex; align-items:center; min-height:36px; color:var(--quiet);
+  font-size:16px; font-weight:400;
 }
-.foot-col a:hover{ color:var(--ink); }
 .foot-bottom{
   display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:var(--s4);
   margin-top:clamp(48px,7vw,80px); padding-top:var(--s6); border-top:1px solid var(--line);
-  font-family:var(--mono); font-size:12px; letter-spacing:.06em; color:var(--quiet);
+  font-size:13px; font-weight:400; letter-spacing:.04em; color:var(--label);
 }
+.foot-bottom .yr{ font-variant-numeric:tabular-nums; }
 @media (max-width:760px){ .foot-top{ grid-template-columns:1fr 1fr; } .foot-brand{ grid-column:1 / -1; } }
 @media (max-width:460px){ .foot-top{ grid-template-columns:1fr; } }
 
 /* safe-area for notched devices */
 @supports(padding:max(0px)){
   .wrap{ padding-left:max(var(--pad), env(safe-area-inset-left)); padding-right:max(var(--pad), env(safe-area-inset-right)); }
+}
+
+/* reduced motion — global floor */
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{
+    animation-duration:0.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:0.01ms !important;
+  }
+  .marquee .lane{ animation:none; }
 }
 </style>
 </head>
@@ -395,55 +501,69 @@ a{ color:inherit; text-decoration:none; }
 <header class="site-header">
   <div class="wrap">
     <nav class="nav" aria-label="Primary">
-      <a class="brand" href="#main" aria-label="Unmoth, home"><span class="mark" aria-hidden="true"></span>Unmoth</a>
+      <a class="brand" href="#main" aria-label="Unmoth, home">
+        <svg class="mark" viewBox="0 0 16 16" aria-hidden="true"><circle class="orbit" cx="8" cy="8" r="6.5"/><circle class="spark" cx="13.6" cy="4.8" r="2"/></svg>
+        Unmoth
+      </a>
 
       <ul class="nav-links">
         <li><a href="#work">Work</a></li>
         <li><a href="#services">Services</a></li>
         <li><a href="#process">Process</a></li>
-        <li><a href="#timeline">Timeline</a></li>
         <li><a href="#pricing">Pricing</a></li>
         <li><a href="#faq">FAQ</a></li>
       </ul>
 
       <div class="nav-actions">
-        <a class="btn btn-primary" href="#pricing">Get sprint</a>
+        <a class="btn" href="#pricing">Get sprint</a>
         <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu" id="navToggle">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
         </button>
       </div>
     </nav>
 
-    <div class="nav-panel" id="mobile-nav" data-open="false">
+    <div class="nav-panel" id="mobile-nav" hidden>
       <ul>
         <li><a href="#work">Work</a></li>
         <li><a href="#services">Services</a></li>
         <li><a href="#process">Process</a></li>
-        <li><a href="#timeline">Timeline</a></li>
         <li><a href="#pricing">Pricing</a></li>
         <li><a href="#faq">FAQ</a></li>
       </ul>
-      <a class="btn btn-primary" href="#pricing">Get sprint</a>
+      <a class="btn" href="#pricing">Get sprint</a>
     </div>
   </div>
 </header>
 
 <main id="main">
 
-  <!-- HERO -->
+  <!-- HERO — near-empty centre, one lit point -->
   <section class="hero wrap" aria-labelledby="hero-title">
-    <h1 id="hero-title">From invisible to unforgettable.</h1>
-    <p class="lede">Your brand in just <span class="hl">14 days</span>.</p>
-    <div class="hero-cta">
-      <a class="btn btn-primary" href="#pricing">Get sprint <span class="arr" aria-hidden="true">→</span></a>
-      <a class="btn btn-ghost" href="#work">Work</a>
+    <svg class="glyph reveal" viewBox="0 0 88 88" aria-hidden="true">
+      <circle class="orbit2" cx="44" cy="44" r="41"/>
+      <circle class="orbit" cx="44" cy="44" r="28"/>
+      <circle class="halo" cx="66.5" cy="27" r="9"/>
+      <circle class="spark" cx="66.5" cy="27" r="3.5"/>
+    </svg>
+    <h1 id="hero-title" class="reveal d1">From invisible to unforgettable.</h1>
+    <p class="lede reveal d2">Your brand in just 14 days.</p>
+    <div class="hero-cta reveal d3">
+      <a class="btn" href="#pricing">Get sprint <span class="arr" aria-hidden="true">→</span></a>
+    </div>
+    <p class="status reveal d4"><span class="dot" aria-hidden="true"></span>Available for new sprints</p>
+  </section>
+
+  <!-- MANIFESTO -->
+  <section class="section manifesto" aria-label="Manifesto">
+    <div class="wrap">
+      <p>Let the world see what you’ve been working on <span class="dark">in the dark</span>.</p>
     </div>
   </section>
 
-  <!-- WORK / USE CASES -->
+  <!-- 001 WORK / USE CASES -->
   <section class="section" id="work" aria-labelledby="work-label">
     <div class="wrap">
-      <p class="eyebrow" id="work-label">Use cases <span class="num">001</span></p>
+      <h2 class="index-label" id="work-label"><span class="num">001</span> Use cases</h2>
 
       <div class="cases">
         <article class="case">
@@ -493,16 +613,16 @@ a{ color:inherit; text-decoration:none; }
       </div>
 
       <div class="work-more">
-        <a class="btn btn-ghost" href="#work">View more work <span class="arr" aria-hidden="true">→</span></a>
+        <a class="btn" href="#work">View more work <span class="arr" aria-hidden="true">→</span></a>
       </div>
     </div>
   </section>
 
-  <!-- SERVICES -->
+  <!-- 002 SERVICES -->
   <section class="section" id="services" aria-labelledby="services-label">
     <div class="wrap">
-      <p class="eyebrow" id="services-label">Services <span class="num">002</span></p>
-      <h2 class="services-head">We turn ideas into brand systems with everything you need to <span class="hl">launch</span>, <span class="hl">scale</span>, and <span class="hl">stand out</span>.</h2>
+      <p class="index-label" id="services-label"><span class="num">002</span> Services</p>
+      <h2 class="services-head">We turn ideas into brand systems with everything you need to launch, scale, and stand out.</h2>
 
       <ul class="svc-list">
         <li><span class="n">01</span> Research and moodboard</li>
@@ -518,60 +638,72 @@ a{ color:inherit; text-decoration:none; }
     </div>
   </section>
 
-  <!-- PROCESS -->
-  <section class="section" id="process" aria-labelledby="process-label">
+  <!-- MARQUEE — quiet ticker of the case index -->
+  <section class="marquee" aria-label="Selected clients: Spacia, Essential, Dockr, New Form Factor">
+    <div class="lane" aria-hidden="true">
+      <ul>
+        <li>Spacia</li><li>Essential</li><li>Dockr</li><li>New Form Factor</li>
+      </ul>
+      <ul>
+        <li>Spacia</li><li>Essential</li><li>Dockr</li><li>New Form Factor</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 003 PROCESS -->
+  <section class="section" id="process" aria-labelledby="process-label" style="border-top:1px solid var(--line)">
     <div class="wrap">
-      <p class="eyebrow" id="process-label">Process <span class="num">003</span></p>
+      <p class="index-label" id="process-label"><span class="num">003</span> Process</p>
+      <h2 class="process-head">A complete process. Just faster.</h2>
 
       <div class="steps">
         <div class="step">
-          <span class="k">Step 01</span>
+          <span class="k">01</span>
           <h3>Kick Off</h3>
           <p>We get aligned fast to start the project with full momentum. Few clear direction, no wasted time.</p>
         </div>
         <div class="step">
-          <span class="k">Step 02</span>
+          <span class="k">02</span>
           <h3>Refine</h3>
           <p>This is where clarity takes shape. We refine the essentials into a brand that feels obvious — and undeniable.</p>
         </div>
         <div class="step">
-          <span class="k">Step 03</span>
+          <span class="k">03</span>
           <h3>Deliver</h3>
-          <p>Everything's in your hands: a sharp brand, clear tools, and the confidence to launch fast.</p>
+          <p>Everything’s in your hands: a sharp brand, clear tools, and the confidence to launch fast.</p>
         </div>
       </div>
+    </div>
+  </section>
 
-      <div class="ruler" role="img" aria-label="14-day sprint cadence, with milestones on days 01, 03, 07, 12 and 14.">
+  <!-- 004 TIMELINE -->
+  <section class="section" id="timeline" aria-labelledby="timeline-label">
+    <div class="wrap">
+      <p class="index-label" id="timeline-label"><span class="num">004</span> Timeline</p>
+      <h2 class="timeline-head">You don’t have 3 months to do your brand design — and we only need 2 weeks to get it done. <span class="match">It’s a perfect match.</span></h2>
+
+      <div class="rail" role="img" aria-label="14-day sprint rail with milestones on days 01, 03, 07, 12 and 14. Day 14 is delivery.">
         <span class="cap">Days</span>
         <span class="track" aria-hidden="true"></span>
-        <span class="tick mile" style="left:6%"><span class="dot"></span><span class="lab">01</span></span>
-        <span class="tick" style="left:19.5%"><span class="dot"></span><span class="lab">03</span></span>
-        <span class="tick mile" style="left:46.6%"><span class="dot"></span><span class="lab">07</span></span>
-        <span class="tick" style="left:80.5%"><span class="dot"></span><span class="lab">12</span></span>
-        <span class="tick mile" style="left:94%"><span class="dot"></span><span class="lab">14</span></span>
+        <span class="tick" style="left:2%"><span class="dot"></span><span class="lab">01</span></span>
+        <span class="tick" style="left:17.4%"><span class="dot"></span><span class="lab">03</span></span>
+        <span class="tick" style="left:48.2%"><span class="dot"></span><span class="lab">07</span></span>
+        <span class="tick" style="left:86.6%"><span class="dot"></span><span class="lab">12</span></span>
+        <span class="tick final" style="left:98%"><span class="dot"></span><span class="lab">14</span></span>
       </div>
     </div>
   </section>
 
-  <!-- TIMELINE -->
-  <section class="section" id="timeline" aria-labelledby="timeline-label">
-    <div class="wrap">
-      <p class="eyebrow" id="timeline-label">Timeline <span class="num">004</span></p>
-      <h2 class="timeline-head">A complete process. Just faster.</h2>
-      <p class="timeline-body">You don't have 3 months to do your brand design — and we only need 2 weeks to get it done. It's a perfect match.</p>
-    </div>
-  </section>
-
-  <!-- PRICING -->
+  <!-- 005 PRICING -->
   <section class="section" id="pricing" aria-labelledby="pricing-label">
     <div class="wrap">
-      <p class="eyebrow" id="pricing-label">Pricing <span class="num">005</span></p>
+      <h2 class="index-label" id="pricing-label"><span class="num">005</span> Pricing</h2>
 
       <div class="price-grid">
         <div class="price-intro">
           <h3>Brand Design</h3>
-          <p class="sub">The main offer, 14 days.</p>
-          <p>If you're looking for extra layers — motion, website, packaging — we're open to extending the work, but this is where every brand starts.</p>
+          <p class="sub">The main offer, 14 days</p>
+          <p>If you’re looking for extra layers — motion, website, packaging — we’re open to extending the work, but this is where every brand starts.</p>
         </div>
 
         <div class="price-card">
@@ -580,41 +712,37 @@ a{ color:inherit; text-decoration:none; }
             <li><span class="lbl">Output</span><span class="val">Full Brand System</span></li>
             <li><span class="lbl">Support</span><span class="val">Figma + PDF</span></li>
           </ul>
-          <a class="btn btn-primary" href="mailto:hello@unmoth.com">Let's Talk <span class="arr" aria-hidden="true">→</span></a>
+          <a class="btn" href="mailto:contact@unmoth.com">Let’s Talk <span class="arr" aria-hidden="true">→</span></a>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- FAQ -->
+  <!-- 006 FAQ -->
   <section class="section" id="faq" aria-labelledby="faq-label">
     <div class="wrap">
-      <p class="eyebrow" id="faq-label">FAQ <span class="num">006</span></p>
+      <h2 class="index-label" id="faq-label"><span class="num">006</span> FAQ</h2>
 
       <div class="faq">
         <details>
           <summary>Can I request changes during the process?<span class="pm" aria-hidden="true"></span></summary>
-          <p class="answer">Yes — you're free to ask for anything. But the sprint remains capped at 14 days. Any revisions or direction changes may impact what can be delivered within that time. We recommend making clear decisions early to get the most out of the process.</p>
+          <p class="answer">Yes — you’re free to ask for anything. But the sprint remains capped at 14 days. Any revisions or direction changes may impact what can be delivered within that time. We recommend making clear decisions early to get the most out of the process.</p>
         </details>
         <details>
           <summary>What if I need something beyond the core identity?<span class="pm" aria-hidden="true"></span></summary>
           <p class="answer">This offer includes a complete brand system but if you need more — like motion, website, or packaging — we can discuss that after delivery.</p>
         </details>
         <details>
-          <summary>Do I own everything that's created?<span class="pm" aria-hidden="true"></span></summary>
+          <summary>Do I own everything that’s created?<span class="pm" aria-hidden="true"></span></summary>
           <p class="answer">Yes. You receive full rights to every asset we deliver. No licenses, no limitations.</p>
         </details>
         <details>
-          <summary>What's included in the delivery?<span class="pm" aria-hidden="true"></span></summary>
-          <p class="answer">A complete, organized brand package. That means logo files (primary + alternates), typography pairings, color palettes, social templates, brand guidelines, and more — all export-ready.</p>
+          <summary>Is this right for early-stage startups?<span class="pm" aria-hidden="true"></span></summary>
+          <p class="answer">Absolutely. This offer was made for founders who move fast and need their brand to do the same — no delays, no meetings that could’ve been emails.</p>
         </details>
         <details>
           <summary>How do we get started?<span class="pm" aria-hidden="true"></span></summary>
-          <p class="answer">You can either book the sprint directly or schedule a call first. Once payment is confirmed, you'll receive a short form to clarify your brand's direction and values — then we begin.</p>
-        </details>
-        <details>
-          <summary>Is this right for early-stage startups?<span class="pm" aria-hidden="true"></span></summary>
-          <p class="answer">Absolutely. This offer was made for founders who move fast and need their brand to do the same — no delays, no meetings that could've been emails.</p>
+          <p class="answer">You can either book the sprint directly or schedule a call first. Once payment is confirmed, you’ll receive a short form to clarify your brand’s direction and values — then we begin.</p>
         </details>
       </div>
     </div>
@@ -623,37 +751,45 @@ a{ color:inherit; text-decoration:none; }
 </main>
 
 <footer class="site-footer">
-  <div class="wrap">
+  <!-- final CTA -->
+  <div class="foot-cta wrap">
+    <h2>Ready to be seen?</h2>
+    <a class="btn" href="#pricing">Get sprint <span class="arr" aria-hidden="true">→</span></a>
+  </div>
+
+  <div class="foot-body wrap">
     <div class="foot-top">
       <div class="foot-brand">
-        <a class="brand" href="#main" aria-label="Unmoth, home"><span class="mark" aria-hidden="true"></span>Unmoth</a>
-        <p>Let the world see what you've been working on in the dark.</p>
+        <a class="brand" href="#main" aria-label="Unmoth, home">
+          <svg class="mark" viewBox="0 0 16 16" aria-hidden="true"><circle class="orbit" cx="8" cy="8" r="6.5"/><circle class="spark" cx="13.6" cy="4.8" r="2"/></svg>
+          Unmoth
+        </a>
+        <p>Let the world see what you’ve been working on in the dark.</p>
       </div>
 
-      <nav class="foot-col" aria-labelledby="foot-social">
-        <h2 id="foot-social"><span class="n">001</span> Follow us on social</h2>
+      <nav class="foot-col" aria-labelledby="foot-nav">
+        <h2 id="foot-nav">Navigation</h2>
         <ul>
-          <li><a href="https://x.com/" target="_blank" rel="noopener">X (Twitter)</a></li>
-          <li><a href="https://www.linkedin.com/" target="_blank" rel="noopener">Linkedin</a></li>
-          <li><a href="mailto:hello@unmoth.com">Email</a></li>
+          <li><a class="tlink" href="#work">Work</a></li>
+          <li><a class="tlink" href="#services">Services</a></li>
+          <li><a class="tlink" href="#process">Process</a></li>
+          <li><a class="tlink" href="#pricing">Pricing</a></li>
+          <li><a class="tlink" href="#faq">FAQ</a></li>
         </ul>
       </nav>
 
-      <nav class="foot-col" aria-labelledby="foot-nav">
-        <h2 id="foot-nav"><span class="n">002</span> Navigation</h2>
+      <nav class="foot-col" aria-labelledby="foot-social">
+        <h2 id="foot-social">Contact</h2>
         <ul>
-          <li><a href="#work">Work</a></li>
-          <li><a href="#services">Services</a></li>
-          <li><a href="#process">Process</a></li>
-          <li><a href="#timeline">Timeline</a></li>
-          <li><a href="#pricing">Pricing</a></li>
-          <li><a href="#faq">FAQ</a></li>
+          <li><a class="tlink" href="mailto:contact@unmoth.com">contact@unmoth.com</a></li>
+          <li><a class="tlink" href="https://www.linkedin.com/" target="_blank" rel="noopener">LinkedIn</a></li>
+          <li><a class="tlink" href="https://x.com/" target="_blank" rel="noopener">Twitter</a></li>
         </ul>
       </nav>
     </div>
 
     <div class="foot-bottom">
-      <span>© 2026 Unmoth</span>
+      <span class="yr">© 2026 Unmoth</span>
       <span>Brand design studio</span>
     </div>
   </div>
@@ -665,20 +801,18 @@ a{ color:inherit; text-decoration:none; }
   var panel = document.getElementById('mobile-nav');
   if(!btn || !panel) return;
   function setOpen(open){
-    panel.setAttribute('data-open', open ? 'true' : 'false');
+    panel.hidden = !open;
     btn.setAttribute('aria-expanded', open ? 'true' : 'false');
     btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
   }
-  btn.addEventListener('click', function(){
-    setOpen(panel.getAttribute('data-open') !== 'true');
-  });
+  btn.addEventListener('click', function(){ setOpen(panel.hidden); });
   /* close when a link is chosen */
   panel.addEventListener('click', function(e){
     if(e.target.closest('a')) setOpen(false);
   });
   /* close on Escape, return focus to the toggle */
   document.addEventListener('keydown', function(e){
-    if(e.key === 'Escape' && panel.getAttribute('data-open') === 'true'){
+    if(e.key === 'Escape' && !panel.hidden){
       setOpen(false); btn.focus();
     }
   });

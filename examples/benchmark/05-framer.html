@@ -8,35 +8,33 @@
 <!-- benchmark #5: framer.com のクローン。題材 = AI ウェブサイトビルダー（デザインツール）。
      native な様式 = ツールそのもの: ツールバー / レイヤーレール / キャンバス / エージェントチャット / ターミナル / 索引スペックシート。
      ヒーローは「型」でなく主張 = 製品の実画面（signature product artifact）を最初に置く。
-     bespoke palette = 真の #000 地（実物どおり。soft-black に寄せない）+ Framer の実ブランド青 #0099FF を1アクセント (+ semantic green)。
+     bespoke palette = 真の黒地（実物どおり。soft-black に寄せない）+ Framer の実ブランド青 #0099FF を1アクセント (+ semantic green)。
      書体: Space Grotesk(display grotesque) ＋ Inter(本文) ＋ JetBrains Mono(端末/コード)。Inter Tight は使わない（本文と崩れる）。
      全長: nav / hero(editor mock) / shipped-with(ticker) / agents(3 mock + connect) /
            platform(index spec sheet + analytics) / community / customers / final CTA / footer。
      テンプレ骨格を使わず、題材の道具様式から構造を導く。 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500..700&family=Inter:opsz,wght@14..32,400..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
     /* bespoke palette — true near-black ground, Framer brand blue #0099FF as the one UI accent (+ semantic green) */
-    --bg:#000;             /* page ground — Framer の地は真の #000。soft-black に寄せない（replica の identity fidelity が house の soft-black 規則に優先） */
-    --bg-2:#0C0C0D;        /* alternate section band（#000 上のごく僅かな浮き） */
+    --bg:#000;             /* page ground — Framer の地は真の黒。soft-black に寄せない（replica の identity fidelity が house の soft-black 規則に優先 — 意図的 WARN） */
+    --bg-2:#0C0C0D;        /* alternate section band（黒地上のごく僅かな浮き） */
     --surface:#161617;     /* panels / cards (~#141414) */
     --raised:#1F1F21;      /* toolbar / card-on-card (~#212121) */
     --sunk:#0C0C0D;        /* canvas inset / track */
     --line:rgba(255,255,255,.09);
     --line-2:rgba(255,255,255,.14);
-    --ink:#F4F4F5;         /* headings / body (純#fff を避ける) */
+    --ink:#F4F4F5;         /* headings / body (純白を避ける) */
     --muted:#A1A1A6;       /* secondary text (≈7.6:1 on bg) */
-    --quiet:#8B8B92;       /* labels / small mono — ≥4.5:1 on #000 & all surfaces incl ≤14px */
+    --quiet:#8B8B92;       /* labels / small mono — ≥4.5:1 on 黒地 & all surfaces incl ≤14px */
     --accent:#0099FF;      /* THE Framer blue — links / focus / signals (≈6.6:1 on bg) */
     --accent-bright:#4DB5FF;/* accent text on lighter surfaces / hover */
-    --accent-ink:#0A82DB;  /* pressed */
     --on-accent:#04121E;   /* near-black text on #0099FF fills (≈6.5:1 — 中明度青は near-black 文字) */
     --accent-sunk:rgba(0,153,255,.14);
     --accent-line:rgba(0,153,255,.34);
     --ok:#3FCF6A; --ok-sunk:rgba(63,207,106,.13); --ok-line:rgba(63,207,106,.30);
-    --warn:#E0A33B;
     /* spacing — 4pt grid */
     --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:20px;--s6:24px;--s8:32px;--s10:40px;--s12:48px;--s16:64px;--s20:80px;--s24:96px;
     /* radius — nesting R_inner = R_outer - padding */
@@ -49,9 +47,11 @@
   *{box-sizing:border-box}
   html{scroll-behavior:smooth}
   body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;
-       -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden}
+       font-optical-sizing:auto;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden}
   a{color:inherit;text-decoration:none}
   h1,h2,h3,h4,h5,p,figure{margin:0}
+  h1,h2,h3,h4{text-wrap:balance}
+  p{text-wrap:pretty}
   img{display:block;max-width:100%}
   ul{margin:0;padding:0;list-style:none}
   ::selection{background:rgba(0,153,255,.30);color:var(--ink)}
@@ -75,26 +75,29 @@
   .btn>span.lbl{transform:translateY(-1px)} /* cap-height 補正 */
   .btn:active{transform:translateY(1px)}
   .btn-primary{background:var(--ink);color:#0A0A0A}
-  .btn-primary:hover{background:#fff}
+  .btn-primary:hover{background:#fff} /* 実物どおり純白CTA — hover は基準(--ink)より1段明るく（identity 由来の意図的 WARN） */
   .btn-accent{background:var(--accent);color:var(--on-accent)}
   .btn-accent:hover{background:var(--accent-bright)}
   .btn-ghost{background:transparent;color:var(--ink);border-color:var(--line-2)}
   .btn-ghost:hover{background:var(--raised)}
   .btn svg{width:16px;height:16px;flex:0 0 auto}
-  .btn-lg{min-height:52px;padding:14px 26px;font-size:16px;border-radius:var(--r-lg)}
+  .btn-lg{min-height:52px;padding:16px 24px;font-size:16px;border-radius:var(--r-lg)}
 
   /* ---------- header ---------- */
   header.site{position:sticky;top:0;z-index:60;background:rgba(0,0,0,.74);backdrop-filter:blur(14px);
               border-bottom:1px solid var(--line)}
   .nav{display:flex;align-items:center;gap:var(--s6);height:64px}
-  .brand{display:flex;align-items:center;gap:9px;font-family:var(--disp);font-weight:600;font-size:19px;letter-spacing:-.02em;min-width:0;color:var(--ink)}
+  .brand{display:flex;align-items:center;gap:8px;font-family:var(--disp);font-weight:600;font-size:19px;letter-spacing:-.02em;min-width:0;color:var(--ink)}
+  .ver{display:inline-flex;align-items:center;min-height:24px;padding:3px 8px;border:1px solid var(--accent-line);border-radius:var(--r-sm);
+       background:var(--accent-sunk);color:var(--accent-bright);font:600 12px/1 var(--sans);letter-spacing:.01em;white-space:nowrap}
+  .ver .lbl{transform:translateY(-1px)}
   .brand svg{width:17px;height:25px;color:var(--accent)}
   .nav-links{display:flex;align-items:center;gap:var(--s1);margin-left:var(--s4)}
-  .nav-links a{display:inline-flex;align-items:center;height:40px;padding-inline:14px;border-radius:var(--r-md);
+  .nav-links a{display:inline-flex;align-items:center;height:40px;padding-inline:12px;border-radius:var(--r-md);
                color:var(--muted);font-size:15px;font-weight:500}
   .nav-links a:hover{color:var(--ink);background:var(--raised)}
   .nav-right{margin-left:auto;display:flex;align-items:center;gap:var(--s2)}
-  .nav-right .login{display:inline-flex;align-items:center;height:40px;padding-inline:14px;color:var(--muted);font-weight:500;font-size:15px;border-radius:var(--r-md)}
+  .nav-right .login{display:inline-flex;align-items:center;height:40px;padding-inline:12px;color:var(--muted);font-weight:500;font-size:15px;border-radius:var(--r-md)}
   .nav-right .login:hover{color:var(--ink)}
 
   /* ---------- mobile disclosure (working off-canvas, not just a hidden nav) ---------- */
@@ -135,7 +138,7 @@
   .editor{margin-top:var(--s12);border:1px solid var(--line-2);border-radius:var(--r-xl);background:var(--surface);
           overflow:hidden;box-shadow:0 1px 0 rgba(255,255,255,.05) inset}
   .ed-bar{display:flex;align-items:center;gap:var(--s3);height:48px;padding-inline:var(--s4);border-bottom:1px solid var(--line);background:var(--raised);min-width:0}
-  .dots{display:flex;gap:7px}
+  .dots{display:flex;gap:8px}
   .dots i{width:11px;height:11px;border-radius:50%;background:var(--line-2)}
   .ed-tools{display:flex;gap:2px;margin-left:var(--s2)}
   .ed-tools button{width:34px;height:34px;display:grid;place-items:center;border:none;background:transparent;color:var(--quiet);border-radius:var(--r-sm);cursor:pointer}
@@ -146,7 +149,7 @@
   .ed-file b{color:var(--ink);font-weight:600}
   .ed-file .br{color:var(--quiet);white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
   .ed-bar .ed-pub{margin-left:auto}
-  .ed-pub .pub{display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:8px 16px;font:600 13.5px/1 var(--sans);
+  .ed-pub .pub{display:inline-flex;align-items:center;gap:8px;min-height:34px;padding:8px 16px;font:600 13.5px/1 var(--sans);
                border-radius:var(--r-sm);background:var(--accent);color:var(--on-accent)}
   .ed-pub .pub svg{width:13px;height:13px}
 
@@ -170,18 +173,20 @@
         var(--sunk);
         padding:var(--s6);position:relative;min-width:0;overflow:hidden}
   .canvas-tag{position:absolute;top:10px;left:14px;font:500 11px/1 var(--mono);color:var(--quiet)}
-  .frame{margin:18px auto 0;max-width:560px;background:#0F0F12;border:1px solid var(--line-2);border-radius:var(--r-lg);
+  .frame{margin:16px auto 0;max-width:560px;background:#0F0F12;border:1px solid var(--line-2);border-radius:var(--r-lg);
          overflow:hidden;outline:2px solid var(--accent);outline-offset:3px}
   .frame-nav{display:flex;align-items:center;gap:var(--s3);height:40px;padding-inline:var(--s4);border-bottom:1px solid var(--line)}
   .frame-nav .fb{font-family:var(--disp);font-weight:600;font-size:13px;letter-spacing:.01em}
-  .frame-nav .fl{margin-left:auto;display:flex;gap:14px;color:var(--quiet);font-size:11.5px}
+  .frame-nav .fl{margin-left:auto;display:flex;gap:16px;color:var(--quiet);font-size:11.5px}
   @media(max-width:460px){.frame-nav .fl{display:none}}
   .frame-hero{padding:var(--s6) var(--s5) var(--s5)}
   .frame-hero h2{font-family:var(--disp);font-weight:600;font-size:clamp(20px,4.6vw,29px);line-height:1.04;letter-spacing:-.02em;margin-bottom:8px}
   .frame-hero p{color:var(--muted);font-size:12.5px;max-width:30ch;margin-bottom:var(--s4)}
-  .ticker-row{display:flex;gap:10px;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
+  .ticker-row{display:flex;gap:8px;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
               mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
-  .ticker-track{display:flex;gap:10px;animation:slide 26s linear infinite;flex:0 0 auto}
+  /* 常時アニメだが装飾ではない: エージェントが今まさに追加した「3D image ticker」そのものを実演するコンテンツ
+     （logo-row の marquee も実物 Framer の identity）。reduced-motion では *{animation:none} で全停止する */
+  .ticker-track{display:flex;gap:8px;animation:slide 26s linear infinite;flex:0 0 auto}
   .ticker-track img{width:108px;height:128px;object-fit:cover;border-radius:var(--r-md);border:1px solid var(--line);flex:0 0 auto;
        transform:perspective(700px) rotateY(-12deg);filter:saturate(.92) contrast(1.02)}
   @keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
@@ -195,24 +200,36 @@
   .chat-log{padding:var(--s4);display:flex;flex-direction:column;gap:var(--s3);flex:1}
   .msg{font-size:13px;line-height:1.5}
   .msg.user{align-self:flex-end;max-width:88%;background:var(--accent-sunk);color:var(--ink);border:1px solid var(--accent-line);
-            padding:10px 14px;border-radius:var(--r-md) var(--r-md) var(--r-sm) var(--r-md)}
-  .msg.sys{color:var(--quiet);font:500 12px/1.45 var(--mono);display:flex;align-items:center;gap:7px}
+            padding:8px 12px;border-radius:var(--r-md) var(--r-md) var(--r-sm) var(--r-md)}
+  .msg.sys{color:var(--quiet);font:500 12px/1.45 var(--mono);display:flex;align-items:center;gap:8px}
   .msg.sys svg{width:13px;height:13px;flex:0 0 auto}
   .msg.bot{color:var(--muted);max-width:94%}
   .msg.done{display:flex;align-items:flex-start;gap:8px;color:var(--ink)}
   .msg.done .chk{flex:0 0 auto;width:18px;height:18px;border-radius:50%;background:var(--ok-sunk);color:var(--ok);display:grid;place-items:center;margin-top:1px}
   .msg.done .chk svg{width:11px;height:11px}
-  .chat-q{margin:0 var(--s4);padding:10px 12px;border:1px solid var(--line);border-radius:var(--r-md);color:var(--muted);font-size:12.5px;background:var(--sunk)}
-  .chat-input{margin:var(--s3) var(--s4) var(--s4);display:flex;align-items:center;gap:var(--s2);
-              border:1px solid var(--line-2);border-radius:var(--r-md);padding:8px 8px 8px 14px;background:var(--sunk)}
-  .chat-input span{color:var(--quiet);font-size:13px;flex:1;min-width:0}
+  .chat-q{margin:0 var(--s4);padding:8px 12px;border:1px solid var(--line);border-radius:var(--r-md);color:var(--muted);font-size:12.5px;background:var(--sunk)}
+  /* 見た目だけの composer モック（実 input 要素ではない — フォーカス/ズーム対象外） */
+  .chat-compose{margin:var(--s3) var(--s4) var(--s4);display:flex;align-items:center;gap:var(--s2);
+              border:1px solid var(--line-2);border-radius:var(--r-md);padding:8px 8px 8px 12px;background:var(--sunk)}
+  .chat-compose span{color:var(--quiet);font-size:13px;flex:1;min-width:0}
   .chat-send{width:32px;height:32px;flex:0 0 auto;display:grid;place-items:center;border:none;border-radius:var(--r-sm);background:var(--accent);color:var(--on-accent);cursor:pointer}
   .chat-send:hover{background:var(--accent-bright)}
   .chat-send svg{width:15px;height:15px}
 
-  /* ---------- shipped-with ticker ---------- */
-  .shipped{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--bg-2);padding-block:var(--s10)}
+  /* ---------- shipped-with showcase + ticker ---------- */
+  .shipped{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--bg-2);padding-block:var(--s16)}
   .shipped .label{text-align:center;margin-bottom:var(--s8)}
+  .ship-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s4);margin-bottom:var(--s8)}
+  @media(max-width:900px){.ship-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:520px){.ship-grid{grid-template-columns:1fr}}
+  .ship-card{display:block;border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;background:var(--surface);min-width:0}
+  .ship-card .shot{aspect-ratio:16/10;overflow:hidden;background:var(--sunk)}
+  .ship-card .shot img{width:100%;height:100%;object-fit:cover;filter:saturate(.95)}
+  .ship-card .cap{display:flex;align-items:baseline;gap:var(--s2);padding:var(--s3) var(--s4);min-width:0}
+  .ship-card .cap .nm{font-family:var(--disp);font-weight:600;font-size:14px;letter-spacing:-.01em}
+  .ship-card .cap .url{margin-left:auto;color:var(--quiet);font:500 11px/1.4 var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  @media(hover:hover){.ship-card:hover{border-color:var(--line-2)}}
+  .ship-more{display:flex;justify-content:center;margin-bottom:var(--s12)}
   .logo-row{overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);
             mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
   .logo-track{display:flex;gap:var(--s12);align-items:center;width:max-content;animation:slide 40s linear infinite}
@@ -233,7 +250,7 @@
   .feat-copy h3{margin-bottom:var(--s3)}
   .feat-copy p{color:var(--muted);max-width:40ch}
   .feat-copy .tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:var(--s5)}
-  .tag{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border:1px solid var(--line);border-radius:999px;
+  .tag{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border:1px solid var(--line);border-radius:999px;
        font-size:12.5px;color:var(--muted);background:var(--surface)}
   .tag svg{width:13px;height:13px;color:var(--accent-bright)}
   .feat-art{min-width:0;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface);overflow:hidden}
@@ -244,11 +261,11 @@
 
   /* cms art */
   .cms-rows{display:flex;flex-direction:column;gap:8px}
-  .cms-row{display:grid;grid-template-columns:18px 1fr auto;gap:10px;align-items:center;padding:9px 12px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--sunk);min-width:0}
+  .cms-row{display:grid;grid-template-columns:18px 1fr auto;gap:8px;align-items:center;padding:8px 12px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--sunk);min-width:0}
   .cms-row .ic{color:var(--quiet);display:grid;place-items:center}
   .cms-row .ic svg{width:14px;height:14px}
   .cms-row .ttl{font-size:13px;color:var(--ink);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .pill-ok{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:500;
+  .pill-ok{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:500;
            color:var(--ok);background:var(--ok-sunk);border:1px solid var(--ok-line);white-space:nowrap}
   .pill-ok svg{width:11px;height:11px}
   .cms-foot{display:flex;align-items:center;gap:8px;margin-top:var(--s4);color:var(--ok);font:500 12px/1.4 var(--mono)}
@@ -269,7 +286,7 @@
   .connect h3{margin-bottom:var(--s3);max-width:20ch}
   .connect p{color:var(--muted);max-width:54ch;margin-bottom:var(--s8)}
   .chips{display:flex;flex-wrap:wrap;gap:var(--s3)}
-  .chip{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border:1px solid var(--line);border-radius:999px;
+  .chip{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid var(--line);border-radius:999px;
         background:var(--surface);color:var(--ink);font-size:14px;font-weight:500}
   .chip .d{width:8px;height:8px;border-radius:50%;background:var(--accent);flex:0 0 auto}
 
@@ -281,7 +298,7 @@
   .irow .nm{font-family:var(--disp);font-weight:600;font-size:19px;letter-spacing:-.01em;min-width:0}
   .irow .ds{color:var(--muted);min-width:0;max-width:48ch;font-size:15px}
   .irow .mt{justify-self:end;text-align:right;min-width:0}
-  .irow .mt .v{font-family:var(--disp);font-weight:600;font-size:22px;letter-spacing:-.02em}
+  .irow .mt .v{font-family:var(--disp);font-weight:600;font-size:22px;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
   .irow .mt .k{display:block;font:500 11px/1.3 var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--quiet);margin-top:2px}
   .irow:hover{background:var(--bg-2)}
   @media(max-width:860px){
@@ -289,7 +306,7 @@
     .irow .num{grid-row:1/3}
     .irow .nm{grid-column:2}
     .irow .ds{grid-column:2}
-    .irow .mt{grid-column:2;justify-self:start;text-align:left;margin-top:6px}
+    .irow .mt{grid-column:2;justify-self:start;text-align:left;margin-top:8px}
     .irow .mt .v{font-size:18px}
   }
 
@@ -304,7 +321,7 @@
   @media(max-width:860px){.ana-panel{border-left:none;border-top:1px solid var(--line)}}
   .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden}
   .stat{background:var(--surface);padding:var(--s5) var(--s6);min-width:0}
-  .stat .v{font-family:var(--disp);font-weight:600;font-size:clamp(24px,3.6vw,33px);letter-spacing:-.025em;line-height:1}
+  .stat .v{font-family:var(--disp);font-weight:600;font-size:clamp(24px,3.6vw,33px);letter-spacing:-.025em;line-height:1;font-variant-numeric:tabular-nums}
   .stat .k{display:block;margin-top:8px;color:var(--muted);font-size:13px}
   .stat .v.up{color:var(--ok)}
   .spark-line{margin-top:var(--s5);display:flex;align-items:flex-end;gap:4px;height:46px}
@@ -318,13 +335,12 @@
   @media(max-width:520px){.comm-grid{grid-template-columns:1fr}}
   .comm-card{border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;background:var(--surface);min-width:0}
   .comm-card .thumb{aspect-ratio:4/3;overflow:hidden;background:var(--sunk)}
-  .comm-card .thumb img{width:100%;height:100%;object-fit:cover;transition:transform .35s ease}
-  .comm-card:hover .thumb img{transform:scale(1.04)}
+  .comm-card .thumb img{width:100%;height:100%;object-fit:cover}
   .comm-card .meta{padding:var(--s4) var(--s5) var(--s5)}
   .comm-card .meta .cat{display:flex;align-items:center;justify-content:space-between;font:600 11px/1 var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--accent-bright)}
-  .comm-card .meta .cat .likes{color:var(--quiet);letter-spacing:.02em}
-  .comm-card .meta h3{font-family:var(--disp);font-weight:600;font-size:15.5px;line-height:1.3;margin-top:10px;letter-spacing:-.01em}
-  .comm-card .meta .by{display:block;margin-top:9px;color:var(--quiet);font:500 12px/1 var(--mono)}
+  .comm-card .meta .cat .likes{color:var(--quiet);letter-spacing:.02em;font-variant-numeric:tabular-nums}
+  .comm-card .meta h3{font-family:var(--disp);font-weight:600;font-size:15.5px;line-height:1.3;margin-top:12px;letter-spacing:-.01em}
+  .comm-card .meta .by{display:block;margin-top:8px;color:var(--quiet);font:500 12px/1 var(--mono)}
   .comm-actions{display:flex;flex-wrap:wrap;gap:var(--s3);margin-top:var(--s12)}
 
   /* ---------- customers ---------- */
@@ -340,9 +356,8 @@
   .story .who{display:flex;flex-direction:column;gap:2px}
   .story .who .nm{font-family:var(--disp);font-weight:600;font-size:16px;letter-spacing:-.01em;color:var(--ink)}
   .story .who .role{color:var(--quiet);font:500 12.5px/1.35 var(--sans)}
-  .story .read{display:inline-flex;align-items:center;gap:7px;color:var(--accent-bright);font-weight:600;font-size:14px}
-  .story .read svg{width:15px;height:15px;transition:transform .15s ease}
-  .story:hover .read svg{transform:translateX(3px)}
+  .story .read{display:inline-flex;align-items:center;gap:8px;color:var(--accent-bright);font-weight:600;font-size:14px}
+  .story .read svg{width:15px;height:15px}
 
   /* ---------- final CTA ---------- */
   .final{text-align:center;padding-block:var(--s24)}
@@ -352,7 +367,8 @@
 
   /* ---------- footer ---------- */
   footer.site{border-top:1px solid var(--line);background:var(--bg-2);padding-block:var(--s16) var(--s10)}
-  .foot-top{display:grid;grid-template-columns:1.5fr repeat(5,1fr);gap:var(--s8) var(--s6)}
+  .foot-top{display:grid;grid-template-columns:1.4fr repeat(6,1fr);gap:var(--s8) var(--s6)}
+  @media(max-width:1080px){.foot-top{grid-template-columns:repeat(4,1fr)}.foot-brand{grid-column:1/-1}}
   @media(max-width:900px){.foot-top{grid-template-columns:1fr 1fr 1fr}}
   @media(max-width:540px){.foot-top{grid-template-columns:1fr 1fr}}
   .foot-brand{min-width:0}
@@ -369,11 +385,29 @@
   .foot-bot .social svg{width:16px;height:16px}
 
   /* ---------- mobile sticky CTA ---------- */
-  .mcta{position:fixed;inset:auto 0 0 0;z-index:70;display:none;gap:var(--s3);padding:10px var(--s4);
-        padding-bottom:calc(10px + env(safe-area-inset-bottom));background:rgba(0,0,0,.93);backdrop-filter:blur(12px);
+  .mcta{position:fixed;inset:auto 0 0 0;z-index:70;display:none;gap:var(--s3);padding:12px var(--s4);
+        padding-bottom:calc(12px + env(safe-area-inset-bottom));background:rgba(0,0,0,.93);backdrop-filter:blur(12px);
         border-top:1px solid var(--line)}
   .mcta .btn{flex:1;justify-content:center}
   @media(max-width:880px){.mcta{display:flex}body{padding-bottom:84px}}
+
+  /* hover 起点の動きはポインタ環境のみ（09 実装規則 — タッチで hover が引っかかるのを防ぐ） */
+  @media(hover:hover){
+    .comm-card .thumb img{transition:transform .2s ease}
+    .comm-card:hover .thumb img{transform:scale(1.04)}
+    .story .read svg{transition:transform .15s ease}
+    .story:hover .read svg{transform:translateX(3px)}
+  }
+
+  /* 演出はページロード1回に集中（09 ブランドA）— hero の staggered reveal のみ。transform/opacity 限定 */
+  @media(prefers-reduced-motion:no-preference){
+    .hero-head h1,.hero>.lead,.hero-cta,.hero-note,.editor{animation:rise .5s cubic-bezier(0,0,.2,1) both}
+    .hero>.lead{animation-delay:.06s}
+    .hero-cta{animation-delay:.12s}
+    .hero-note{animation-delay:.16s}
+    .editor{animation-delay:.22s}
+  }
+  @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 
   @media(prefers-reduced-motion:reduce){
     *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
@@ -389,6 +423,7 @@
       <svg viewBox="0 0 16 24" aria-hidden="true" fill="currentColor"><path d="M2 1h12v7H9zM2 8h7l5 5H9v8l-7-7z"/></svg>
       Framer
     </a>
+    <span class="ver"><span class="lbl">Framer 3.0</span></span>
     <nav class="nav-links" aria-label="Primary">
       <a href="#agents">Product</a>
       <a href="#platform">Platform</a>
@@ -398,7 +433,7 @@
     </nav>
     <div class="nav-right">
       <a class="login" href="#login">Log in</a>
-      <a class="btn btn-primary" href="#start"><span class="lbl">Get started for free</span></a>
+      <a class="btn btn-primary" href="#start"><span class="lbl">Start for free</span></a>
       <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu">
         <svg class="ic-bars" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
         <svg class="ic-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
@@ -416,7 +451,7 @@
   <a href="#developers">Developers</a>
   <div class="mn-sep" aria-hidden="true"></div>
   <a href="#login">Log in</a>
-  <a class="btn btn-primary" href="#start"><span class="lbl">Get started for free</span></a>
+  <a class="btn btn-primary" href="#start"><span class="lbl">Start for free</span></a>
 </nav>
 
 <main id="top">
@@ -428,8 +463,8 @@
     </div>
     <p class="lead">Design, run your CMS, and ship code with agents that work alongside you, not instead of you. Publish on one platform — hosting, SEO, and analytics built in. You stay in control of every pixel.</p>
     <div class="hero-cta">
-      <a class="btn btn-primary btn-lg" href="#start"><span class="lbl">Get started for free</span></a>
-      <a class="btn btn-ghost btn-lg" href="#customers"><span class="lbl">See Framer sites</span>
+      <a class="btn btn-primary btn-lg" href="#start"><span class="lbl">Start for free</span></a>
+      <a class="btn btn-ghost btn-lg" href="#customers"><span class="lbl">Get a demo</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </a>
     </div>
@@ -503,7 +538,7 @@
             <div class="msg done"><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg></span><span>Done. Replaced the text block with Haus copy and added a horizontal image ticker from the provided images.</span></div>
           </div>
           <div class="chat-q">Want me to add tablet and phone breakpoints to make it responsive?</div>
-          <div class="chat-input">
+          <div class="chat-compose">
             <span>Reply to the agent…</span>
             <button class="chat-send" aria-label="Send message to agent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
           </div>
@@ -513,8 +548,33 @@
   </section>
 
   <!-- ============ SHIPPED WITH FRAMER ============ -->
-  <section class="shipped" aria-label="Brands shipped with Framer">
+  <section class="shipped" aria-label="Sites and brands shipped with Framer">
     <p class="label kicker">Shipped with Framer</p>
+    <div class="wrap">
+      <div class="ship-grid">
+        <a class="ship-card" href="#site-perplexity">
+          <span class="shot"><img src="https://picsum.photos/seed/ship-perplexity/800/500" width="800" height="500" loading="lazy" alt="Perplexity marketing site, shipped with Framer"></span>
+          <span class="cap"><span class="nm">Perplexity</span><span class="url">perplexity.ai</span></span>
+        </a>
+        <a class="ship-card" href="#site-superlist">
+          <span class="shot"><img src="https://picsum.photos/seed/ship-superlist/800/500" width="800" height="500" loading="lazy" alt="Superlist product site, shipped with Framer"></span>
+          <span class="cap"><span class="nm">Superlist</span><span class="url">superlist.com</span></span>
+        </a>
+        <a class="ship-card" href="#site-miro">
+          <span class="shot"><img src="https://picsum.photos/seed/ship-miro/800/500" width="800" height="500" loading="lazy" alt="Miro campaign site, shipped with Framer"></span>
+          <span class="cap"><span class="nm">Miro</span><span class="url">miro.com</span></span>
+        </a>
+        <a class="ship-card" href="#site-raycast">
+          <span class="shot"><img src="https://picsum.photos/seed/ship-raycast/800/500" width="800" height="500" loading="lazy" alt="Raycast launch site, shipped with Framer"></span>
+          <span class="cap"><span class="nm">Raycast</span><span class="url">raycast.com</span></span>
+        </a>
+      </div>
+      <div class="ship-more">
+        <a class="btn btn-ghost" href="#customers"><span class="lbl">See Framer sites</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </div>
+    <p class="label kicker">Trusted by</p>
     <div class="logo-row">
       <div class="logo-track" aria-hidden="true">
         <span>Perplexity</span><span>Miro</span><span>Raycast</span><span>Maven</span><span>Superlist</span><span>Retool</span><span>Loops</span><span>Reflect</span>
@@ -602,7 +662,7 @@
 <span class="ok">  ✓ Import complete · 47 blog entries published to Framer CMS.</span>
           </div>
           <div class="copy-row">
-            <a class="btn btn-ghost" href="#install" style="min-height:40px;padding:10px 16px;font-size:13.5px">
+            <a class="btn btn-ghost" href="#install" style="min-height:40px;padding:8px 16px;font-size:13.5px">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
               <span class="lbl">Copy install prompt</span></a>
             <span class="src">works with Codex, Cursor &amp; Claude Code</span>
@@ -633,7 +693,7 @@
   <section class="sec wrap" id="platform">
     <div class="sec-head">
       <h2 class="disp">Not just vibes, a full platform</h2>
-      <p class="lead">Everything a real site needs is built in. No plugins to wire up, no hosting to configure — design and ship on one stack.</p>
+      <p class="lead">Manage more. Publish faster. Everything a real site needs is built in — no plugins to wire up, no hosting to configure.</p>
     </div>
 
     <div class="index">
@@ -752,7 +812,6 @@
   <!-- ============ CUSTOMERS ============ -->
   <section class="sec wrap" id="customers">
     <div class="sec-head">
-      <span class="kicker">Customers</span>
       <h2 class="disp">Trusted by teams shipping big sites</h2>
       <p class="lead">From AI labs to global studios, teams move from idea to published site in days — and keep iterating without a developer in the loop.</p>
     </div>
@@ -851,33 +910,41 @@
       <nav class="fcol" aria-label="Solutions">
         <h3>Solutions</h3>
         <ul>
-          <li><a href="#">Startups</a></li>
           <li><a href="#">Agencies</a></li>
-          <li><a href="#">Enterprise</a></li>
-          <li><a href="#">Designers</a></li>
-          <li><a href="#">Freelancers</a></li>
-        </ul>
-      </nav>
-      <nav class="fcol" aria-label="Developers">
-        <h3>Developers</h3>
-        <ul>
-          <li><a href="#">Overview</a></li>
-          <li><a href="#">Plugins</a></li>
-          <li><a href="#">Quick Start</a></li>
-          <li><a href="#">Reference</a></li>
-          <li><a href="#">Changelog</a></li>
+          <li><a href="#">Startups</a></li>
+          <li><a href="#">Business</a></li>
+          <li><a href="#">Students</a></li>
         </ul>
       </nav>
       <nav class="fcol" aria-label="Resources">
         <h3>Resources</h3>
         <ul>
-          <li><a href="#">Blog</a></li>
-          <li><a href="#">Newsletter</a></li>
+          <li><a href="#">Articles</a></li>
+          <li><a href="#">Tutorials</a></li>
+          <li><a href="#">Changelog</a></li>
           <li><a href="#">State of Sites</a></li>
           <li><a href="#">Brand</a></li>
-          <li><a href="#">vs Webflow</a></li>
-          <li><a href="#">vs WordPress</a></li>
-          <li><a href="#">vs Squarespace</a></li>
+        </ul>
+      </nav>
+      <nav class="fcol" aria-label="Developers">
+        <h3>Developers</h3>
+        <ul>
+          <li><a href="#">Server API</a></li>
+          <li><a href="#">Plugins</a></li>
+          <li><a href="#">Reference</a></li>
+          <li><a href="#">Quick Start</a></li>
+        </ul>
+      </nav>
+      <nav class="fcol" aria-label="Compare">
+        <h3>Compare</h3>
+        <ul>
+          <li><a href="#">Webflow</a></li>
+          <li><a href="#">WordPress</a></li>
+          <li><a href="#">Squarespace</a></li>
+          <li><a href="#">Wix</a></li>
+          <li><a href="#">Unbounce</a></li>
+          <li><a href="#">Readymag</a></li>
+          <li><a href="#">Contentful</a></li>
         </ul>
       </nav>
       <nav class="fcol" aria-label="Company">
@@ -905,8 +972,8 @@
 
 <!-- mobile sticky CTA (thumb zone) -->
 <div class="mcta">
-  <a class="btn btn-ghost" href="#customers"><span class="lbl">See sites</span></a>
-  <a class="btn btn-primary" href="#start"><span class="lbl">Get started free</span></a>
+  <a class="btn btn-ghost" href="#customers"><span class="lbl">Get a demo</span></a>
+  <a class="btn btn-primary" href="#start"><span class="lbl">Start for free</span></a>
 </div>
 
 <script>
