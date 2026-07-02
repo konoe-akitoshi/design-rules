@@ -106,6 +106,8 @@ R_inner = R_outer - Padding（最小2px）
 - 絵文字多用 → 必要最小限。SVGアイコン推奨
 - 均等padding → 非対称padding必須
 - 1ページ3色以上のアクセント → プライマリ1色 + セマンティック
+- `transition: all`・layoutプロパティのアニメ → `transform`/`opacity` のみ明示
+- AI収束スタイル（クリーム紙×セリフ×テラコッタ／黒地×アシッド1色／hairline新聞風）を題材の導出なしにデフォルト採用しない
 
 ---
 

@@ -13,11 +13,12 @@
 
 - **signifier**：操作可能な要素は「押せる/入力できる/開ける」と見た目で分かる（[03](../03-interaction-feedback.md) Norman）。
 - **focus**：`:focus-visible` で `outline: 2px solid var(--c-accent); outline-offset: 1px`（[10](../10-accessibility.md)）。
-- **状態**：`hover` / `active` / `disabled` を持ち、操作には即時フィードバックを返す（03）。
+- **状態**：インタラクティブ部品は **6マイクロステート**（`default` / `hover` / `focus` / `active` / `disabled` / `loading`）が揃うまで未完成。操作には即時フィードバックを返す（03）。hover は `@media (hover: hover)` 内で。
 - **色**：[color-system](../values/color-system.md) の役割（`--c-surface`/`--c-line`/`--c-ink`/`--c-muted`/`--c-accent`/semantic）。**影でなくヘアライン**で面を分ける（[07](../07-restraint-form.md) Rams）。
 - **寸法**：`../../tokens.json`（4ptグリッド・非対称padding・黄金比radius）。インタラクティブ要素の最小タッチは 44–48px（10）。
 - **コントラスト**：本文 4.5:1 / UI 3:1。状態を**色だけで伝えない**（アイコン/ラベル併用）（10）。
 - **抑制**：各部位は情報を運ぶ。装飾だけの部位を置かない（07 / Tufte data-ink）。
+- **実装の床**（→ [prohibited 実装](../../prohibited.md)）：入力群は `<form>` で包み Enter 送信可・送信中は二重送信防止／入力の font-size 16px 以上／truncate する flex 子に `min-width: 0`／`<img>` は寸法明示／ナビは `<a href>`（`<div onClick>` 禁止）／アニメは transform・opacity のみ（`transition: all` 禁止）。
 
 ---
 

@@ -40,7 +40,17 @@ def hex_to_hsl(h):
     else:         hue = (r - g) / d + 4
     return hue * 60, s, l
 
+def strip_comments(text):
+    """CSS /* */ と HTML <!-- --> コメントを、行番号を保ったまま空白化する。
+    説明コメント内の #000 等が色使用として誤検知されるのを防ぐ。"""
+    def blank(m):
+        return "".join(c if c == "\n" else " " for c in m.group(0))
+    text = re.sub(r'/\*.*?\*/', blank, text, flags=re.S)
+    text = re.sub(r'<!--.*?-->', blank, text, flags=re.S)
+    return text
+
 def check(text):
+    text = strip_comments(text)
     f = []  # (severity, rule, source, n, hint, lines)
 
     # 1) 純白・純黒（色/地として）— prohibited「text-black の直接使用」/ 01「純白純黒を避ける」
@@ -114,7 +124,70 @@ def check(text):
         f.append((WARN, "NO-REDUCED-MOTION", "09-motion", 1,
                   "アニメ/transition があるのに prefers-reduced-motion 対応が無い", []))
 
-    # 10) アクセント色数 — prohibited「1ページに3色以上のアクセント」(情報)
+    # 10) transition: all — prohibited 実装「transition: all 禁止」
+    ta = lines_of(text, r'transition:\s*all\b')
+    if ta:
+        f.append((ERROR, "TRANSITION-ALL", "prohibited 実装", len(ta),
+                  "transition: all は禁止。アニメするプロパティを明示（opacity/transform 等）", ta))
+
+    # 11) layout プロパティのアニメ — prohibited 実装「transform/opacity のみ」
+    #     max-height 等は開閉でよく使われるので top/left/width/height/margin に限定
+    la = lines_of(text, r'transition:[^;}]*\b(?:top|left|right|bottom|width|height|margin)\s*[\s,;}]')
+    la = [ln for ln in la if not re.search(r'max-height|min-height|line-height', text.splitlines()[ln-1], re.I)]
+    if la:
+        f.append((WARN, "LAYOUT-ANIM", "prohibited 実装", len(la),
+                  "layout プロパティ（top/left/width/height/margin）をアニメしている。transform/opacity に", la))
+
+    # 12) 入力の font-size 16px 未満 — prohibited 実装（iOS 自動ズーム）
+    small_in = []
+    for m in re.finditer(r'(?:input|textarea|select)[^{]*\{[^}]*font-size:\s*(\d+(?:\.\d+)?)px', text, re.I):
+        if float(m.group(1)) < 16:
+            small_in.append(text.count("\n", 0, m.start()) + 1)
+    if small_in:
+        f.append((WARN, "INPUT-FONT-SIZE", "prohibited 実装", len(small_in),
+                  "入力要素の font-size が 16px 未満。iOS が自動ズームする。16px 以上に", small_in))
+
+    # 13) img の寸法未指定 — prohibited 実装（CLS）
+    #     width/height 属性か style の aspect-ratio があれば可
+    nosize = [ln for ln in lines_of(text, r'<img\b(?![^>]*\b(?:width|height)=)[^>]*>')
+              if not re.search(r'aspect-ratio', text.splitlines()[ln-1], re.I)]
+    if nosize:
+        f.append((WARN, "IMG-SIZE", "prohibited 実装", len(nosize),
+                  "<img> に width/height（か aspect-ratio）が無い。読込時にレイアウトシフト", nosize))
+
+    # 14) 4の倍数外スペーシング — prohibited「4の倍数以外のスペーシング値」
+    #     1–2px の微調整は許容。5px 以上で 4 で割れない値をフラグ
+    off = []
+    for m in re.finditer(r'(?:padding|margin|gap|row-gap|column-gap)(?:-[a-z]+)?:\s*([^;}]+)', text, re.I):
+        for v in re.findall(r'(\d+(?:\.\d+)?)px', m.group(1)):
+            n = float(v)
+            if n >= 5 and n % 4 != 0:
+                off.append(text.count("\n", 0, m.start()) + 1)
+                break
+    if off:
+        off = sorted(set(off))
+        f.append((WARN, "OFF-GRID-SPACING", "prohibited スペーシング", len(off),
+                  "4の倍数でない spacing 値（5px以上）。4pt グリッドに乗せる", off))
+
+    # 15) トークンドリフト — Project Wallace 型: ユニーク値数の膨張を検出
+    ucolors = {c.lower() for c in re.findall(r'#[0-9a-fA-F]{6}\b', text)}
+    usizes = {m for m in re.findall(r'font-size:\s*([\d.]+(?:px|rem))', text, re.I)}
+    if len(ucolors) > 24 or len(usizes) > 10:
+        f.append((INFO, "TOKEN-DRIFT", "values / tokens.json", 1,
+                  f"ユニーク色 {len(ucolors)}個 / font-size {len(usizes)}段。"
+                  "トークン外の値が静かに増えていないか確認（色はランプから導出、段は限定スケールに）", []))
+
+    # 16) 表があるのに tabular-nums が無い — 06-typography / components/display
+    if re.search(r'<table\b', text, re.I) and not re.search(r'tabular-nums', text, re.I):
+        f.append((INFO, "NO-TABULAR-NUMS", "06-typography", 1,
+                  "<table> があるのに font-variant-numeric: tabular-nums が無い。数値列の桁が揃わない", []))
+
+    # 17) 見出しの折返し最適化 — 06-typography「balance=見出し / pretty=本文」
+    if re.search(r'<h[12]\b', text, re.I) and not re.search(r'text-wrap:\s*(?:balance|pretty)', text, re.I):
+        f.append((INFO, "NO-TEXT-WRAP", "06-typography", 1,
+                  "text-wrap: balance（見出し）/ pretty（本文）が無い。孤立語・不揃いな折返しの防止に", []))
+
+    # 18) アクセント色数 — prohibited「1ページに3色以上のアクセント」(情報)
     hues = {}
     for hx in set(re.findall(r'#[0-9a-fA-F]{6}\b', text)):
         H, S, L = hex_to_hsl(hx)

@@ -79,6 +79,18 @@
 
 - **意味を伝えないアニメは、上記の値の範囲内であっても入れない。** 時間・easing は「動かすと決めた動き」の調整値にすぎない。
 
+### 実装規則（動かすと決めたあとの床）
+
+- **アニメするのは compositor プロパティ（`transform` / `opacity`）のみ**。layout プロパティ（top/left/width/height/margin）のアニメはリフローを毎フレーム誘発する。位置は `translate`、サイズ感は `scale` で。
+- **`transition: all` 禁止**。アニメするプロパティを明示する（意図しないプロパティが動き、テーマ切替時に全要素がにじむ）。
+- **プロパティの種類で性格を変える**（Material 3 の spatial/effect 区別）: 位置・サイズ・形状（spatial）は ease-out や軽いオーバーシュートが自然。**色・不透明度（effect）は絶対にバウンスさせない**（明滅に見える）。
+- `will-change` はアニメの実行中だけ。常時付けっぱなしはメモリを食い、描画を遅くする。
+- 大面積の `blur()` / `backdrop-filter` をアニメしない（最も重い部類）。
+- hover 起点の動きは `@media (hover: hover)` 内に置く（タッチデバイスで hover が「引っかかる」）。
+- テーマ切替（ライト/ダーク）の瞬間は transition を無効化する（全要素が一斉ににじむ）。
+- **（ブランドA）演出は1回に集中**: 散発的な micro-interaction を各所に足すより、ページロード時の staggered reveal（`animation-delay` の階段）1回に演出を集約する方が、静けさと印象を両立する。
+- スクロール駆動アニメ（`animation-timeline: view()/scroll()`）を使う場合も必ず `@media (prefers-reduced-motion: no-preference)` 内に置く。スクロール量に直結した動き（特にパララックス）は酔いの主因。
+
 ---
 
 ## 統合 — この章の使える規則（チェックリスト）
@@ -91,5 +103,7 @@
 6. 動きが内容より目立っていないか（Deference を崩していないか）
 7. **`prefers-reduced-motion: reduce` を尊重しているか（アニメを止める／最小化する）**
 8. 時間・easing が推奨デフォルトの目安に収まっているか（短いUI 120–200ms／大要素 200–300ms／ease-out 系）
+9. transform/opacity のみをアニメしているか（`transition: all`・layout プロパティ・大面積 blur を動かしていないか）
+10. 色・不透明度をバウンスさせていないか／hover 起点の動きが `@media (hover: hover)` 内か
 
 衝突時の優先: 重大変化の可視性(3 の例外) はメタ下限。静けさより、重大な異常・緊急通知への気づきを優先する。`prefers-reduced-motion`(7) は常に尊重する。
