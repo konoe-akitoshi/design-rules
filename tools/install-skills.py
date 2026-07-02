@@ -33,6 +33,29 @@ def rewrite(text: str) -> str:
     return text
 
 
+MANIFEST = DST / ".design-rules-manifest.json"
+
+
+def prune_removed(current_names, check_only):
+    """前回インストールしたがリポジトリから消えたスキルを DST から削除する。"""
+    import json
+    removed = 0
+    if MANIFEST.is_file():
+        previous = set(json.loads(MANIFEST.read_text(encoding="utf-8")))
+        for name in sorted(previous - set(current_names)):
+            stale = DST / name
+            if stale.is_dir():
+                removed += 1
+                print(("would remove: " if check_only else "removed: ") + str(stale))
+                if not check_only:
+                    shutil.rmtree(stale)
+    if not check_only:
+        MANIFEST.parent.mkdir(parents=True, exist_ok=True)
+        MANIFEST.write_text(json.dumps(sorted(current_names), ensure_ascii=False, indent=2),
+                            encoding="utf-8", newline="\n")
+    return removed
+
+
 def main(argv):
     check_only = "--check" in argv
     if not SRC.is_dir():
