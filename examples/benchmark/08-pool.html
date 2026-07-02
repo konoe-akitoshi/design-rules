@@ -1,0 +1,737 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pool — One account isn't enough.</title>
+<meta name="description" content="Pool is a new account designed for more: more people, more control, a purpose all its own. A dedicated place for shared money.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   POOL — tokens
+   SAMPLED inline from ref: #001F22 (page bg / bg-bg), #003439 (surface,
+   sf-lock), #E0D8CD (sand divider + accent), pure white card, rounded-
+   [32px]/4xl/3xl/2xl/full, font-sans=Inter (subject: Inter-only).
+   ANALOG (ref defines these in an external /_astro/main.*.css not in the
+   copied HTML): --fg (text-fg), --fg-muted (text-fg-muted), --sage
+   (text-sage), --bg-subtle, --border, --dark-sand, font-mono (IBM Plex
+   Mono stands in for the proprietary mono), and the text-* type scale.
+   Contrast of every analog verified vs the real #001F22 / #003439 bg
+   (incl <=14px): fg 15.0:1, fg-muted 8.3:1, sage 6.7:1, sand 12.2:1.
+   ============================================================ */
+:root{
+  --bg:#001F22;            /* page background — SAMPLED (bg-[#001F22]) */
+  --bg-subtle:#022A2D;     /* product-demo panel (bg-bg-subtle) — analog */
+  --surface:#003439;       /* elevated teal (sf-lock #003439) — SAMPLED */
+  --fg:#F4EFE6;            /* warm near-white (text-fg) — analog, 15.0:1 */
+  --fg-muted:#BBB3A4;      /* warm muted sand (text-fg-muted) — analog, 8.3:1 */
+  --sand:#E0D8CD;          /* sand accent + dashed divider — SAMPLED */
+  --sage:#8AA89B;          /* footer link (text-sage) — analog, 6.7:1 */
+  /* state colors DERIVED from base tokens (color-system: no hand-picked
+     second hex) — hover raises contrast, never lowers it */
+  --sage-hi:color-mix(in oklab,var(--sage) 45%,var(--fg)); /* sage hover ≈11:1 */
+  --card:#ffffff;          /* demo frame — SAMPLED (ref cards are pure white);
+                              intentional PURE-BLACK-WHITE: real identity */
+  --primary:#E0D8CD;       /* pill button bg (bg-primary) = sand */
+  --primary-fg:#001F22;    /* pill button text (text-primary-fg) = teal, 12.2:1 */
+  --border:rgba(244,239,230,.12);    /* hairline on dark — analog */
+  --dark-sand:rgba(224,216,205,.16); /* FAQ row divider (border-dark-sand) — analog */
+
+  --font-sans:"Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+
+  /* type scale — APPROXIMATED (ref's text-* live in external CSS) */
+  --t-display-2:clamp(2.75rem,1.6rem + 5.6vw,4.25rem);
+  --t-heading-1:clamp(1.875rem,1.6rem + 1.3vw,2.25rem);
+  --t-heading-2:clamp(1.625rem,1.35rem + 1.4vw,2.125rem);
+  --t-body-lg:1.125rem;
+  --t-body-rg:1rem;
+  --t-body-sm:.875rem;
+  --t-mono:.75rem;
+
+  /* radius vocab — SAMPLED rounded-[32px]/4xl/3xl/2xl/full */
+  --r-panel:32px;
+  --r-card:24px;
+  --r-md:16px;
+  --r-sm:8px;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--fg);
+  font-family:var(--font-sans);
+  font-size:var(--t-body-rg);
+  line-height:1.5;
+  font-optical-sizing:auto;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  overflow-x:clip;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+img,svg{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;margin:0}
+h1,h2,h3,p{margin:0}
+h1,h2,h3{text-wrap:balance}
+p{text-wrap:pretty}
+:focus-visible{outline:2px solid var(--sand);outline-offset:2px;border-radius:2px}
+
+/* layout */
+.wrap{width:100%;max-width:1280px;margin-inline:auto;padding-inline:clamp(24px,5vw,104px)}
+.section{padding-block:80px}
+@media(min-width:1280px){.section{padding-block:96px}}
+
+/* type helpers */
+.mono{font-family:var(--font-mono);font-size:var(--t-mono);text-transform:uppercase;letter-spacing:-.01em;font-weight:500;line-height:1}
+.display-2{font-size:var(--t-display-2);font-weight:500;line-height:1.03;letter-spacing:-.03em}
+.heading-1{font-size:var(--t-heading-1);font-weight:500;line-height:1.1;letter-spacing:-.02em}
+.heading-2{font-size:var(--t-heading-2);font-weight:500;line-height:1.12;letter-spacing:-.02em}
+.body-lg{font-size:var(--t-body-lg);line-height:1.5}
+.body-sm{font-size:var(--t-body-sm);line-height:1.45}
+.muted{color:var(--fg-muted)}
+.pre-line{white-space:pre-line}
+
+/* pill buttons */
+.pill{
+  display:inline-flex;align-items:center;justify-content:center;
+  height:48px;padding-inline:24px;border-radius:999px;
+  font-family:var(--font-mono);font-size:var(--t-mono);text-transform:uppercase;
+  letter-spacing:-.01em;font-weight:500;white-space:nowrap;cursor:pointer;
+  border:1px solid transparent;
+  transition:opacity .15s ease,transform .12s cubic-bezier(0,0,.2,1);
+}
+@media(hover:hover){.pill:hover{opacity:.9}}
+.pill:active{transform:translateY(1px)}
+.pill-primary{background:var(--primary);color:var(--primary-fg)}
+.pill-ghost{background:var(--bg);color:var(--fg);border-color:var(--border)}
+
+/* dashed sand divider */
+.divider{width:100%;max-width:1280px;margin-inline:auto;padding-inline:clamp(24px,5vw,104px)}
+.divider span{
+  display:block;height:1px;
+  background:repeating-linear-gradient(to right,var(--sand) 0 3px,transparent 3px 6px);
+  -webkit-mask-image:linear-gradient(to right,transparent,#000 10%,#000 90%,transparent);
+  mask-image:linear-gradient(to right,transparent,#000 10%,#000 90%,transparent);
+}
+
+/* ---------- header ---------- */
+.site-header{background:var(--bg)}
+.logo{display:block;width:74px;color:var(--fg)}
+.logo svg{width:100%;height:auto}
+
+/* desktop nav */
+.nav-desktop{display:none}
+@media(min-width:1024px){
+  .nav-desktop{display:flex;align-items:center;justify-content:space-between;gap:24px;padding-block:20px}
+  .nav-mobile{display:none}
+}
+.nav-links{display:flex;align-items:center;gap:32px;list-style:none;margin:0;padding:0}
+.nav-link{font-family:var(--font-mono);font-size:var(--t-mono);text-transform:uppercase;letter-spacing:-.01em;font-weight:500;transition:opacity .15s}
+@media(hover:hover){.nav-link:hover{opacity:.7}}
+.nav-right{display:flex;align-items:center;gap:32px}
+
+/* mobile nav (working disclosure) */
+.nav-mobile summary{
+  height:56px;display:flex;align-items:center;justify-content:space-between;
+  padding-inline:24px;cursor:pointer;list-style:none;
+}
+.nav-mobile summary::-webkit-details-marker{display:none}
+.nav-mobile .icon-x{display:none}
+.nav-mobile[open] .icon-menu{display:none}
+.nav-mobile[open] .icon-x{display:block}
+.nav-mobile .menu-icons{display:flex;align-items:center;gap:24px}
+.nav-mobile[open] summary .careers-inline{display:none}
+.menu-panel{
+  position:fixed;inset:56px 0 0 0;z-index:50;background:var(--bg);
+  padding:40px 24px;display:flex;flex-direction:column;overflow:auto;
+}
+.menu-panel ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:24px}
+.menu-panel a.big{font-size:var(--t-heading-1);font-weight:500;letter-spacing:-.02em}
+.menu-panel hr{border:0;border-top:1px solid var(--border);margin:40px 0}
+
+/* ---------- hero ---------- */
+.hero{display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding-top:64px}
+.hero h1{max-width:48rem;min-width:0}
+.hero p{margin-top:24px;max-width:36rem;min-width:0}
+.hero .pill{margin-top:40px}
+/* single page-load reveal (09: 演出はロード1回に集中 / transform+opacityのみ) */
+@media(prefers-reduced-motion:no-preference){
+  .hero>*{animation:rise .3s cubic-bezier(0,0,.2,1) both}
+  .hero p{animation-delay:70ms}
+  .hero .pill{animation-delay:140ms}
+}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* ---------- product demo ---------- */
+.demo{padding-block:80px}
+@media(min-width:1280px){.demo{padding-top:80px;padding-bottom:96px}}
+.demo-inner{width:100%;max-width:1280px;margin-inline:auto;display:flex;flex-direction:column;gap:32px;padding-inline:clamp(24px,5vw,104px)}
+.demo-frame{
+  position:relative;width:100%;overflow:hidden;border-radius:var(--r-card);
+  background:var(--card);border:8px solid var(--card); /* frame, not padding */
+}
+@media(min-width:1280px){.demo-frame{border-radius:var(--r-panel)}}
+.demo-stage{
+  position:relative;aspect-ratio:398/223;overflow:hidden;border-radius:var(--r-md);
+  background:var(--bg-subtle);
+}
+@media(min-width:1280px){.demo-stage{aspect-ratio:1349/736;max-height:max(420px,calc(100svh - 200px));border-radius:24px}}
+.demo-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s ease;pointer-events:none}
+.demo-img.is-active{opacity:1}
+.demo-scrim{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0),rgba(0,0,0,.28) 60%);pointer-events:none}
+.tablist{
+  position:absolute;left:0;right:0;top:24px;z-index:5;display:flex;gap:8px;
+  padding-inline:24px;overflow-x:auto;scrollbar-width:none;
+}
+.tablist::-webkit-scrollbar{display:none}
+@media(min-width:1280px){.tablist{top:32px;padding-inline:48px}}
+.tab{
+  flex:0 0 auto;height:44px;display:inline-flex;align-items:center;justify-content:center;
+  padding-inline:24px;border-radius:999px;white-space:nowrap;cursor:pointer;
+  font-family:var(--font-mono);font-size:var(--t-mono);text-transform:uppercase;
+  letter-spacing:-.01em;font-weight:500;color:var(--fg);
+  background:rgba(0,0,0,.30);border:1px solid rgba(0,0,0,.18);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  transition:background-color .15s ease,color .15s ease;
+}
+@media(min-width:1280px){.tab{min-width:160px}}
+@media(hover:hover){.tab:hover{background:rgba(0,0,0,.45)}}
+.tab[aria-selected="true"]{background:rgba(255,255,255,.92);color:var(--primary-fg);border-color:rgba(255,255,255,.92)}
+.tab:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+.panels{display:grid}
+.panel{grid-column:1/-1;grid-row:1;display:grid;gap:12px;padding-inline:0}
+@media(min-width:1024px){.panel{grid-template-columns:1fr 1fr;column-gap:120px;align-items:start;padding-inline:clamp(0px,2vw,104px)}}
+.panel[hidden]{display:none}
+@media(prefers-reduced-motion:no-preference){.panel:not([hidden]){animation:panel-in .25s ease-out}}
+@keyframes panel-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.demo-note{padding:12px 24px;text-align:center;font-family:var(--font-mono);font-size:10px;line-height:1.4;letter-spacing:-.02em;color:var(--fg-muted)}
+
+/* ---------- marquee ---------- */
+.marquee-head{margin-bottom:40px;display:grid;gap:16px}
+@media(min-width:1024px){.marquee-head{grid-template-columns:1fr 1fr;column-gap:120px;align-items:start;margin-bottom:64px}}
+.marquee-head p{max-width:28rem;min-width:0}
+.marquee{position:relative;overflow:hidden;
+  -webkit-mask-image:linear-gradient(to right,transparent,#000 4%,#000 96%,transparent);
+  mask-image:linear-gradient(to right,transparent,#000 4%,#000 96%,transparent)}
+.marquee-track{display:flex;width:max-content;animation:marquee 60s linear infinite}
+@media(hover:hover){.marquee:hover .marquee-track{animation-play-state:paused}}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.pcard{margin-right:16px;width:264px;flex:0 0 auto;background:var(--bg-subtle);border:1px solid var(--border);border-radius:var(--r-card);padding-bottom:12px}
+.pcard-img{height:176px;width:100%;overflow:hidden;border-radius:20px 20px var(--r-sm) var(--r-sm);background:var(--sand)}
+.pcard-img img{width:100%;height:100%;object-fit:cover}
+.pcard-row{margin-top:8px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding-inline:12px;min-width:0}
+.pcard-row .meta{min-width:0}
+.pcard-row .name{font-size:var(--t-body-rg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pcard-row .amt{font-size:var(--t-body-rg);color:var(--fg-muted)}
+.amt,.card-mock .num{font-variant-numeric:tabular-nums} /* 06: 金額は等幅数字 */
+.avatars{display:flex;flex:0 0 auto}
+.avatars img,.avatars .more{width:24px;height:24px;border-radius:999px;border:2px solid var(--bg-subtle);object-fit:cover;background:var(--sand);margin-left:-8px}
+.avatars .more{display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:9px;letter-spacing:-.36px;text-transform:uppercase;color:var(--primary-fg)}
+
+/* ---------- debit ---------- */
+.debit-head{display:grid;gap:8px}
+@media(min-width:1024px){.debit-head{grid-template-columns:1fr 1fr;column-gap:120px;align-items:start}}
+.debit-head h2{max-width:24rem;min-width:0}
+.debit-head p{max-width:36rem;min-width:0}
+.debit-grid{margin-top:40px;display:grid;gap:24px}
+@media(min-width:1024px){.debit-grid{grid-template-columns:1fr 1fr;align-items:stretch}}
+.debit-visual{
+  position:relative;border-radius:var(--r-md);background:var(--bg-subtle);
+  border:1px solid var(--border);min-height:300px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:40px 24px;overflow:hidden;
+}
+.card-mock{
+  width:min(100%,320px);aspect-ratio:1.586;border-radius:18px;
+  background:var(--surface);border:1px solid var(--border);
+  padding:20px 24px;display:flex;flex-direction:column;justify-content:space-between;
+  box-shadow:0 24px 40px rgba(0,0,0,.18);
+}
+.card-mock .top{display:flex;align-items:center;justify-content:space-between}
+.card-mock .glyph{width:28px;color:var(--sand)}
+.card-mock .visa{font-family:var(--font-mono);font-size:var(--t-mono);text-transform:uppercase;letter-spacing:.04em;color:var(--fg-muted)}
+.card-mock .num{font-family:var(--font-mono);font-size:1rem;letter-spacing:.08em;color:var(--fg)}
+.card-mock .foot{display:flex;align-items:flex-end;justify-content:space-between;font-family:var(--font-mono);font-size:11px;letter-spacing:.02em;color:var(--fg-muted);text-transform:uppercase}
+.linked{margin-top:24px;display:flex;align-items:center;gap:8px}
+.linked .dot{width:14px;height:14px;border-radius:999px;background:var(--sand)}
+.linked .mono{color:var(--fg)}
+.debit-cards{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(min-width:1024px){.debit-cards{grid-template-rows:1fr 1fr;gap:24px}}
+.dcard{
+  position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;border:1px solid var(--border);border-radius:var(--r-md);padding:28px 16px;
+}
+@media(min-width:1024px){.dcard{padding:32px 16px}}
+.dcard .thumb{width:72px;height:72px;border-radius:12px;object-fit:cover;background:var(--sand);margin-bottom:16px}
+.dcard .name{font-size:var(--t-body-rg)}
+.dcard .amt{font-size:var(--t-body-rg);color:var(--fg-muted)}
+.dcard .anchor{position:absolute;left:16px;top:16px;width:14px;height:14px;border-radius:999px;background:rgba(244,239,230,.10)}
+
+/* ---------- safety ---------- */
+.safety-outer{padding-block:80px;padding-inline:0}
+@media(min-width:1280px){.safety-outer{padding-block:120px;padding-inline:56px}}
+.safety-panel{
+  position:relative;max-width:1333px;margin-inline:auto;overflow:hidden;
+  background:var(--bg);color:var(--fg);
+}
+@media(min-width:1280px){.safety-panel{border-radius:var(--r-panel);background:#001f22}}
+.safety-inner{
+  width:100%;max-width:1280px;margin-inline:auto;padding:40px clamp(24px,5vw,104px);
+}
+@media(min-width:1280px){
+  .safety-inner{display:grid;min-height:598px;grid-template-columns:454px 1fr;grid-template-rows:auto 1fr auto;column-gap:96px;padding-block:104px}
+}
+.safety-copy{max-width:36rem;min-width:0}
+@media(min-width:1280px){.safety-copy{grid-column:1;grid-row:1;max-width:454px}}
+.safety-copy p{margin-top:16px}
+.safety-fdic{margin-top:48px;max-width:36rem;min-width:0;font-family:var(--font-mono);font-size:var(--t-body-sm);letter-spacing:-.02em;color:rgba(255,255,255,.55)}
+@media(min-width:1280px){.safety-fdic{grid-column:1;grid-row:3;margin-top:0;max-width:454px}}
+.safety-field{
+  position:relative;margin-top:48px;height:260px;min-width:0;
+  border-radius:var(--r-card);background:rgba(0,52,57,.4);border:1px solid var(--border);overflow:hidden;
+}
+@media(min-width:1280px){.safety-field{grid-column:2;grid-row:1/span 3;margin-top:0;height:310px;align-self:center;justify-self:end;width:min(100%,654px)}}
+.chip{
+  position:absolute;display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;
+  background:var(--surface);border:1px solid var(--border);
+  font-family:var(--font-mono);font-size:11px;letter-spacing:-.01em;color:rgba(255,255,255,.9);white-space:nowrap;
+}
+.chip.scram{color:rgba(255,255,255,.45);letter-spacing:.18em}
+.chip .av{width:18px;height:18px;border-radius:999px;background:var(--sand);flex:0 0 auto}
+.sf-divider{position:absolute;left:50%;top:0;bottom:0;z-index:6;width:2px;transform:translateX(-50%);
+  background:linear-gradient(to right,#000 0 1px,rgba(255,255,255,.12) 1px 2px)}
+.sf-lock{position:absolute;left:50%;top:50%;z-index:7;width:32px;height:32px;transform:translate(-50%,-50%);
+  display:flex;align-items:center;justify-content:center;border-radius:999px;
+  border:1px solid rgba(255,255,255,.10);background:var(--surface);box-shadow:0 1px 2px rgba(0,0,0,.45);color:var(--fg)}
+
+/* ---------- cta band ---------- */
+.cta-band{max-width:48rem;margin-inline:auto;display:flex;flex-direction:column;align-items:center;gap:24px;text-align:center;padding:80px 24px}
+@media(min-width:1280px){.cta-band{padding-block:120px}}
+.cta-band p{max-width:36rem;min-width:0}
+.cta-actions{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px}
+
+/* ---------- faq ---------- */
+.faq-grid{display:grid;gap:24px}
+@media(min-width:1024px){.faq-grid{grid-template-columns:1fr 1fr;column-gap:120px}}
+.faq-grid h2{max-width:28rem;min-width:0}
+.faq-list{min-width:0}
+@media(min-width:1024px){.faq-list{grid-column:2}}
+.faq{border-bottom:1px solid var(--dark-sand);padding-block:20px}
+.faq:last-child{border-bottom:0}
+.faq summary{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:24px;cursor:pointer;
+  list-style:none;font-size:var(--t-body-lg);color:var(--fg);
+}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary .ic{margin-top:4px;flex:0 0 auto;width:16px;height:16px;color:var(--fg)}
+.faq .ic-minus{display:none}
+.faq[open] .ic-plus{display:none}
+.faq[open] .ic-minus{display:block}
+.faq-body{margin-top:12px;max-width:65ch}
+.faq-body p{color:var(--fg-muted);font-size:var(--t-body-lg);line-height:1.5}
+.faq-body p + p{margin-top:16px}
+
+/* ---------- footer ---------- */
+.footer{overflow-x:clip;background:var(--bg)}
+.footer-top{padding-top:32px}
+@media(min-width:1280px){.footer-top{padding-top:140px}}
+.footer-cols{display:grid;gap:40px}
+@media(min-width:1280px){.footer-cols{grid-template-columns:1fr 1fr;column-gap:120px;align-items:start}}
+.footer .logo{color:var(--sand);width:74px}
+@media(min-width:1280px){.footer .logo{width:120px}}
+.footer-links{display:flex;flex-direction:column;gap:48px}
+@media(min-width:1280px){.footer-links{flex-direction:row;column-gap:114px}} /* 114px SAMPLED (ref gap-x-[114px]) — intentional off-grid */
+.footer-links ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:20px;width:173px}
+.footer-links a{font-family:var(--font-mono);font-size:var(--t-mono);text-transform:uppercase;letter-spacing:-.01em;font-weight:500;color:var(--sage);transition:color .15s}
+@media(hover:hover){.footer-links a:hover{color:var(--sage-hi)}}
+.footer hr{border:0;border-top:1px solid rgba(138,168,155,.3);margin-block:48px}
+@media(min-width:1280px){.footer hr{margin-block:80px}}
+.footer .copyright{font-family:var(--font-mono);font-size:var(--t-mono);text-transform:uppercase;letter-spacing:-.01em;color:var(--sage);white-space:nowrap}
+.legal{margin-top:29px;max-width:56rem;display:flex;flex-direction:column;gap:8px;font-size:var(--t-body-sm);color:var(--sage)} /* 29px SAMPLED (ref mt-[29px]) — intentional off-grid */
+.legal sup{font-size:.7em}
+.footer-tagline{position:relative;margin-top:48px;height:12.3vw;min-height:52px;overflow:hidden}
+@media(min-width:1280px){.footer-tagline{margin-top:130px}} /* 130px SAMPLED (ref mt-[130px]) — intentional off-grid */
+.footer-tagline span{
+  position:absolute;bottom:-.16em;left:50%;transform:translateX(-50%);white-space:nowrap;text-align:center;
+  font-family:var(--font-sans);font-weight:500;line-height:1;color:rgba(255,255,255,.04);
+  font-size:12.66vw;letter-spacing:-.03em;
+}
+
+@media(prefers-reduced-motion:reduce){
+  .marquee-track{animation:none}
+  *{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header class="site-header">
+  <!-- mobile disclosure nav -->
+  <details class="nav-mobile">
+    <summary aria-label="Menu">
+      <a href="/" class="logo" aria-label="Pool — Home">
+        <svg viewBox="0 0 74 24" fill="currentColor" role="img" aria-label="Pool">
+          <path d="M23.6631 10.606C22.6201 11.649 19.4771 10.195 16.6411 7.35898C13.8051 4.52298 12.3521 1.37998 13.3941 0.336983C14.4371 -0.705017 17.5801 0.747983 20.4161 3.58398C23.2521 6.41998 24.7051 9.56298 23.6631 10.606Z"/>
+          <path d="M10.6061 23.662C9.56305 24.705 6.42005 23.251 3.58405 20.415C0.749053 17.58 -0.704947 14.436 0.337053 13.394C1.38005 12.352 4.52305 13.805 7.35905 16.641C10.1951 19.477 11.6481 22.619 10.6061 23.662Z"/>
+          <path d="M13.394 23.662C12.351 22.619 13.805 19.476 16.641 16.64C19.477 13.804 22.62 12.351 23.663 13.393C24.705 14.436 23.252 17.579 20.416 20.415C17.58 23.251 14.437 24.704 13.394 23.662Z"/>
+          <path d="M0.338055 10.606C-0.704945 9.56299 0.749055 6.41999 3.58506 3.58399C6.42006 0.748992 9.56406 -0.705008 10.6061 0.336992C11.6481 1.37999 10.1951 4.52299 7.35906 7.35899C4.52306 10.195 1.38106 11.648 0.338055 10.606Z"/>
+          <path d="M35.757 20.068H32.307V3.966H37.708C41.581 3.966 43.998 6.097 43.998 9.594C43.998 13.068 41.581 15.222 37.708 15.222H35.758L35.757 20.068ZM37.52 12.287C39.538 12.287 40.571 11.095 40.571 9.593C40.571 8.067 39.538 6.899 37.52 6.899H35.757V12.287H37.52Z"/>
+          <path d="M50.47 7.487C46.801 7.487 44.703 10.359 44.703 13.903C44.703 17.447 46.83 20.319 50.47 20.319C54.11 20.319 56.237 17.447 56.237 13.903C56.237 10.359 54.14 7.487 50.47 7.487ZM50.47 17.599C48.872 17.599 47.989 15.944 47.989 13.903C47.989 11.862 48.872 10.207 50.47 10.207C52.068 10.207 52.951 11.862 52.951 13.903C52.951 15.944 52.067 17.599 50.47 17.599Z"/>
+          <path d="M63.199 7.487C59.53 7.487 57.432 10.359 57.432 13.903C57.432 17.447 59.559 20.319 63.199 20.319C66.839 20.319 68.966 17.447 68.966 13.903C68.966 10.359 66.869 7.487 63.199 7.487ZM63.199 17.599C61.601 17.599 60.718 15.944 60.718 13.903C60.718 11.862 61.601 10.207 63.199 10.207C64.797 10.207 65.68 11.862 65.68 13.903C65.68 15.944 64.796 17.599 63.199 17.599Z"/>
+          <path d="M74 3.966H70.714V20.068H74V3.966Z"/>
+        </svg>
+      </a>
+      <div class="menu-icons">
+        <a href="/careers" class="nav-link careers-inline">Careers</a>
+        <svg class="icon-menu" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg>
+        <svg class="icon-x" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </div>
+    </summary>
+    <div class="menu-panel">
+      <ul>
+        <li><a href="/careers" class="big">Careers</a></li>
+        <li><a href="https://app.poolmoney.com" class="big">Sign In</a></li>
+      </ul>
+      <hr>
+      <a href="https://app.poolmoney.com" class="pill pill-primary" style="width:fit-content">Create My Pool</a>
+    </div>
+  </details>
+
+  <!-- desktop nav -->
+  <nav class="wrap nav-desktop" aria-label="Primary">
+    <a href="/" class="logo" aria-label="Pool — Home">
+      <svg viewBox="0 0 74 24" fill="currentColor" role="img" aria-label="Pool">
+        <path d="M23.6631 10.606C22.6201 11.649 19.4771 10.195 16.6411 7.35898C13.8051 4.52298 12.3521 1.37998 13.3941 0.336983C14.4371 -0.705017 17.5801 0.747983 20.4161 3.58398C23.2521 6.41998 24.7051 9.56298 23.6631 10.606Z"/>
+        <path d="M10.6061 23.662C9.56305 24.705 6.42005 23.251 3.58405 20.415C0.749053 17.58 -0.704947 14.436 0.337053 13.394C1.38005 12.352 4.52305 13.805 7.35905 16.641C10.1951 19.477 11.6481 22.619 10.6061 23.662Z"/>
+        <path d="M13.394 23.662C12.351 22.619 13.805 19.476 16.641 16.64C19.477 13.804 22.62 12.351 23.663 13.393C24.705 14.436 23.252 17.579 20.416 20.415C17.58 23.251 14.437 24.704 13.394 23.662Z"/>
+        <path d="M0.338055 10.606C-0.704945 9.56299 0.749055 6.41999 3.58506 3.58399C6.42006 0.748992 9.56406 -0.705008 10.6061 0.336992C11.6481 1.37999 10.1951 4.52299 7.35906 7.35899C4.52306 10.195 1.38106 11.648 0.338055 10.606Z"/>
+        <path d="M35.757 20.068H32.307V3.966H37.708C41.581 3.966 43.998 6.097 43.998 9.594C43.998 13.068 41.581 15.222 37.708 15.222H35.758L35.757 20.068ZM37.52 12.287C39.538 12.287 40.571 11.095 40.571 9.593C40.571 8.067 39.538 6.899 37.52 6.899H35.757V12.287H37.52Z"/>
+        <path d="M50.47 7.487C46.801 7.487 44.703 10.359 44.703 13.903C44.703 17.447 46.83 20.319 50.47 20.319C54.11 20.319 56.237 17.447 56.237 13.903C56.237 10.359 54.14 7.487 50.47 7.487ZM50.47 17.599C48.872 17.599 47.989 15.944 47.989 13.903C47.989 11.862 48.872 10.207 50.47 10.207C52.068 10.207 52.951 11.862 52.951 13.903C52.951 15.944 52.067 17.599 50.47 17.599Z"/>
+        <path d="M63.199 7.487C59.53 7.487 57.432 10.359 57.432 13.903C57.432 17.447 59.559 20.319 63.199 20.319C66.839 20.319 68.966 17.447 68.966 13.903C68.966 10.359 66.869 7.487 63.199 7.487ZM63.199 17.599C61.601 17.599 60.718 15.944 60.718 13.903C60.718 11.862 61.601 10.207 63.199 10.207C64.797 10.207 65.68 11.862 65.68 13.903C65.68 15.944 64.796 17.599 63.199 17.599Z"/>
+        <path d="M74 3.966H70.714V20.068H74V3.966Z"/>
+      </svg>
+    </a>
+    <div class="nav-right">
+      <ul class="nav-links">
+        <li><a href="/careers" class="nav-link">Careers</a></li>
+        <li><a href="https://app.poolmoney.com" class="nav-link">Sign In</a></li>
+      </ul>
+      <a href="https://app.poolmoney.com" class="pill pill-primary">Create My Pool</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+<!-- ============ HERO ============ -->
+<section class="wrap hero">
+  <h1 class="display-2 pre-line">One account
+isn't enough.</h1>
+  <p class="body-lg">Pool is a new account designed for more: more people, more control, a purpose all its own. Make as many as you need.</p>
+  <a href="https://app.poolmoney.com" class="pill pill-primary">Create My Pool</a>
+</section>
+
+<!-- ============ PRODUCT DEMO (tabbed) ============ -->
+<section class="demo" data-demo aria-label="Product tour">
+  <div class="demo-inner">
+    <div class="demo-frame">
+      <div class="demo-stage">
+        <img class="demo-img is-active" data-img="0" src="https://picsum.photos/seed/poolcollab/1280/736" alt="" width="1280" height="736" fetchpriority="high" decoding="async">
+        <img class="demo-img" data-img="1" src="https://picsum.photos/seed/poolcollect/1280/736" alt="" width="1280" height="736" loading="lazy" decoding="async">
+        <img class="demo-img" data-img="2" src="https://picsum.photos/seed/poolspend/1280/736" alt="" width="1280" height="736" loading="lazy" decoding="async">
+        <img class="demo-img" data-img="3" src="https://picsum.photos/seed/poolmanage/1280/736" alt="" width="1280" height="736" loading="lazy" decoding="async">
+        <div class="demo-scrim" aria-hidden="true"></div>
+        <div class="tablist" role="tablist" aria-label="Product tour">
+          <button type="button" role="tab" id="tab-0" aria-controls="panel-0" aria-selected="true" tabindex="0" class="tab" data-tab="0">Collaborate</button>
+          <button type="button" role="tab" id="tab-1" aria-controls="panel-1" aria-selected="false" tabindex="-1" class="tab" data-tab="1">Collect</button>
+          <button type="button" role="tab" id="tab-2" aria-controls="panel-2" aria-selected="false" tabindex="-1" class="tab" data-tab="2">Spend</button>
+          <button type="button" role="tab" id="tab-3" aria-controls="panel-3" aria-selected="false" tabindex="-1" class="tab" data-tab="3">Manage</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panels" aria-live="polite">
+      <div class="panel" id="panel-0" role="tabpanel" aria-labelledby="tab-0" data-panel="0">
+        <h2 class="heading-2">A dedicated place for shared money</h2>
+        <p class="body-lg">Turn financial chaos into organized collaboration. Invite collaborators, assign spending roles, and manage money the right way.</p>
+      </div>
+      <div class="panel" id="panel-1" role="tabpanel" aria-labelledby="tab-1" data-panel="1" hidden>
+        <h2 class="heading-2">Collect money</h2>
+        <p class="body-lg">You keep what you collect. Pool does not take a percentage or charge fees to collect money.</p>
+      </div>
+      <div class="panel" id="panel-2" role="tabpanel" aria-labelledby="tab-2" data-panel="2" hidden>
+        <h2 class="heading-2">Spend seamlessly from across your Pools</h2>
+        <p class="body-lg">Nothing extra to track. Simply spend directly out of the Pool with virtual and physical debit cards.</p>
+      </div>
+      <div class="panel" id="panel-3" role="tabpanel" aria-labelledby="tab-3" data-panel="3" hidden>
+        <h2 class="heading-2">Granular control over who's able to spend</h2>
+        <p class="body-lg">Use our membership tools to set limits on who can spend and manage debit card access.</p>
+      </div>
+    </div>
+
+    <p class="demo-note">*Pool is a financial technology company, not a bank. All banking services provided by First Internet Bank, Member FDIC.</p>
+  </div>
+</section>
+
+<!-- ============ MARQUEE ============ -->
+<section class="section" style="overflow:hidden" aria-label="1,000 ways to Pool">
+  <div class="wrap marquee-head">
+    <h2 class="heading-2">1,000 ways to Pool</h2>
+    <p class="body-lg">Pool is perfect for roommates, kids' teams and classrooms, emergency funds, and even things we haven't thought of yet.</p>
+  </div>
+  <div class="marquee">
+    <div class="marquee-track" id="marquee-track"></div>
+  </div>
+</section>
+
+<!-- ============ DEBIT ============ -->
+<div class="divider" aria-hidden="true"><span></span></div>
+<section class="wrap section" aria-label="One debit card for all your Pools">
+  <div class="debit-head">
+    <h2 class="heading-2">One debit card for all your Pools</h2>
+    <p class="body-lg">Get a free card and use it with any Pool where you're a Spender. Just link it and swipe. No more reimbursements, just simple spending with community transparency.</p>
+  </div>
+  <div class="debit-grid">
+    <div class="debit-visual">
+      <div class="card-mock">
+        <div class="top">
+          <svg class="glyph" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M23.6631 10.606C22.6201 11.649 19.4771 10.195 16.6411 7.35898C13.8051 4.52298 12.3521 1.37998 13.3941 0.336983C14.4371 -0.705017 17.5801 0.747983 20.4161 3.58398C23.2521 6.41998 24.7051 9.56298 23.6631 10.606Z"/>
+            <path d="M10.6061 23.662C9.56305 24.705 6.42005 23.251 3.58405 20.415C0.749053 17.58 -0.704947 14.436 0.337053 13.394C1.38005 12.352 4.52305 13.805 7.35905 16.641C10.1951 19.477 11.6481 22.619 10.6061 23.662Z"/>
+            <path d="M13.394 23.662C12.351 22.619 13.805 19.476 16.641 16.64C19.477 13.804 22.62 12.351 23.663 13.393C24.705 14.436 23.252 17.579 20.416 20.415C17.58 23.251 14.437 24.704 13.394 23.662Z"/>
+            <path d="M0.338055 10.606C-0.704945 9.56299 0.749055 6.41999 3.58506 3.58399C6.42006 0.748992 9.56406 -0.705008 10.6061 0.336992C11.6481 1.37999 10.1951 4.52299 7.35906 7.35899C4.52306 10.195 1.38106 11.648 0.338055 10.606Z"/>
+          </svg>
+          <span class="visa">Visa Debit</span>
+        </div>
+        <div class="num">•••• •••• •••• 4921</div>
+        <div class="foot"><span>Pool</span><span>09 / 29</span></div>
+      </div>
+      <div class="linked">
+        <span class="dot" aria-hidden="true"></span>
+        <span class="mono">Linked Pool</span>
+      </div>
+    </div>
+    <div class="debit-cards">
+      <article class="dcard"><span class="anchor" aria-hidden="true"></span><img class="thumb" src="https://picsum.photos/seed/mrsk/144/144" alt="" width="72" height="72" loading="lazy" decoding="async"><p class="name">Mrs. K's Class</p><p class="amt">$1,210</p></article>
+      <article class="dcard"><img class="thumb" src="https://picsum.photos/seed/roomies/144/144" alt="" width="72" height="72" loading="lazy" decoding="async"><p class="name">Roomies fund</p><p class="amt">$414</p></article>
+      <article class="dcard"><img class="thumb" src="https://picsum.photos/seed/laced/144/144" alt="" width="72" height="72" loading="lazy" decoding="async"><p class="name">Laced team '26</p><p class="amt">$176</p></article>
+      <article class="dcard"><img class="thumb" src="https://picsum.photos/seed/summer/144/144" alt="" width="72" height="72" loading="lazy" decoding="async"><p class="name">Summer trip</p><p class="amt">$5,950</p></article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SAFETY ============ -->
+<section class="safety-outer" aria-label="Safety first">
+  <div class="safety-panel">
+    <div class="safety-inner">
+      <div class="safety-copy">
+        <h2 class="heading-2">Safety first</h2>
+        <p class="body-lg">Our system is designed with a security-first mindset, and we work hard to keep your money safe and personal data protected.</p>
+      </div>
+      <div class="safety-field" aria-hidden="true">
+        <div class="chip" style="top:18%;left:6%"><span class="av"></span>Ryan C.</div>
+        <div class="chip" style="top:46%;left:3%;opacity:.6"><span class="av"></span>Charlie M.</div>
+        <div class="chip" style="top:74%;left:10%"><span class="av"></span>Lorrie B.</div>
+        <div class="chip scram" style="top:24%;right:6%">•••• ••••</div>
+        <div class="chip scram" style="top:54%;right:3%;opacity:.6">••• •••••</div>
+        <div class="chip scram" style="top:74%;right:14%">•••• ••</div>
+        <div class="sf-divider"></div>
+        <div class="sf-lock">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+      </div>
+      <p class="safety-fdic">Pool partners with First Internet Bank, Member FDIC, and Pool accounts are eligible for FDIC insurance up to $250,000 per depositor, per ownership category.*</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA BAND ============ -->
+<section class="cta-band">
+  <h2 class="display-2 pre-line">Bank alone,
+Pool together.</h2>
+  <p class="body-lg">Your bank account is no place for other people's money. Pool is.</p>
+  <div class="cta-actions">
+    <a href="https://app.poolmoney.com" class="pill pill-primary">Create My Pool</a>
+    <a href="/blog" class="pill pill-ghost">Learn more</a>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<div class="divider" aria-hidden="true"><span></span></div>
+<section class="wrap section" aria-label="Answers to your questions">
+  <div class="faq-grid">
+    <h2 class="heading-2">Answers to your questions</h2>
+    <div class="faq-list">
+      <details class="faq">
+        <summary><span>Does Pool charge fees?</span>
+          <span class="ic" aria-hidden="true"><svg class="ic-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg><svg class="ic-minus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/></svg></span>
+        </summary>
+        <div class="faq-body">
+          <p>Pool does not have mandatory monthly fees or minimum balance requirements. It's free to start a Pool, invite people, fund your Pool and use virtual and physical debit cards.</p>
+          <p>Pool charges transaction-based fees for certain types of opt-in transactions such as Instant Transfers. All transaction-based fees will be clearly labeled, and our Customer Support team is happy to answer any questions about fees.</p>
+        </div>
+      </details>
+      <details class="faq">
+        <summary><span>How does Pool make money?</span>
+          <span class="ic" aria-hidden="true"><svg class="ic-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg><svg class="ic-minus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/></svg></span>
+        </summary>
+        <div class="faq-body">
+          <p>Pool makes money in a few different ways.</p>
+          <p>First, we charge a transaction fee for certain types of premium transactions like Instant Transfers.</p>
+          <p>Second, we collect a small fee from merchants whenever the Pool Visa debit card is used. The debit card is free for Pool's customers, and this fee is called an "interchange fee". It's paid by merchants in the Visa network, not by Pool customers.</p>
+        </div>
+      </details>
+      <details class="faq">
+        <summary><span>Is Pool a bank? Are my funds FDIC-insured?</span>
+          <span class="ic" aria-hidden="true"><svg class="ic-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg><svg class="ic-minus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/></svg></span>
+        </summary>
+        <div class="faq-body">
+          <p>Pool is a financial technology company, not a bank. All banking services are provided by First Internet Bank, Member FDIC.</p>
+          <p>At Pool, the ability to protect your funds and transact safely are top priorities. Earning your trust is important to us, and as a company we invest a lot of time, effort, and spend into keeping your money safe every day.</p>
+          <p>Your deposits are held at our partner bank, First Internet Bank, Member FDIC. Funds deposited into Pool accounts are insured up to $250,000 per depositor by the FDIC, provided requirements for pass-through insurance coverage are met. Your share of funds in your Pools are maintained at First Internet Bank in a manner intended to qualify for this insurance protection.</p>
+          <p>We partner with an FDIC-insured institution to ensure your funds are safe. Our Customer Support team is happy to answer any questions related to safety or FDIC Insurance.</p>
+        </div>
+      </details>
+      <details class="faq">
+        <summary><span>How can I get in touch?</span>
+          <span class="ic" aria-hidden="true"><svg class="ic-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg><svg class="ic-minus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/></svg></span>
+        </summary>
+        <div class="faq-body">
+          <p>You can email our team at hello@poolmoney.com. We would love to hear from you!</p>
+        </div>
+      </details>
+      <details class="faq">
+        <summary><span>How is Pool different from other payments and splitting apps (Venmo, Cash App, Splitwise, PayPal, etc.)?</span>
+          <span class="ic" aria-hidden="true"><svg class="ic-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg><svg class="ic-minus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/></svg></span>
+        </summary>
+        <div class="faq-body">
+          <p>Pool offers a full financial account that can support multiple users who have shared access to funds (if you allow it). That's the big difference.</p>
+          <p>Instead of "sending money" or "splitting a transaction," Pool operates with the core principle that money should be shared. You won't need to catalog transactions, or collect money every time your rent is due. Instead, you can add multiple users who all have access to the same account. Fund your Pool, invite your members, and manage your money together.</p>
+          <p>Pool is great for ongoing relationships and ongoing transactions—living together, extended family expenses, schools, HOAs, caregivers, and on and on.</p>
+          <p>Finally, Pool allows you to set rules and permissions for how your Pool operates. You can add Spenders and Viewers to your Pool, depending on the access you want to allow. Give debit card access, if you want. Every shared financial relationship is different, and we want to enable you to set yours up in your own way.</p>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="wrap footer-top">
+    <div class="footer-cols">
+      <a href="/" class="logo" aria-label="Pool — Home">
+        <svg viewBox="0 0 74 24" fill="currentColor" role="img" aria-label="Pool">
+          <path d="M23.6631 10.606C22.6201 11.649 19.4771 10.195 16.6411 7.35898C13.8051 4.52298 12.3521 1.37998 13.3941 0.336983C14.4371 -0.705017 17.5801 0.747983 20.4161 3.58398C23.2521 6.41998 24.7051 9.56298 23.6631 10.606Z"/>
+          <path d="M10.6061 23.662C9.56305 24.705 6.42005 23.251 3.58405 20.415C0.749053 17.58 -0.704947 14.436 0.337053 13.394C1.38005 12.352 4.52305 13.805 7.35905 16.641C10.1951 19.477 11.6481 22.619 10.6061 23.662Z"/>
+          <path d="M13.394 23.662C12.351 22.619 13.805 19.476 16.641 16.64C19.477 13.804 22.62 12.351 23.663 13.393C24.705 14.436 23.252 17.579 20.416 20.415C17.58 23.251 14.437 24.704 13.394 23.662Z"/>
+          <path d="M0.338055 10.606C-0.704945 9.56299 0.749055 6.41999 3.58506 3.58399C6.42006 0.748992 9.56406 -0.705008 10.6061 0.336992C11.6481 1.37999 10.1951 4.52299 7.35906 7.35899C4.52306 10.195 1.38106 11.648 0.338055 10.606Z"/>
+          <path d="M35.757 20.068H32.307V3.966H37.708C41.581 3.966 43.998 6.097 43.998 9.594C43.998 13.068 41.581 15.222 37.708 15.222H35.758L35.757 20.068ZM37.52 12.287C39.538 12.287 40.571 11.095 40.571 9.593C40.571 8.067 39.538 6.899 37.52 6.899H35.757V12.287H37.52Z"/>
+          <path d="M50.47 7.487C46.801 7.487 44.703 10.359 44.703 13.903C44.703 17.447 46.83 20.319 50.47 20.319C54.11 20.319 56.237 17.447 56.237 13.903C56.237 10.359 54.14 7.487 50.47 7.487ZM50.47 17.599C48.872 17.599 47.989 15.944 47.989 13.903C47.989 11.862 48.872 10.207 50.47 10.207C52.068 10.207 52.951 11.862 52.951 13.903C52.951 15.944 52.067 17.599 50.47 17.599Z"/>
+          <path d="M63.199 7.487C59.53 7.487 57.432 10.359 57.432 13.903C57.432 17.447 59.559 20.319 63.199 20.319C66.839 20.319 68.966 17.447 68.966 13.903C68.966 10.359 66.869 7.487 63.199 7.487ZM63.199 17.599C61.601 17.599 60.718 15.944 60.718 13.903C60.718 11.862 61.601 10.207 63.199 10.207C64.797 10.207 65.68 11.862 65.68 13.903C65.68 15.944 64.796 17.599 63.199 17.599Z"/>
+          <path d="M74 3.966H70.714V20.068H74V3.966Z"/>
+        </svg>
+      </a>
+      <div class="footer-links">
+        <ul>
+          <li><a href="/legal">Legal</a></li>
+          <li><a href="/legal/tos">Terms of Service</a></li>
+          <li><a href="/legal/visa-cardholder-agreement">Cardholder Terms</a></li>
+          <li><a href="/legal/privacy-policy">Privacy Policy</a></li>
+          <li><a href="/legal/privacy-notice">Privacy Notice</a></li>
+        </ul>
+        <ul>
+          <li><a href="/blog">Blog</a></li>
+          <li><a href="/careers">Careers</a></li>
+          <li><a href="https://help.poolmoney.com/">Contact Us</a></li>
+          <li><a href="http://x.com/ourpools">@ourpools</a></li>
+        </ul>
+      </div>
+    </div>
+    <hr>
+    <p class="copyright">©2026 Pool United, Inc.</p>
+    <div class="legal">
+      <p>* Pool is a financial technology company, not a bank. All banking services provided by First Internet Bank, Member FDIC.</p>
+      <p>FDIC insurance is provided by First Internet Bank, Member FDIC, and applies only to deposits held at First Internet Bank. Pool is not itself an FDIC-insured institution. FDIC 'pass-through' insurance applies to deposits only if regulatory requirements are satisfied, including proper recordkeeping of customer ownership. Deposits are insured up to $250,000 per depositor, per ownership category, provided requirements for pass-through FDIC insurance coverage are met. Pool deposits are held at First Internet Bank in a manner designed to qualify for FDIC 'pass-through' insurance. FDIC deposit insurance only applies in the event of the failure of the FDIC insured bank.</p>
+      <p>Federal law requires Pool to verify your identity before opening an account.</p>
+      <p>** The Pool Visa<sup>®</sup> Debit Card is issued by First Internet Bank, pursuant to a license from Visa U.S.A. Inc.</p>
+    </div>
+  </div>
+  <div class="footer-tagline"><span aria-hidden="true">Together We're Rich</span></div>
+</footer>
+
+<script>
+(function(){
+  /* ---- marquee track: build duplicated set of pool cards ---- */
+  var pools=[
+    {n:"Laced team '26 ⚽️",a:"$1,210",b:"+8",s:"laced"},
+    {n:"Roomies fund 🌟",a:"$414",b:"",s:"roomies"},
+    {n:"Mrs. K's Class",a:"$1,210",b:"+22",s:"mrsk"},
+    {n:"Summer trip",a:"$5,950",b:"",s:"summer"},
+    {n:"Monthly date 💘",a:"$86",b:"",s:"date"},
+    {n:"Mission Book Club",a:"$224",b:"+4",s:"book"},
+    {n:"Intramural bball🏀",a:"$463",b:"+8",s:"bball"},
+    {n:"Communal Studio",a:"$1,132",b:"+7",s:"studio"},
+    {n:"Sophia's Nanny Fund",a:"$958",b:"",s:"nanny"},
+    {n:"Crested Butte Trip 🏔️",a:"$1,865",b:"+2",s:"butte"},
+    {n:"Rent",a:"$3,254",b:"",s:"rent"}
+  ];
+  function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function avatarStack(seed,badge){
+    var h='<div class="avatars" aria-hidden="true">';
+    for(var i=1;i<=3;i++){h+='<img src="https://picsum.photos/seed/'+seed+i+'/48/48" alt="" width="24" height="24" loading="lazy" decoding="async">';}
+    if(badge){h+='<span class="more">'+esc(badge)+'</span>';}
+    return h+'</div>';
+  }
+  function cardHTML(p){
+    return '<article class="pcard">'+
+      '<div class="pcard-img"><img src="https://picsum.photos/seed/'+p.s+'/256/176" alt="" width="256" height="176" loading="lazy" decoding="async"></div>'+
+      '<div class="pcard-row"><div class="meta"><p class="name">'+esc(p.n)+'</p><p class="amt">'+esc(p.a)+'</p></div>'+avatarStack(p.s,p.b)+'</div>'+
+    '</article>';
+  }
+  var track=document.getElementById('marquee-track');
+  if(track){
+    var set=pools.map(cardHTML).join('');
+    track.innerHTML=set+set; /* duplicate for seamless -50% loop */
+  }
+
+  /* ---- tabbed product demo ----
+     No autoplay: 09-motion/Calm — 自動再生は既定オフ、切替はユーザー操作
+     （click / ArrowLeft・ArrowRight）でのみ。平常時の画面は静止。 */
+  var root=document.querySelector('[data-demo]');
+  if(root){
+    var tabs=[].slice.call(root.querySelectorAll('[data-tab]'));
+    var panels=[].slice.call(root.querySelectorAll('[data-panel]'));
+    var imgs=[].slice.call(root.querySelectorAll('[data-img]'));
+    var current=0;
+    function show(i){
+      current=(i+tabs.length)%tabs.length;
+      tabs.forEach(function(t,idx){
+        var on=idx===current;
+        t.setAttribute('aria-selected',String(on));
+        t.tabIndex=on?0:-1;
+      });
+      panels.forEach(function(p,idx){p.hidden=idx!==current;});
+      imgs.forEach(function(m,idx){m.classList.toggle('is-active',idx===current);});
+    }
+    tabs.forEach(function(t){
+      t.addEventListener('click',function(){show(+t.getAttribute('data-tab'));});
+      t.addEventListener('keydown',function(e){
+        if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft')return;
+        e.preventDefault();
+        show(current+(e.key==='ArrowRight'?1:-1));
+        tabs[current].focus();
+      });
+    });
+    show(0);
+  }
+})();
+</script>
+</body>
+</html>

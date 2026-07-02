@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#131110" />
+<title>Squarespace Refresh 2025: Built to Stand Out, Ready to Scale — Squarespace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  /* ---- Tokens: real site is dark ground (all copy is text--light), monochrome,
+     Clarkson 400/500 (proprietary geometric sans) → free analog Hanken Grotesk.
+     Dark derivation per color-system: warm-black ground (never pure black), ink is
+     warm off-white (never pure white), elevation = lightness steps, α-white hairlines.
+     Monochrome = zero accent (color-system carve-out; matches the brand). ----*/
+  :root{
+    color-scheme:dark;
+    --ground:#131110;                 /* 暖黒 L≈8% */
+    --surface:#1C1A17;                /* +1段: cards, promo, nav panel */
+    --raised:#26231F;                 /* +2段: hover ground, media placeholder */
+    --line:rgba(255,255,255,.10);
+    --line-strong:rgba(255,255,255,.22);
+    --ink:#F1EFEA;                    /* headings / strong (16.4:1 on ground) */
+    --body-c:#CFCBC2;                 /* paragraph (10.7:1 on surface) */
+    --muted:#A6A199;                  /* meta / small (6.8:1 on surface) */
+    --quiet:#8A857C;                  /* labels only (5.1:1 on ground) */
+    --btn-face:#F1EFEA;               /* primary button = cream on dark */
+    --btn-face-hover:#DBD8D0;         /* 1段濃く (13.2:1 vs ground text) */
+    --sans:"Hanken Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    --r-card:16px;
+    --r-btn:6px;
+    --maxw:1240px;
+    --nav-h:60px;
+  }
+  *,*::before,*::after{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  html,body{max-width:100%;overflow-x:hidden;}
+  body{
+    margin:0;background:var(--ground);color:var(--ink);
+    font-family:var(--sans);font-weight:400;font-size:16px;line-height:1.55;
+    font-optical-sizing:auto;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  }
+  img,svg,video{display:block;max-width:100%;}
+  img{height:auto;}
+  a{color:inherit;text-decoration:none;}
+  button{font:inherit;color:inherit;cursor:pointer;}
+  h1,h2,h3,h4,p{margin:0;}
+  h1,h2,h3{text-wrap:balance;}
+  ul,ol{margin:0;padding:0;list-style:none;}
+
+  :where(a,button,input,select,summary,[tabindex]):focus-visible{
+    outline:2px solid var(--ink);outline-offset:3px;border-radius:3px;
+  }
+  .skip{
+    position:absolute;left:8px;top:8px;z-index:200;
+    background:var(--ink);color:var(--ground);padding:8px 16px;border-radius:var(--r-btn);
+    transform:translateY(-250%);transition:transform .15s ease;
+  }
+  .skip:focus{transform:translateY(0);}
+
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px;}
+  @media(max-width:640px){.wrap{padding:0 16px;}}
+
+  /* ---------- Promo banner ---------- */
+  .promo{background:var(--surface);border-bottom:1px solid var(--line);font-size:14px;color:var(--body-c);}
+  .promo__row{
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    min-height:40px;padding:8px 24px;text-align:center;flex-wrap:wrap;
+  }
+  .promo strong{font-weight:500;color:var(--ink);}
+  .promo__fine{
+    max-width:66ch;margin:0 auto;color:var(--muted);font-size:12px;
+    line-height:1.5;padding:4px 24px 12px;text-align:center;text-wrap:pretty;
+  }
+
+  /* ---------- Global navigation ---------- */
+  .gnav{
+    position:sticky;top:0;z-index:100;background:rgba(19,17,16,.88);
+    -webkit-backdrop-filter:saturate(140%) blur(10px);
+    backdrop-filter:saturate(140%) blur(10px);border-bottom:1px solid var(--line);
+  }
+  .gnav__row{display:flex;align-items:center;gap:24px;min-height:var(--nav-h);}
+  .brand{font-weight:500;font-size:21px;letter-spacing:-.02em;color:var(--ink);flex:0 0 auto;}
+  .gnav__primary{display:flex;gap:4px;flex:1;min-width:0;}
+  .gnav__primary a{padding:8px 12px;border-radius:var(--r-btn);font-size:14px;color:var(--body-c);}
+  .gnav__end{display:flex;align-items:center;gap:8px;flex:0 0 auto;}
+  .lnk-quiet{padding:8px 12px;border-radius:var(--r-btn);font-size:14px;color:var(--body-c);}
+  @media (hover:hover){
+    .gnav__primary a:hover,.lnk-quiet:hover{background:var(--raised);color:var(--ink);}
+  }
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;
+    background:var(--btn-face);color:var(--ground);border:1px solid var(--btn-face);
+    padding:12px 24px;border-radius:999px;font-size:14px;font-weight:500;line-height:1;
+  }
+  .btn:active{transform:translateY(1px);}
+  .btn--lg{padding:16px 32px;font-size:16px;}
+  .btn--ghost{background:transparent;color:var(--ink);border-color:var(--line-strong);}
+  @media (hover:hover){
+    .btn:hover{background:var(--btn-face-hover);border-color:var(--btn-face-hover);}
+    .btn--ghost:hover{background:var(--raised);border-color:var(--ink);color:var(--ink);}
+  }
+  .navtoggle{
+    display:none;width:44px;height:44px;border:1px solid var(--line);
+    border-radius:var(--r-btn);background:var(--surface);align-items:center;justify-content:center;
+  }
+  .navtoggle svg{width:20px;height:20px;}
+  @media(max-width:900px){
+    .navtoggle{display:inline-flex;order:3;}
+    #menu-panel{
+      display:none;position:absolute;left:0;right:0;top:var(--nav-h);
+      background:var(--surface);border-bottom:1px solid var(--line-strong);
+      padding:8px 24px 20px;
+    }
+    #menu-panel.open{display:block;}
+    .gnav__primary{flex-direction:column;gap:2px;}
+    .gnav__primary a{padding:12px 16px;font-size:16px;}
+    .gnav__end{margin-top:12px;flex-direction:column;align-items:stretch;}
+    .gnav__end .lnk-quiet,.gnav__end .btn{width:100%;text-align:center;justify-content:center;}
+  }
+
+  /* ---------- Hero ---------- */
+  .hero{position:relative;background:var(--ground);overflow:hidden;}
+  .hero__media{position:absolute;inset:0;}
+  .hero__media img{width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.02) brightness(.9);}
+  .hero__scrim{position:absolute;inset:0;background:rgba(15,13,11,.56);}
+  .hero__inner{
+    position:relative;max-width:var(--maxw);margin:0 auto;
+    padding:120px 24px 56px;min-height:clamp(440px,78vh,780px);
+    display:flex;flex-direction:column;justify-content:flex-end;
+  }
+  .hero__logo{
+    font-weight:500;letter-spacing:-.03em;line-height:.9;color:var(--ink);
+    font-size:clamp(64px,15vw,200px);margin:0;
+  }
+  .hero__logo span{display:block;font-size:.92em;}
+  .hero__sub{
+    font-size:clamp(21px,3vw,30px);font-weight:400;line-height:1.2;
+    max-width:18ch;margin-top:24px;color:var(--ink);
+  }
+  .hero__actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:32px;}
+  .hero .btn--ghost svg{width:16px;height:16px;margin-right:8px;}
+  .hero__jumps{
+    display:flex;gap:8px 32px;flex-wrap:wrap;margin-top:40px;
+    padding-top:20px;border-top:1px solid var(--line-strong);
+  }
+  .jumplink{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:8px 0;font-size:16px;font-weight:500;color:var(--ink);
+  }
+  .jumplink svg{width:12px;height:12px;flex:0 0 auto;}
+  @media (hover:hover){.jumplink:hover{text-decoration:underline;text-underline-offset:4px;}}
+
+  /* page-load reveal: the one concentrated flourish (real site does the same
+     opacity/translateY stagger). transform/opacity only, gated on motion pref. */
+  @media (prefers-reduced-motion: no-preference){
+    @keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+    .hero__logo{animation:rise .6s cubic-bezier(0,0,.2,1) both;}
+    .hero__sub{animation:rise .6s cubic-bezier(0,0,.2,1) .08s both;}
+    .hero__actions{animation:rise .6s cubic-bezier(0,0,.2,1) .16s both;}
+    .hero__jumps{animation:rise .6s cubic-bezier(0,0,.2,1) .24s both;}
+  }
+
+  /* ---------- Body shell: sticky index + content ---------- */
+  .shell{max-width:var(--maxw);margin:0 auto;padding:0 24px;
+    display:grid;grid-template-columns:236px minmax(0,1fr);gap:48px;}
+  @media(max-width:980px){.shell{grid-template-columns:1fr;gap:0;}}
+  @media(max-width:640px){.shell{padding:0 16px;}}
+
+  .index{position:sticky;top:calc(var(--nav-h) + 20px);align-self:start;
+    height:max-content;padding:40px 0;}
+  .index__label{
+    font-size:12px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--quiet);margin-bottom:16px;
+  }
+  .index ol{counter-reset:idx;}
+  .index li{counter-increment:idx;}
+  .index a{
+    display:flex;gap:8px;padding:8px 0;font-size:14px;color:var(--muted);
+    align-items:baseline;line-height:1.3;
+  }
+  .index a::before{
+    content:counter(idx,decimal-leading-zero);
+    color:var(--quiet);font-variant-numeric:tabular-nums;font-size:12px;
+    flex:0 0 auto;padding-top:2px;
+  }
+  @media (hover:hover){.index a:hover{color:var(--ink);}}
+  .index a.is-active{color:var(--ink);font-weight:500;}
+  @media(max-width:980px){
+    .index{position:sticky;top:var(--nav-h);z-index:40;padding:0;
+      background:rgba(19,17,16,.92);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+      border-bottom:1px solid var(--line);margin:0 -16px;}
+    .index__label{display:none;}
+    .index ol{display:flex;gap:4px;overflow-x:auto;padding:8px 16px;scrollbar-width:none;}
+    .index ol::-webkit-scrollbar{display:none;}
+    .index li{flex:0 0 auto;}
+    .index a{white-space:nowrap;padding:8px 12px;border:1px solid var(--line);
+      border-radius:999px;font-size:14px;}
+    .index a::before{display:none;}
+    .index a.is-active{background:var(--ink);color:var(--ground);border-color:var(--ink);}
+  }
+
+  .content{padding:8px 0 40px;min-width:0;}
+
+  /* ---------- Section primitives ---------- */
+  .sec{padding:56px 0;border-top:1px solid var(--line);}
+  .sec:first-child{border-top:none;}
+  .sec__title{
+    font-size:clamp(28px,4.4vw,46px);font-weight:500;line-height:1.1;
+    letter-spacing:-.02em;color:var(--ink);max-width:20ch;
+  }
+  .sec__intro{margin-top:16px;font-size:clamp(16px,2vw,18px);color:var(--body-c);
+    max-width:54ch;line-height:1.55;text-wrap:pretty;}
+
+  /* chapter divider (real: headline title1 + standfirst) */
+  .group{padding:64px 0 8px;border-top:1px solid var(--line);}
+  .group h2{
+    font-size:clamp(40px,8vw,92px);font-weight:500;letter-spacing:-.03em;
+    line-height:.96;color:var(--ink);
+  }
+  .group p{
+    margin-top:20px;font-size:clamp(16px,2.2vw,21px);line-height:1.45;
+    color:var(--body-c);max-width:44ch;text-wrap:pretty;
+  }
+
+  /* feature grid */
+  .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin-top:36px;}
+  @media(max-width:600px){.grid{grid-template-columns:1fr;gap:16px;}}
+  .card{
+    min-width:0;background:var(--surface);border:1px solid var(--line);
+    border-radius:var(--r-card);overflow:hidden;display:flex;flex-direction:column;
+  }
+  @media (hover:hover){
+    .card{transition:transform .15s cubic-bezier(0,0,.2,1);}
+    .card:hover{border-color:var(--line-strong);transform:translateY(-2px);}
+  }
+  .card__media{aspect-ratio:16/10;background:var(--raised);overflow:hidden;}
+  .card__media img{width:100%;height:100%;object-fit:cover;filter:grayscale(1) brightness(.92);}
+  .card__body{padding:16px 24px 24px;display:flex;flex-direction:column;gap:8px;}
+  .card h3{font-size:18px;font-weight:500;letter-spacing:-.01em;color:var(--ink);line-height:1.3;}
+  .card p{font-size:14px;line-height:1.55;color:var(--body-c);text-wrap:pretty;}
+  .card--lead{grid-column:1 / -1;}
+  @media(min-width:601px){
+    .card--lead{flex-direction:row;align-items:stretch;}
+    .card--lead .card__media{flex:0 0 46%;aspect-ratio:auto;min-height:240px;}
+    .card--lead .card__body{justify-content:center;padding:32px 36px;gap:12px;}
+    .card--lead h3{font-size:clamp(21px,2.6vw,30px);}
+    .card--lead p{font-size:16px;max-width:46ch;}
+  }
+  .highlights .grid{gap:24px;}
+  .highlights .card h3{font-size:clamp(18px,2.4vw,26px);}
+  .highlights .card p{font-size:16px;}
+
+  .note{font-size:12px;color:var(--muted);margin-top:28px;line-height:1.5;max-width:66ch;}
+
+  /* ---------- Conversion ---------- */
+  .conv{background:var(--ground);border-top:1px solid var(--line);
+    text-align:center;padding:clamp(72px,12vw,144px) 24px;}
+  .conv h2{font-size:clamp(30px,5vw,56px);font-weight:500;letter-spacing:-.02em;line-height:1.05;}
+  .conv .btn{margin-top:32px;}
+  .conv__fine{margin-top:16px;font-size:14px;color:var(--muted);}
+  .conv__brand{font-size:clamp(40px,9vw,120px);font-weight:500;letter-spacing:-.03em;
+    line-height:.98;margin-top:clamp(56px,10vw,112px);color:var(--ink);text-wrap:balance;}
+
+  /* ---------- Footer ---------- */
+  .foot{background:var(--ground);color:var(--body-c);border-top:1px solid var(--line);
+    padding:64px 0 40px;font-size:14px;}
+  .foot__cols{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:32px 24px;}
+  @media(max-width:1080px){.foot__cols{grid-template-columns:repeat(4,1fr);}}
+  @media(max-width:680px){.foot__cols{grid-template-columns:repeat(2,1fr);}}
+  .foot__cols h3{font-size:12px;font-weight:500;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--ink);margin-bottom:16px;}
+  .foot__cols li{margin-bottom:8px;}
+  .foot__cols a{color:var(--body-c);}
+  .foot__mid{display:flex;flex-wrap:wrap;gap:16px 28px;align-items:center;
+    justify-content:space-between;margin-top:48px;padding-top:28px;border-top:1px solid var(--line);}
+  .foot__follow{display:flex;align-items:center;gap:16px;}
+  .foot__follow span{font-weight:500;color:var(--ink);}
+  /* icon-only button: equal padding is intentional (square 48px touch target =
+     24px glyph + 12px ring, per touch-target rule); asymmetric padding would
+     off-center the glyph. The asymmetric-padding rule targets text containers. */
+  .foot__follow a{display:inline-flex;width:24px;height:24px;color:var(--muted);padding:12px;box-sizing:content-box;}
+  .foot__follow svg{width:24px;height:24px;}
+  @media (hover:hover){
+    .foot__cols a:hover,.foot__legal a:hover{color:var(--ink);text-decoration:underline;text-underline-offset:2px;}
+    .foot__follow a:hover{color:var(--ink);}
+  }
+  .foot__pick{display:flex;gap:12px;flex-wrap:wrap;}
+  .foot__pick label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted);}
+  .foot__pick select{
+    font:inherit;font-size:16px;color:var(--ink);background:var(--surface);
+    border:1px solid var(--line-strong);border-radius:var(--r-btn);padding:8px 12px;min-width:150px;
+  }
+  .foot__trust{display:flex;flex-wrap:wrap;gap:8px 24px;margin-top:28px;font-size:12px;color:var(--muted);}
+  .foot__legal{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:24px;
+    padding-top:24px;border-top:1px solid var(--line);font-size:14px;}
+  .foot__copy{margin-top:16px;font-size:14px;color:var(--muted);}
+
+  html{scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-h) + 16px);}
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{
+      animation-duration:.01ms!important;animation-iteration-count:1!important;
+      transition-duration:.01ms!important;scroll-behavior:auto!important;
+    }
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#content">Skip to Main Content</a>
+
+<!-- ===== Promo banner ===== -->
+<aside class="promo" aria-label="Promo banner">
+  <div class="promo__row">
+    <span><strong>Take 20% off any new website plan</strong></span>
+  </div>
+  <p class="promo__fine">Enter code at checkout by 11:59 PM EST on the expiration date. Discount applies to the first payment of an applicable new Squarespace subscription only. Does not apply to recurring payments. Cannot be used on previous purchases, upgrades, in combination with other offers, or payments through In-App Pay.</p>
+</aside>
+
+<!-- ===== Global navigation ===== -->
+<header class="gnav">
+  <div class="wrap gnav__row">
+    <a class="brand" href="/" aria-label="Squarespace homepage">Squarespace</a>
+    <button class="navtoggle" id="navToggle" aria-expanded="false" aria-controls="menu-panel" aria-label="Open main menu">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+    <div id="menu-panel">
+      <nav class="gnav__primary" aria-label="Main menu">
+        <a href="#">Products</a>
+        <a href="#">Solutions</a>
+        <a href="#">Resources</a>
+        <a href="#">Pricing</a>
+        <a href="#">Premium</a>
+        <a href="#">For Pros</a>
+      </nav>
+      <div class="gnav__end">
+        <a class="lnk-quiet" href="#">Log In</a>
+        <a class="btn" href="#">Get started</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ===== Hero ===== -->
+<section class="hero" id="hero">
+  <div class="hero__media">
+    <img src="https://picsum.photos/seed/sqsp-refresh-hero/2400/1400?grayscale"
+         alt="A preview of new products and features with bold imagery and modern design elements that highlight new product features in a sleek, minimal style."
+         width="2400" height="1400" loading="eager" fetchpriority="high" decoding="async" />
+  </div>
+  <div class="hero__scrim"></div>
+  <div class="hero__inner">
+    <h1 class="hero__logo" aria-label="Refresh 2025">Refresh<span>2025</span></h1>
+    <p class="hero__sub">Built to stand out, ready to scale</p>
+    <div class="hero__actions">
+      <button class="btn btn--lg btn--ghost" type="button">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>Watch Video
+      </button>
+    </div>
+    <nav class="hero__jumps" aria-label="Chapters">
+      <a class="jumplink" href="#design-differently">Design differently
+        <svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 1v10M2 7l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <a class="jumplink" href="#scale-your-business">Scale your business
+        <svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 1v10M2 7l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    </nav>
+  </div>
+</section>
+
+<!-- ===== Body shell ===== -->
+<div class="shell">
+  <!-- Sticky section index -->
+  <nav class="index" id="sidenav" aria-label="Section index">
+    <p class="index__label">Refresh 2025</p>
+    <ol>
+      <li><a href="#highlights" data-target="highlights" class="is-active">Highlights</a></li>
+      <li><a href="#blueprint-ai" data-target="blueprint-ai">Design faster with Blueprint AI</a></li>
+      <li><a href="#finish-layer" data-target="finish-layer">Finish Layer</a></li>
+      <li><a href="#beacon-ai" data-target="beacon-ai">Grow faster with Beacon AI</a></li>
+      <li><a href="#domains" data-target="domains">Squarespace Domains</a></li>
+      <li><a href="#offer-services" data-target="offer-services">Offer Services</a></li>
+      <li><a href="#financial-solutions" data-target="financial-solutions">Financial Solutions</a></li>
+      <li><a href="#donations" data-target="donations">Donations</a></li>
+      <li><a href="#sell-at-scale" data-target="sell-at-scale">Sell at Scale</a></li>
+      <li><a href="#marketing-tools" data-target="marketing-tools">Marketing Tools</a></li>
+      <li><a href="#acuity-scheduling" data-target="acuity-scheduling">Acuity Scheduling</a></li>
+      <li><a href="#bio-sites" data-target="bio-sites">Bio Sites</a></li>
+    </ol>
+  </nav>
+
+  <main class="content" id="content">
+
+    <!-- Highlights (intro overview, real order: Blueprint AI / Finish Layer / Beacon AI / AIO) -->
+    <section class="sec highlights" id="highlights">
+      <h2 class="sec__title">Built to stand out, ready to scale</h2>
+      <div class="grid">
+        <article class="card">
+          <div class="card__media"><img src="https://picsum.photos/seed/hl-blueprint/800/500?grayscale" alt="Blueprint AI site generation preview" width="800" height="500" loading="lazy" decoding="async" /></div>
+          <div class="card__body"><h3>Design Faster with Blueprint AI</h3><p>New ways to start a website, with content curated just for you. Start building via chat or generate a set of adaptive templates.</p></div>
+        </article>
+        <article class="card">
+          <div class="card__media"><img src="https://picsum.photos/seed/hl-finish/800/500?grayscale" alt="Finish Layer design controls preview" width="800" height="500" loading="lazy" decoding="async" /></div>
+          <div class="card__body"><h3>Finish Layer</h3><p>Transform your website design into an immersive experience with professional-grade customization and editing controls.</p></div>
+        </article>
+        <article class="card">
+          <div class="card__media"><img src="https://picsum.photos/seed/hl-beacon/800/500?grayscale" alt="Squarespace Beacon AI assistant preview" width="800" height="500" loading="lazy" decoding="async" /></div>
+          <div class="card__body"><h3>Squarespace Beacon AI</h3><p>Set up and manage operations faster with your new business partner, built to automate routine tasks and drive growth.</p></div>
+        </article>
+        <article class="card">
+          <div class="card__media"><img src="https://picsum.photos/seed/hl-aio/800/500?grayscale" alt="AIO search optimization preview" width="800" height="500" loading="lazy" decoding="async" /></div>
+          <div class="card__body"><h3>AIO – SEO for the AI era</h3><p>Get discovered across traditional and AI search with AI optimization that provides intuitive audits and clear visual insights.</p></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===== CHAPTER I: Design differently ===== -->
+    <div class="group" id="design-differently">
+      <h2>Design differently</h2>
+      <p>Pro-grade website design tools, intuitive enough for anyone to use. Take your online aesthetic to a whole new level.</p>
+    </div>
+
+    <!-- Blueprint AI -->
+    <section class="sec" id="blueprint-ai">
+      <h2 class="sec__title">Design faster with Blueprint AI</h2>
+      <div class="grid">
+        <article class="card card--lead">
+          <div class="card__media"><img src="https://picsum.photos/seed/bp-templates/900/620?grayscale" alt="Blueprint template gallery preview" width="900" height="620" loading="lazy" decoding="async" /></div>
+          <div class="card__body"><h3>Blueprint templates</h3><p>Choose from designer-made templates pre-filled with curated AI content and styling aligned with your brand.</p></div>
+        </article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/bp-chat/800/500?grayscale" alt="Blueprint AI chat flow preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Chat within Blueprint AI</h3><p>Start building your site through a simple, conversational flow that generates a personalized design with brand-specific content and layouts.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/bp-gpt/800/500?grayscale" alt="Squarespace GPT in ChatGPT preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Squarespace GPT</h3><p>Build a site directly in ChatGPT through a guided flow that creates a personalized design with content adapted to your brand.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/bp-image/800/500?grayscale" alt="AI image background editor preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>AI image backgrounds</h3><p>Design faster with AI-generated image backgrounds made for text overlay, curated for a cohesive and professional look.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/bp-video/800/500?grayscale" alt="AI video background preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>AI video backgrounds</h3><p>Add AI-generated video backgrounds to keep visitors engaged and add variety to your page design.</p></div></article>
+      </div>
+    </section>
+
+    <!-- Finish Layer -->
+    <section class="sec" id="finish-layer">
+      <h2 class="sec__title">Finish Layer</h2>
+      <div class="grid">
+        <article class="card card--lead">
+          <div class="card__media"><img src="https://picsum.photos/seed/fl-anim/900/620?grayscale" alt="Block animation treatments preview" width="900" height="620" loading="lazy" decoding="async" /></div>
+          <div class="card__body"><h3>Block animations</h3><p>Make a statement and drive stronger engagement with interactive, highly customizable animation treatments.</p></div>
+        </article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/fl-transform/800/500?grayscale" alt="Block transforms preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Block transforms</h3><p>Add more depth and personality to block content with next-generation display and placement flexibility.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/fl-responsive/800/500?grayscale" alt="Responsive editing preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Responsive editing</h3><p>Level up your workflow with flexible new editing logic and further optimize your design for mobile breakpoints.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/fl-hiding/800/500?grayscale" alt="Block hiding on mobile preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Block hiding</h3><p>Present your most important content and hide unneeded blocks on mobile for a more cohesive viewing experience.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/fl-stacks/800/500?grayscale" alt="Stacks layout control preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Stacks</h3><p>Arrange, align and distribute blocks in a fixed order, with even more responsive control over your layout.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/fl-mobile/800/500?grayscale" alt="Mobile overrides preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Mobile overrides</h3><p>Create a different mobile layout from your desktop version with independent block design settings.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/fl-saved/800/500?grayscale" alt="Saved sections library preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Account-wide saved sections</h3><p>Circle members can now save and reuse section layouts across multiple projects to speed up build time.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/fl-fonts/800/500?grayscale" alt="Font uploads preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Font uploads</h3><p>Fine-tune your site’s styling and maintain brand consistency with new options to import external font files.</p></div></article>
+      </div>
+    </section>
+
+    <!-- ===== CHAPTER II: Scale your business ===== -->
+    <div class="group" id="scale-your-business">
+      <h2>Scale your business</h2>
+      <p>Set up and manage operations faster with your new business partner, built to automate routine tasks and drive growth.</p>
+    </div>
+
+    <!-- Beacon AI -->
+    <section class="sec" id="beacon-ai">
+      <h2 class="sec__title">Grow faster with Squarespace Beacon AI</h2>
+      <div class="grid">
+        <article class="card card--lead">
+          <div class="card__media"><img src="https://picsum.photos/seed/bc-beacon/900/620?grayscale" alt="Squarespace Beacon AI guidance preview" width="900" height="620" loading="lazy" decoding="async" /></div>
+          <div class="card__body"><h3>Squarespace Beacon AI</h3><p>Get clear, tailored guidance across the Squarespace platform for optimizing your business and accelerating growth.</p></div>
+        </article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/bc-aio/800/500?grayscale" alt="AIO Scanner preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>AIO Scanner</h3><p>Track how your site shows up in AI-driven search results, and get insights to boost your visibility.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/bc-seo/800/500?grayscale" alt="SEO Scanner preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>SEO Scanner</h3><p>Scan your website’s page titles, descriptions, and image alt text—then get optimized copy to improve them in one click.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/bc-site/800/500?grayscale" alt="AI Site Scanner preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>AI Site Scanner</h3><p>Scan your site to catch issues before they impact visitors, from broken links to SEO gaps.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/bc-product/800/500?grayscale" alt="AI Product Composer preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>AI Product Composer</h3><p>Generate detailed, professional product and service listings with AI, starting from a short description or an image.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/bc-discount/800/500?grayscale" alt="AI Discount Composer preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>AI Discount Composer</h3><p>Get smart, tailored discount suggestions to help boost your sales and attract customers.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/bc-faq/800/500?grayscale" alt="AI FAQ Composer preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>AI FAQ Composer</h3><p>Create a personalized, SEO-optimized FAQ to answer your customers’ top questions and boost your AI search visibility.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/bc-home/800/500?grayscale" alt="Home dashboard preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Home dashboard</h3><p>Grow your business with a new centralized home for personalized insights and recommendations at every step of your journey.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/bc-notif/800/500?grayscale" alt="Notifications preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Notifications</h3><p>Receive tailored real-time alerts to help you efficiently manage your business.</p></div></article>
+      </div>
+    </section>
+
+    <!-- Domains -->
+    <section class="sec" id="domains">
+      <h2 class="sec__title">Squarespace Domains</h2>
+      <div class="grid">
+        <article class="card card--lead">
+          <div class="card__media"><img src="https://picsum.photos/seed/dm-premium/900/620?grayscale" alt="Premium domains preview" width="900" height="620" loading="lazy" decoding="async" /></div>
+          <div class="card__body"><h3>Premium domains</h3><p>The most exclusive, highly sought-after names, that give your brand instant impact, now available for registration.</p></div>
+        </article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/dm-activity/800/500?grayscale" alt="Activity log preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Activity log</h3><p>Keep track of changes made to your domain by owners and managers, so you stay informed and protected.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/dm-2fa/800/500?grayscale" alt="Two-factor authentication preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Added two-factor authentication</h3><p>Keep more of your account secure with re-authentication protection extended to DNS and domain permissions.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/dm-parking/800/500?grayscale" alt="Customizable parking page preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Customizable parking pages</h3><p>Stand out online at every stage with new customization features that let you style your domain’s landing page, before you have a website.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/dm-naming/800/500?grayscale" alt="AI naming tools preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>AI-powered naming tools</h3><p>Get inspired and get started — generate naming options with AI tools like Business Name Generator and Domain Name Generator.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/dm-tlds/800/500?grayscale" alt="Expanded TLDs preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Expanded suite of TLDs</h3><p>Over 400 TLDs to choose from, plus newly added, popular TLDs like .ai, .nyc, and .link, so you can find the best fit for you.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/dm-transfer/800/500?grayscale" alt="Domain ownership transfer preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Domains ownership transfer</h3><p>Improved in-dashboard domain ownership transfer lets you transfer ownership permissions to existing managers, securely and simply.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/dm-reseller/800/500?grayscale" alt="Reseller API preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Website reseller API</h3><p>Sell Squarespace websites and domains directly on your platform with our industry-leading reseller API.</p></div></article>
+      </div>
+    </section>
+
+    <!-- Offer Services -->
+    <section class="sec" id="offer-services">
+      <h2 class="sec__title">Offer Services</h2>
+      <div class="grid">
+        <article class="card card--lead">
+          <div class="card__media"><img src="https://picsum.photos/seed/os-events/900/620?grayscale" alt="Sell events and experiences preview" width="900" height="620" loading="lazy" decoding="async" /></div>
+          <div class="card__body"><h3>Sell events and experiences</h3><p>Promote and sell camps, retreats, and group trips with tools to attract more clients and grow your business.</p></div>
+        </article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/os-listings/800/500?grayscale" alt="Improved product listings preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Improved product listings</h3><p>Showcase offerings in a clean, mobile-friendly list format, and turn more visitors into customers with designer layouts.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/os-export/800/500?grayscale" alt="Orders auto-export preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Orders auto-export</h3><p>Automatically export order details to Zapier and Google Sheets to simplify your workflows and stay organized.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/os-form/800/500?grayscale" alt="Form follow-up questions preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Form follow-up questions</h3><p>Gather important details up front to reduce back-and-forth and keep projects moving smoothly.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/os-recurring/800/500?grayscale" alt="Recurring invoices preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Recurring invoices</h3><p>Automatically bill repeat clients on a schedule, so you never miss a payment and get paid on time, every time.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/os-scheduled/800/500?grayscale" alt="Scheduled invoices preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Scheduled invoices</h3><p>Create invoices in advance and schedule them to send at the perfect time for you and your clients.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/os-app/800/500?grayscale" alt="Invoicing in the Squarespace app preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Invoicing in the Squarespace app</h3><p>Send professional, on-brand invoices from your phone so you can get paid faster and manage billing on the go.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/os-intl/800/500?grayscale" alt="International invoicing preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>International invoicing</h3><p>Customizable form fields and additional tax and shipping details ensure you have business compliant invoicing.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/os-paid/800/500?grayscale" alt="Mark invoices as paid preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Mark invoices as paid</h3><p>Stay organized and track all payments in one place by marking invoices as paid in a unified dashboard.</p></div></article>
+      </div>
+    </section>
+
+    <!-- Financial Solutions -->
+    <section class="sec" id="financial-solutions">
+      <h2 class="sec__title">Financial Solutions</h2>
+      <div class="grid">
+        <article class="card card--lead">
+          <div class="card__media"><img src="https://picsum.photos/seed/fn-balance/900/620?grayscale" alt="Squarespace Balance account preview" width="900" height="620" loading="lazy" decoding="async" /></div>
+          <div class="card__body"><h3>Squarespace Balance</h3><p>Your all-in-one financial account for same-day earnings, rewards, and business spending cards.</p></div>
+        </article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/fn-capital/800/500?grayscale" alt="Squarespace Capital preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Squarespace Capital*</h3><p>Accelerate your business growth with financing through Squarespace Capital.*</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/fn-instant/800/500?grayscale" alt="Instant payouts preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Instant payouts**</h3><p>Get paid as soon as you make a sale—transfer your earnings to your bank account in minutes.**</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/fn-paylinks/800/500?grayscale" alt="Pay links preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Pay links</h3><p>Create shareable links to accept payments and allow customers to check out or leave a tip from social, email, or text.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/fn-anz/800/500?grayscale" alt="Squarespace Payments in Australia and New Zealand preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Squarespace Payments in Australia and New Zealand</h3><p>Manage your payments and payouts with Squarespace Payments, now available in Australia and New Zealand.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/fn-eu/800/500?grayscale" alt="Squarespace Payments in Europe preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Squarespace Payments in more of Europe</h3><p>Now available in Ireland, France, Germany, Austria, Belgium, Finland, Spain, Italy, Portugal, and the Netherlands.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/fn-apm/800/500?grayscale" alt="Alternative payment methods preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>New alternative payment methods</h3><p>Offer your customers more ways to pay with Google Pay. SEPA and iDEAL coming soon.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/fn-tap/800/500?grayscale" alt="Tap to Pay in the mobile app preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Tap to Pay in the mobile app</h3><p>Accept in-person payments for products and services with just your phone and the Squarespace app. No card reader or extra hardware required.</p></div></article>
+      </div>
+      <p class="note">*Squarespace Capital is available to eligible U.S. merchants only. Financing is provided by Squarespace’s lending partners. **Instant payouts are subject to eligibility requirements and a per-transfer fee.</p>
+    </section>
+
+    <!-- Donations -->
+    <section class="sec" id="donations">
+      <h2 class="sec__title">Donations</h2>
+      <div class="grid">
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/dn-fees/800/500?grayscale" alt="Cover the fees preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Cover the fees</h3><p>Give donors the option to cover processing fees, so 100% of every contribution goes directly to your mission.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/dn-qr/800/500?grayscale" alt="Donation QR codes preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>QR codes</h3><p>Easily accept in-person and mail donations by generating QR codes for donation pages.</p></div></article>
+      </div>
+    </section>
+
+    <!-- Sell at Scale -->
+    <section class="sec" id="sell-at-scale">
+      <h2 class="sec__title">Sell at Scale</h2>
+      <div class="grid">
+        <article class="card card--lead">
+          <div class="card__media"><img src="https://picsum.photos/seed/ss-tax/900/620?grayscale" alt="Automated tax preview" width="900" height="620" loading="lazy" decoding="async" /></div>
+          <div class="card__body"><h3>Automated tax</h3><p>Simplify tax collection with up-to-date tax rates (sales tax, VAT, GST, and more) by location and product or service type.</p></div>
+        </article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/ss-search/800/500?grayscale" alt="Search and filter orders preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Search and filter orders by product</h3><p>Find inventory quickly using keywords or filters, such as one time or recurring purchases, delivery method, or payment type.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/ss-shipping/800/500?grayscale" alt="Carrier calculated shipping preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Carrier calculated shipping</h3><p>Calculate real-time domestic shipping rates. Coming soon, link third-party carriers like Royal Mail and Australia Post.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/ss-currency/800/500?grayscale" alt="Multicurrency extension preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Multicurrency extension by TinyCurrency</h3><p>Present clear prices in a customer’s local currency and let them switch for seamless international sales.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/ss-restaurant/800/500?grayscale" alt="Restaurant ordering extension preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Restaurant ordering extension by Allday</h3><p>Turn your website into an online ordering hub—build menus, take orders, and more with optimized checkout.</p></div></article>
+      </div>
+    </section>
+
+    <!-- Marketing Tools -->
+    <section class="sec" id="marketing-tools">
+      <h2 class="sec__title">Marketing Tools</h2>
+      <div class="grid">
+        <article class="card card--lead">
+          <div class="card__media"><img src="https://picsum.photos/seed/mk-acuity/900/620?grayscale" alt="Acuity Scheduling integration preview" width="900" height="620" loading="lazy" decoding="async" /></div>
+          <div class="card__body"><h3>Acuity Scheduling integration</h3><p>Send more targeted campaigns with deeper appointment-related data within Contacts, like past and upcoming appointment types and dates.</p></div>
+        </article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/mk-campaigns/800/500?grayscale" alt="AI generated campaigns preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>AI generated campaigns</h3><p>Instantly generate conversion-optimized subject lines and email copy tailored to your business.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/mk-formauto/800/500?grayscale" alt="Form response automation preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Form response automation</h3><p>Create more opportunities to connect with automatic responses to form submissions on your website.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/mk-invauto/800/500?grayscale" alt="Invoice paid automation preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Invoice paid automation</h3><p>Auto-respond with a personalized, on-brand email when someone pays an invoice on your website.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/mk-localseo/800/500?grayscale" alt="Local SEO extension preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Local SEO extension by SEOSpace</h3><p>Attract more local customers with a new SEO tool to boost visibility on Google Maps.</p></div></article>
+      </div>
+    </section>
+
+    <!-- Acuity Scheduling -->
+    <section class="sec" id="acuity-scheduling">
+      <h2 class="sec__title">Acuity Scheduling</h2>
+      <div class="grid">
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/ac-style/800/500?grayscale" alt="Acuity style editor preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Style editor</h3><p>Instantly apply your website styles to your scheduling page for a cohesive brand experience.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/ac-pos/800/500?grayscale" alt="Acuity point of sale preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Point of sale (POS)</h3><p>Manage every part of client checkout—deposits, balances, tipping, and more—right from the Acuity app.</p></div></article>
+      </div>
+    </section>
+
+    <!-- Bio Sites -->
+    <section class="sec" id="bio-sites">
+      <h2 class="sec__title">Bio Sites</h2>
+      <div class="grid">
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/bs-downloads/800/500?grayscale" alt="Bio Sites digital downloads preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Digital downloads</h3><p>List guides, sheets, and more directly on your Bio Site to scale passive income from digital content.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/bs-appts/800/500?grayscale" alt="Bio Sites 1:1 appointments preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>1:1 appointments</h3><p>Monetize your time with bookable appointments and customize the price, length, and details to what you can uniquely offer.</p></div></article>
+        <article class="card"><div class="card__media"><img src="https://picsum.photos/seed/bs-email/800/500?grayscale" alt="Bio Sites email automations preview" width="800" height="500" loading="lazy" decoding="async" /></div><div class="card__body"><h3>Bio Sites email automations</h3><p>Drive repeat sales and streamline engagement with on-brand emails triggered by sales on your Bio Site.</p></div></article>
+      </div>
+      <p class="note">Images for products marked “Coming soon” are for illustrative purposes only. Actual product may vary.</p>
+    </section>
+
+  </main>
+</div>
+
+<!-- ===== Conversion ===== -->
+<section class="conv" id="conversion" aria-label="Get started">
+  <h2>Start your free website trial today</h2>
+  <a class="btn btn--lg" href="#">Get started</a>
+  <p class="conv__fine">No credit card required. Cancel anytime.</p>
+  <p class="conv__brand">A website makes it real</p>
+</section>
+
+<!-- ===== Footer ===== -->
+<footer class="foot">
+  <div class="wrap">
+    <nav class="foot__cols" aria-label="Footer">
+      <div>
+        <h3>Products</h3>
+        <ul>
+          <li><a href="#">Website Templates</a></li>
+          <li><a href="#">Websites</a></li>
+          <li><a href="#">Domains</a></li>
+          <li><a href="#">AI Website Builder</a></li>
+          <li><a href="#">Design Intelligence</a></li>
+          <li><a href="#">Online Stores</a></li>
+          <li><a href="#">Services</a></li>
+          <li><a href="#">Invoicing</a></li>
+          <li><a href="#">Scheduling</a></li>
+          <li><a href="#">Content &amp; Memberships</a></li>
+          <li><a href="#">Donations</a></li>
+          <li><a href="#">Payments</a></li>
+          <li><a href="#">Marketing Tools</a></li>
+          <li><a href="#">Professional Email</a></li>
+          <li><a href="#">Premium</a></li>
+          <li><a href="#">Feature List</a></li>
+          <li><a href="#">Product Updates</a></li>
+          <li><a href="#">Pricing</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Solutions</h3>
+        <ul>
+          <li><a href="#">Creative Services</a></li>
+          <li><a href="#">Professional Services</a></li>
+          <li><a href="#">Education &amp; Training</a></li>
+          <li><a href="#">Beauty</a></li>
+          <li><a href="#">Sports &amp; Fitness</a></li>
+          <li><a href="#">Health &amp; Wellness</a></li>
+          <li><a href="#">Home Services</a></li>
+          <li><a href="#">Events &amp; Experiences</a></li>
+          <li><a href="#">Charities &amp; Nonprofits</a></li>
+          <li><a href="#">Personal</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Resources</h3>
+        <ul>
+          <li><a href="#">Customer Examples</a></li>
+          <li><a href="#">Squarespace Collection</a></li>
+          <li><a href="#">Extensions</a></li>
+          <li><a href="#">Squarespace Blog</a></li>
+          <li><a href="#">Free Tools</a></li>
+          <li><a href="#">Business Name Generator</a></li>
+          <li><a href="#">Logo Maker</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>From Squarespace</h3>
+        <ul>
+          <li><a href="#">Acuity Scheduling</a></li>
+          <li><a href="#">Bio Sites</a></li>
+          <li><a href="#">Unfold</a></li>
+          <li><a href="#">Email Campaigns</a></li>
+          <li><a href="#">Squarespace for Pros</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Programs</h3>
+        <ul>
+          <li><a href="#">Circle</a></li>
+          <li><a href="#">Affiliates</a></li>
+          <li><a href="#">Students</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Support</h3>
+        <ul>
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Forum</a></li>
+          <li><a href="#">Webinars</a></li>
+          <li><a href="#">Hire an Expert</a></li>
+          <li><a href="#">Developer Blog</a></li>
+          <li><a href="#">Developer Platform</a></li>
+          <li><a href="#">System Status</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Company</h3>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Our Brand</a></li>
+          <li><a href="#">Accessibility</a></li>
+          <li><a href="#">Newsroom</a></li>
+          <li><a href="#">Press &amp; Media</a></li>
+          <li><a href="#">Contact Us</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="foot__mid">
+      <div class="foot__follow">
+        <span>Follow</span>
+        <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.6"/><circle cx="17.5" cy="6.5" r="1.1" fill="currentColor"/></svg></a>
+        <a href="#" aria-label="Youtube"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="5.5" width="19" height="13" rx="3.5" stroke="currentColor" stroke-width="1.6"/><path d="M10 9.5l5 2.5-5 2.5z" fill="currentColor"/></svg></a>
+        <a href="#" aria-label="Linkedin"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.6"/><path d="M7 10v7M7 7v.01M11 17v-4a2 2 0 0 1 4 0v4M11 10v7M15 17v-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></a>
+        <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14 8h2V5h-2a3 3 0 0 0-3 3v2H9v3h2v6h3v-6h2.2l.5-3H14V8z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></a>
+      </div>
+      <div class="foot__pick">
+        <label>Select language:
+          <select aria-label="Select language">
+            <option>English</option><option>Deutsch</option><option>Español</option>
+            <option>Français</option><option>Italiano</option><option>Português</option>
+          </select>
+        </label>
+        <label>Select currency:
+          <select aria-label="Select currency">
+            <option>USD</option><option>EUR</option><option>GBP</option><option>AUD</option>
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <div class="foot__trust">
+      <span>We are an ICANN accredited registrar.</span>
+      <span>Data traffic protected by SSL encryption</span>
+    </div>
+
+    <nav class="foot__legal" aria-label="Legal">
+      <a href="#">Terms</a><a href="#">Privacy</a><a href="#">Data Privacy</a>
+      <a href="#">EU Legal</a><a href="#">SCTA Disclosure</a>
+      <a href="#">Specific Privacy Notice</a><a href="#">Security Measures</a><a href="#">Sitemap</a>
+    </nav>
+    <p class="foot__copy">© 2003–2026 Squarespace, Inc.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  // Mobile nav disclosure
+  var toggle=document.getElementById('navToggle');
+  var panel=document.getElementById('menu-panel');
+  if(toggle&&panel){
+    toggle.addEventListener('click',function(){
+      var open=panel.classList.toggle('open');
+      toggle.setAttribute('aria-expanded',open?'true':'false');
+      toggle.setAttribute('aria-label',open?'Close main menu':'Open main menu');
+    });
+    panel.addEventListener('click',function(e){
+      if(e.target.tagName==='A'&&panel.classList.contains('open')){
+        panel.classList.remove('open');
+        toggle.setAttribute('aria-expanded','false');
+      }
+    });
+  }
+
+  // Scrollspy: highlight active index link + reflect section in URL (deep-linkable)
+  var links=Array.prototype.slice.call(document.querySelectorAll('#sidenav a[data-target]'));
+  var map={};
+  links.forEach(function(l){map[l.getAttribute('data-target')]=l;});
+  var sections=links.map(function(l){return document.getElementById(l.getAttribute('data-target'));}).filter(Boolean);
+  if('IntersectionObserver' in window && sections.length){
+    var current=null;
+    var io=new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(en.isIntersecting){
+          if(current)current.classList.remove('is-active');
+          var a=map[en.target.id];
+          if(a){a.classList.add('is-active');current=a;
+            if(history.replaceState&&location.hash!=='#'+en.target.id){
+              history.replaceState(null,'','#'+en.target.id);
+            }
+            if(window.matchMedia('(max-width:980px)').matches){
+              a.scrollIntoView({block:'nearest',inline:'center'});
+            }
+          }
+        }
+      });
+    },{rootMargin:'-45% 0px -50% 0px',threshold:0});
+    sections.forEach(function(s){io.observe(s);});
+  }
+})();
+</script>
+</body>
+</html>

@@ -106,6 +106,8 @@ R_inner = R_outer - Padding（最小2px）
 - 絵文字多用 → 必要最小限。SVGアイコン推奨
 - 均等padding → 非対称padding必須
 - 1ページ3色以上のアクセント → プライマリ1色 + セマンティック
+- `transition: all`・layoutプロパティのアニメ → `transform`/`opacity` のみ明示
+- AI収束スタイル（クリーム紙×セリフ×テラコッタ／黒地×アシッド1色／hairline新聞風）を題材の導出なしにデフォルト採用しない
 
 ---
 
@@ -132,22 +134,15 @@ R_inner = R_outer - Padding（最小2px）
 
 ## スキル（スラッシュコマンド）
 
-各スキルは [guidelines/](./guidelines/README.md) の該当章を判断基準として読む。ワークフローの段ごとに発火する。
+「作る・直す・検査する」の3動詞に対応。各スキルは [guidelines/](./guidelines/README.md) の該当章を判断基準として読む。
 
-| 段 | コマンド | 用途 |
-|----|---------|------|
-| 着手前 | `/design-requirements-grill [説明]` | 要件をガイドライン決定順で問い詰めて明確化。曖昧なまま実装に入らせない |
-| 要件定義 | `/ux-strategist [説明]` | 観測→判断→制御→FB・認知労働・介入点を設計戦略に落とす |
-| 生成 | `/design-apply [UIの説明]` | ガイドライン/トークン準拠でUIコードを生成。セルフチェック付き |
-| 設計 | `/composition-patterns [説明]` | 繰り返す構造を再利用可能なパターン（signifier・5状態内包）へ |
-| ポリッシュ | `/baseline-ui [ファイル]` | スペーシング・タイポ・錯視補正をガイドラインに沿って仕上げ |
-| a11y | `/fixing-accessibility [ファイル]` | コントラスト・色のみ依存・ターゲット・focus・ラベルを修正 |
-| アニメ後 | `/fixing-motion-performance [ファイル]` | 装飾アニメ除去・意味ある動きへ・reduced-motion付与 |
-| QAゲート | `/web-design-guidelines [ファイル]` | 原則レベル検査（情報構造・操作・抑制・状態・a11y）を根拠付きで |
-| 検証 | `/design-review [ファイル]` | 機械的チェック（禁止パターン・トークン・非対称padding・WCAG） |
-| 参照 | `/design-tokens [カテゴリ]` | トークン値のクイック参照 |
+| 動詞 | コマンド | 用途 |
+|------|---------|------|
+| 作る | `/design [説明]` | 要件確認（曖昧なら2〜3問）→A/B判別→戦略→生成→セルフチェックまで一気通貫 |
+| 直す | `/design-fix [ファイル]` | 既存UIの修正: design-lint 先行→土台の精度（spacing/タイポ/錯視）→a11y→モーション |
+| 検査 | `/design-review [ファイル]` | 修正せず報告: 機械的検出（lint）＋原則レベル検査（情報構造・操作・抑制・状態・a11y）を根拠付きで |
 
-`/frontend-design`（美的方向）と React パフォーマンスは既存スキルを利用する。
+他リポジトリで使う場合は `python tools/install-skills.py` で `~/.claude/skills/` へインストール（知識の実体はこのリポジトリを絶対パス参照）。`/frontend-design`（美的方向）と React パフォーマンスは既存スキルを利用する。
 
 ---
 

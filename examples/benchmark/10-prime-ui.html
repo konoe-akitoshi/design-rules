@@ -1,0 +1,1055 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Prime UI - Build sites fast. Fear no code.</title>
+<meta name="description" content="Prime UI is the missing foundation for AI-generated websites. Go from sitemaps and wireframes to production-ready Next.js and Tailwind CSS code in minutes.">
+<!-- benchmark #10 Prime UI · dev tool. 題材=サイトを速く作る道具 → 構造は題材の native 様式（サイトマップ→ワイヤーフレーム→コード→完成サイト）から導く。
+     セクション順は blueprint 0–12 に一致: nav / hero(+search mock) / trusted-by / 01 sitemap / 02 experiment / 03 export /
+     complete site / templates showcase(白地 — dark/light 両モードが売りという identity) / clean code(CWV 巨大緑数字) /
+     crafted-in details / pricing / faq / footer。
+     palette は real からサンプル: 冷近黒地 #040406（実物実測値 — ガイドラインの L8–12% より深いが題材由来） / blue-600 #2563EB を1アクセント /
+     α白ヘアライン / 緑=semantic(success・perf)。ダーク導出規則: エレベーション=明度段(bg→panel→panel-2)、状態色は color-mix で導出。
+     書体: Inter(見出し・本文) + Geist Mono(ラベル・数値・コード — mono が identity の核)。見出しは real に合わせ 72–96px。
+     意図的に残す WARN: (1).fade 銀グラデ見出し (2)CWV 数字の緑グラデ #BAEBD5→#124D32 — どちらも real 実測の identity（bg-clip:text）。 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* sampled dark palette — cool near-black ground (#040406, real-measured), blue-600 accent (#2563EB) */
+    --bg:#040406;          /* ground / canvas */
+    --bg-2:#090A0D;        /* alternate section ground (lifted band) — elevation = lightness step */
+    --panel:#121316;       /* cards / panels (sampled #121316) */
+    --panel-2:#1A1B20;     /* toolbars / nested raised */
+    --well:#020204;        /* code well (deeper than ground) */
+    --line:rgba(255,255,255,.07);    /* hairline */
+    --line-2:rgba(255,255,255,.12);  /* stronger hairline / interactive border */
+
+    --ink:#ECEEF2;         /* off-white primary text (~17:1 on ground; 純#fffは使わない) */
+    --ink-soft:#C9CDD6;    /* secondary heading (~13:1) */
+    --muted:#9AA0AD;       /* body secondary (~7.8:1) — near sampled #9194A1 */
+    --quiet:#878B97;       /* mono labels / tertiary (>=5:1 even on panel-2) */
+
+    --accent:#2563EB;      /* blue-600 — the ONE signal accent (sampled) */
+    --accent-hover:color-mix(in oklab, var(--accent) 84%, #F5F7FC); /* derived, not hand-picked (dark: hover = lighter) */
+    --accent-bright:#6E97F8;/* accent text on dark (~6.2:1) */
+    --accent-sunk:rgba(37,99,235,.15); /* tag / selected ground */
+    --accent-line:rgba(37,99,235,.45);
+    --on-accent:#F5F7FC;   /* near-white on blue-600 fill (~4.9:1; 純#fff回避) */
+
+    --good:#34B964;        /* semantic: success / passing (~7.5:1) — near sampled #20AC4F */
+    --good-hi:#BAEBD5;     /* CWV giant-stat gradient ends — sampled verbatim from real */
+    --good-lo:#124D32;
+
+    /* light showcase band (real: template showcase is on white — dark/light duality is the pitch) */
+    --lt-bg:#F2F3F5;
+    --lt-surface:#FDFDFE;
+    --lt-ink:#0B0C0E;      /* sampled light ink */
+    --lt-muted:#4A4E59;    /* ~7:1 on --lt-bg */
+    --lt-line:#DCDEE3;
+
+    --display:"Inter",system-ui,-apple-system,sans-serif;
+    --sans:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+
+    --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s6:24px;--s8:32px;--s12:48px;--s16:64px;
+    /* golden-ratio radius scale 16/10/6/4/2 */
+    --r0:16px;--r1:10px;--r2:6px;--r3:4px;--r4:2px;
+    --wrap:1180px;
+  }
+
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:var(--sans);font-size:17px;line-height:1.6;font-weight:400;
+    font-optical-sizing:auto;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  }
+  img{max-width:100%;display:block}
+  a{color:inherit;text-decoration:none}
+  button{font:inherit;color:inherit;cursor:pointer}
+  h1,h2,h3,h4{margin:0;font-family:var(--display);font-weight:600;letter-spacing:-.02em;text-wrap:balance}
+  p{margin:0;text-wrap:pretty}
+
+  /* muted second line of headings: sampled silver gradient clipped to text (real identity — intentional gradient) */
+  .fade{
+    display:block;
+    color:#7E828F; /* fallback where bg-clip:text is unsupported */
+    background:linear-gradient(100deg,#8D91A0,#5E616E);
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;
+  }
+  /* bright second line (real: block text-gray-50 ~ near-white) */
+  .bright{display:block;color:var(--ink)}
+
+  :focus-visible{outline:2px solid var(--accent-bright);outline-offset:2px;border-radius:var(--r4)}
+  .lite :focus-visible{outline-color:var(--accent)}
+
+  .skip{position:absolute;left:-9999px;top:0;background:var(--accent);color:var(--on-accent);
+    padding:8px 16px;border-radius:var(--r2);z-index:100;font-family:var(--mono);font-size:13px}
+  .skip:focus{left:12px;top:12px}
+
+  .wrap{max-width:var(--wrap);margin-inline:auto;padding-inline:clamp(20px,5vw,40px)}
+  section{padding-block:clamp(64px,9vw,120px)}
+
+  .num-tab{font-variant-numeric:tabular-nums}
+
+  /* shared bits ----------------------------------------------------------- */
+  .eyebrow{font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:.03em;
+    color:var(--quiet);display:inline-flex;align-items:center;gap:8px}
+  .eyebrow::before{content:"";width:24px;height:1px;background:var(--line-2)}
+
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:14px;
+    font-weight:500;line-height:1;border-radius:var(--r2);border:1px solid transparent;
+    padding:12px 20px;transition:background-color .15s,border-color .15s,color .15s;white-space:nowrap}
+  .btn span{transform:translateY(-1px)} /* cap-height optical correction */
+  .btn svg{flex:none}
+  .btn-primary{background:var(--accent);color:var(--on-accent);font-weight:600}
+  .btn-primary:hover{background:var(--accent-hover)}
+  .btn-ghost{background:transparent;border-color:var(--line-2);color:var(--ink)}
+  .btn-ghost:hover{background:var(--panel-2);border-color:var(--accent-line)}
+  .btn-soft{background:var(--panel-2);border-color:var(--line);color:var(--ink)}
+  .btn-soft:hover{border-color:var(--accent-line);color:var(--accent-bright)}
+  .lite .btn-ghost{border-color:#C4C7CE;color:var(--lt-ink)}
+  .lite .btn-ghost:hover{background:var(--lt-surface);border-color:var(--accent)}
+
+  .tag{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;
+    color:var(--ink-soft);background:var(--panel-2);border:1px solid var(--line);
+    padding:4px 12px;border-radius:var(--r3)}
+  .tag.accent{color:var(--accent-bright);background:var(--accent-sunk);border-color:var(--accent-line)}
+
+  .window{background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r0);overflow:hidden}
+  .winbar{display:flex;align-items:center;gap:12px;padding:12px 20px;background:var(--panel-2);
+    border-bottom:1px solid var(--line);min-width:0}
+  .dots{display:flex;gap:4px;flex:none}
+  .dots i{width:10px;height:10px;border-radius:50%;background:var(--line-2)}
+  .winbar .url{font-family:var(--mono);font-size:12px;color:var(--quiet);min-width:0;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+  /* header ---------------------------------------------------------------- */
+  header.site{position:sticky;top:0;z-index:50;background:rgba(7,8,10,.82);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .nav{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:64px;
+    flex-wrap:wrap;min-width:0;padding-block:8px}
+  .brand{display:inline-flex;align-items:center;gap:12px;font-family:var(--display);
+    font-weight:600;font-size:18px;letter-spacing:-.01em;min-width:0}
+  .brand .glyph{width:28px;height:28px;border-radius:var(--r2);flex:none;
+    background:var(--accent);
+    display:grid;place-items:center;color:var(--on-accent);font-family:var(--mono);
+    font-weight:600;font-size:15px}
+  .nav-links{display:flex;align-items:center;gap:4px 20px;flex-wrap:wrap;min-width:0}
+  .nav-links a{font-family:var(--mono);font-size:13px;color:var(--muted);padding-block:8px}
+  .nav-links a:hover{color:var(--ink)}
+  .nav-r{display:flex;align-items:center;gap:8px;flex:none}
+  @media(max-width:480px){
+    .nav .btn{padding:8px 12px;font-size:13px}
+    .nav-links{gap:4px 16px}
+  }
+
+  /* hero ------------------------------------------------------------------ */
+  .hero{padding-top:clamp(48px,7vw,84px);padding-bottom:clamp(56px,7vw,96px)}
+  .hero-top{max-width:840px;margin-inline:auto;text-align:center}
+  .hero-mark{width:52px;height:52px;border-radius:var(--r1);margin:0 auto 24px;
+    background:var(--accent);display:grid;place-items:center;
+    color:var(--on-accent);font-family:var(--mono);font-weight:600;font-size:24px;
+    box-shadow:0 0 0 1px var(--accent-line)}
+  /* real hero headline tops out at text-6xl (~60px), font-semibold tracking-tight */
+  .hero h1{font-size:clamp(38px,6.4vw,60px);line-height:1.06;letter-spacing:-.028em;font-weight:600}
+  /* real: text-[20px] gray-70 body with a white lead clause */
+  .hero-sub{margin:24px auto 0;max-width:62ch;color:var(--muted);
+    font-size:clamp(16px,1.7vw,20px);line-height:1.55}
+  .hero-sub b{color:var(--ink);font-weight:500}
+  .join{margin-top:24px;font-family:var(--mono);font-size:12px;letter-spacing:.03em;color:var(--muted)}
+  .hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+  /* real hero artifact origin: the mono "Search..." prompt (sitemap in, site out) */
+  .hero-search{margin:clamp(32px,5vw,48px) auto 0;max-width:560px;display:flex;align-items:center;
+    gap:12px;background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r1);
+    padding:16px 20px;min-width:0;text-align:left}
+  .hero-search svg{flex:none;color:var(--muted)}
+  .hero-search .ph{font-family:var(--mono);font-size:17px;color:var(--quiet);flex:1;min-width:0;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .hero-search kbd{font-family:var(--mono);font-size:12px;color:var(--muted);background:var(--panel-2);
+    border:1px solid var(--line-2);border-radius:var(--r3);padding:2px 8px;flex:none}
+  .hero-canvas{margin:clamp(32px,5vw,56px) auto 0;max-width:1060px}
+
+  /* hero signature artifact: wireframe -> code */
+  .build{display:grid;grid-template-columns:1.05fr 1fr;min-width:0}
+  @media(max-width:760px){.build{grid-template-columns:1fr}}
+  .build-pane{min-width:0;padding:0}
+  .build-pane.wire{border-right:1px solid var(--line)}
+  @media(max-width:760px){.build-pane.wire{border-right:0;border-bottom:1px solid var(--line)}}
+  .pane-head{display:flex;align-items:center;justify-content:space-between;gap:8px;
+    padding:12px 16px;border-bottom:1px solid var(--line);min-width:0}
+  .pane-head .ttl{font-family:var(--mono);font-size:12px;color:var(--quiet);letter-spacing:.03em;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pane-head .ttl b{color:var(--accent-bright);font-weight:600}
+  .wireframe{padding:16px 20px;display:flex;flex-direction:column;gap:12px}
+  .wf{border:1px dashed var(--line-2);border-radius:var(--r2);background:rgba(255,255,255,.012);
+    padding:12px 16px;display:flex;flex-direction:column;gap:8px}
+  .wf .label{font-family:var(--mono);font-size:11px;color:var(--quiet);letter-spacing:.05em}
+  .wf .bar{height:8px;border-radius:var(--r3);background:var(--line-2)}
+  .wf .bar.lg{height:12px;width:62%}
+  .wf .bar.sm{width:38%;background:var(--line)}
+  .wf.sel{border-style:solid;border-color:var(--accent-line);background:var(--accent-sunk)}
+  .wf-row{display:flex;gap:8px}
+  .wf-row .bar{flex:1;min-width:0}
+  .code{background:var(--well);padding:16px 20px;overflow-x:auto;min-width:0}
+  .code pre{margin:0;font-family:var(--mono);font-size:13px;line-height:1.85;color:var(--ink-soft)}
+  .code .ln{color:var(--quiet);opacity:.5;user-select:none;display:inline-block;width:1.6em;
+    text-align:right;margin-right:12px;font-variant-numeric:tabular-nums}
+  .k{color:var(--accent-bright)}.s{color:var(--good)}.t{color:var(--ink)}.c{color:var(--quiet)}.a{color:var(--muted)}
+  .build-foot{display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+    padding:12px 20px;border-top:1px solid var(--line);background:var(--panel-2);min-width:0}
+  .stat-ok{font-family:var(--mono);font-size:12px;color:var(--good);display:inline-flex;align-items:center;gap:8px}
+  .build-foot .meta{font-family:var(--mono);font-size:12px;color:var(--quiet);font-variant-numeric:tabular-nums}
+
+  /* logo wall (blueprint #2 — right after hero) ---------------------------- */
+  .proof{border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    padding-block:clamp(44px,6vw,68px)}
+  .proof .cap{text-align:center;font-family:var(--mono);font-size:12px;letter-spacing:.05em;
+    color:var(--quiet)}
+  .logos{margin-top:28px;display:flex;flex-wrap:wrap;justify-content:center;gap:16px 40px;align-items:center}
+  .logos span{font-family:var(--display);font-weight:600;font-size:clamp(16px,2.1vw,22px);
+    color:var(--muted);letter-spacing:-.01em;opacity:.85}
+
+  /* step / story sections — real layout: centered heading, artifact below ---- */
+  .step{max-width:920px;margin-inline:auto;text-align:center;min-width:0}
+  /* real step numbers: font-mono, up to ~28px, inherits ink (not accent), tracked */
+  .step .num{display:inline-block;font-family:var(--mono);font-weight:500;
+    font-size:clamp(18px,3vw,28px);letter-spacing:.16em;color:var(--ink);line-height:1;
+    font-variant-numeric:tabular-nums}
+  .step h2{margin-top:16px;line-height:1.04;letter-spacing:-.032em;font-weight:600}
+  /* real step-02 second line is a muted subtitle, not part of the heading */
+  .step .subtitle{margin-top:8px;font-weight:500;color:var(--muted);
+    font-size:clamp(20px,2.8vw,30px);letter-spacing:-.012em;line-height:1.1}
+  .step p.body{margin:24px auto 0;max-width:54ch;color:var(--muted);line-height:1.6}
+  .step .step-cta{margin-top:24px}
+  .step-art{margin:clamp(36px,5vw,60px) auto 0;max-width:1000px;text-align:left;min-width:0}
+  .s01 h2{font-size:clamp(34px,6.6vw,72px)}
+  .s02 h2{font-size:clamp(40px,8.6vw,96px)}   /* real text-8xl */
+  .s03 h2{font-size:clamp(34px,6.8vw,78px)}   /* real text-7xl */
+
+  /* 01 sitemap artifact */
+  .art-cap{font-family:var(--mono);font-size:11px;color:var(--quiet);letter-spacing:.04em;
+    padding:8px 20px;border-bottom:1px solid var(--line);text-transform:uppercase}
+  .sitemap{padding:20px clamp(20px,3vw,28px) 24px}
+  .sm-root{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:13px;
+    color:var(--ink);background:var(--panel-2);border:1px solid var(--line-2);
+    padding:8px 16px;border-radius:var(--r2);margin-bottom:8px}
+  .sm-root .ico{color:var(--accent-bright)}
+  .sm-tree{display:grid;gap:8px;margin-left:16px;padding-left:24px;border-left:1px solid var(--line-2)}
+  .sm-node{display:flex;align-items:center;gap:12px;background:var(--panel-2);
+    border:1px solid var(--line);border-radius:var(--r2);padding:12px 16px;min-width:0;position:relative}
+  .sm-node::before{content:"";position:absolute;left:-24px;top:50%;width:20px;height:1px;background:var(--line-2)}
+  .sm-node .pg{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}
+  .sm-node .pg .nm{font-family:var(--display);font-weight:500;font-size:15px;color:var(--ink)}
+  .sm-node .pg .pa{font-family:var(--mono);font-size:11px;color:var(--quiet)}
+  .sm-node .chg{font-family:var(--mono);font-size:11px;color:var(--muted);
+    border:1px solid var(--line);border-radius:var(--r3);padding:4px 12px;background:transparent;flex:none}
+  .sm-node .chg:hover{color:var(--accent-bright);border-color:var(--accent-line)}
+  .sm-node .ico{color:var(--quiet);flex:none}
+
+  /* 02 experiment artifact: tabs + wireframe variations */
+  .tabs{min-width:0}
+  .tablist{display:flex;gap:4px;padding:4px 8px;background:var(--panel-2);border:1px solid var(--line);
+    border-radius:var(--r1);width:max-content;max-width:100%;overflow-x:auto}
+  .tab{font-family:var(--mono);font-size:13px;color:var(--muted);background:transparent;border:0;
+    padding:8px 16px;border-radius:var(--r2);white-space:nowrap}
+  .tab[aria-selected="true"]{background:var(--accent-sunk);color:var(--accent-bright);
+    box-shadow:inset 0 0 0 1px var(--accent-line)}
+  .tab:hover{color:var(--ink)}
+  .tabpanel{margin-top:16px}
+  .tabpanel[hidden]{display:none}
+  .variations{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media(max-width:560px){.variations{grid-template-columns:repeat(2,1fr)}}
+  .vthumb{min-width:0;border:1px solid var(--line);border-radius:var(--r2);background:var(--well);
+    padding:8px 12px;display:flex;flex-direction:column;gap:8px;min-height:148px}
+  .vthumb.active{border-color:var(--accent-line);box-shadow:0 0 0 1px var(--accent-line)}
+  .vthumb .vb{border-radius:var(--r3);background:var(--line-2)}
+  .vthumb .vb.hero{height:24px;background:var(--accent-sunk);border:1px solid var(--accent-line)}
+  .vthumb .vb.row{height:14px}
+  .vthumb .vrow{display:flex;gap:4px}
+  .vthumb .vrow .vb{flex:1;min-width:0;height:30px}
+  .vcap{font-family:var(--mono);font-size:11px;color:var(--quiet);margin-top:auto;letter-spacing:.03em}
+
+  /* 03 export code artifact */
+  .term-body{background:var(--well);padding:16px clamp(16px,2.5vw,24px);overflow-x:auto}
+  .term-body pre{margin:0;font-family:var(--mono);font-size:13px;line-height:1.9;color:var(--ink-soft);
+    font-variant-numeric:tabular-nums}
+  .prompt{color:var(--accent-bright)}
+  .ok{color:var(--good)}.dim{color:var(--quiet)}
+
+  /* complete-site tabs section */
+  .complete{background:var(--bg-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .complete-head{max-width:760px}
+  .complete-head h2{font-size:clamp(34px,5vw,60px);line-height:1.02;margin-top:16px;letter-spacing:-.03em}
+  .complete-head p{margin-top:20px;color:var(--muted);max-width:54ch;line-height:1.65}
+  .complete-head p b{color:var(--ink-soft);font-weight:500}
+  .complete-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);
+    gap:clamp(24px,4vw,52px);align-items:start}
+  @media(max-width:880px){.complete-grid{grid-template-columns:1fr}}
+  .pageinfo{min-width:0}
+  .pageinfo h3{font-family:var(--display);font-size:24px;font-weight:600;margin-bottom:12px}
+  .pageinfo p{color:var(--muted);line-height:1.65;margin-bottom:20px;max-width:60ch}
+  .pageinfo .tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+  .pageinfo .acts{display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+  .preview-card{min-width:0;background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r0);overflow:hidden}
+  .pv-mock{padding:16px 20px;display:flex;flex-direction:column;gap:16px;min-width:0}
+  .pv-hero{border-radius:var(--r1);background:var(--accent-sunk);
+    border:1px solid var(--accent-line);padding:16px 24px;display:flex;flex-direction:column;gap:8px;min-width:0}
+  .pv-hero .b1{height:14px;width:70%;border-radius:var(--r3);background:rgba(255,255,255,.22)}
+  .pv-hero .b2{height:9px;width:48%;border-radius:var(--r3);background:rgba(255,255,255,.13)}
+  .pv-hero .pill{height:24px;width:96px;border-radius:var(--r2);background:var(--accent);margin-top:4px}
+  .pv-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;min-width:0}
+  .pv-col{min-width:0;border:1px solid var(--line);border-radius:var(--r2);background:var(--well);
+    padding:8px 12px;display:flex;flex-direction:column;gap:8px}
+  .pv-col .sq{height:26px;border-radius:var(--r2);background:var(--line-2)}
+  .pv-col .l{height:7px;border-radius:var(--r3);background:var(--line-2)}
+  .pv-col .l.sh{width:60%;background:var(--line)}
+
+  /* templates showcase — real: on WHITE ground (light/dark duality is the pitch) -------- */
+  .lite{background:var(--lt-bg);color:var(--lt-ink)}
+  .lite .eyebrow{color:var(--lt-muted)}
+  .lite .eyebrow::before{background:#C4C7CE}
+  .feat-head{max-width:780px}
+  .feat-head .kicker{font-family:var(--display);font-size:18px;font-weight:500;letter-spacing:-.01em}
+  .feat-head h2{font-size:clamp(32px,4.8vw,60px);line-height:1.04;margin-top:12px;letter-spacing:-.03em}
+  .feat-head h2 .duo{display:block;color:var(--lt-muted)}
+  .feat-head p{margin-top:24px;color:var(--lt-muted);max-width:56ch;line-height:1.65}
+  .feat-head p b{color:var(--lt-ink);font-weight:600}
+  .tpl-head{margin-top:clamp(40px,6vw,64px);display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
+  /* real: this is an h3 at ~text-[28px], not a giant display heading */
+  .tpl-head h3{font-size:clamp(22px,3vw,28px);max-width:22ch;line-height:1.2;letter-spacing:-.018em;font-weight:600}
+  .tpl-acts{display:flex;gap:12px;flex-wrap:wrap}
+  .tpl-grid{margin-top:32px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media(max-width:880px){.tpl-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:520px){.tpl-grid{grid-template-columns:1fr}}
+  .tpl{position:relative;min-width:0;border:1px solid var(--lt-line);border-radius:var(--r1);overflow:hidden;
+    background:var(--lt-surface);display:block;transition:border-color .15s,transform .2s}
+  .tpl .shot{aspect-ratio:16/11;overflow:hidden;background:#E7E8EB}
+  .tpl .shot img{width:100%;height:100%;object-fit:cover;filter:saturate(.85)}
+  .tpl .open{position:absolute;left:12px;bottom:12px;display:inline-flex;align-items:center;gap:8px;
+    font-family:var(--mono);font-size:12px;color:var(--ink);background:rgba(7,8,10,.7);
+    border:1px solid var(--line-2);border-radius:var(--r3);padding:4px 8px;opacity:0;transform:translateY(4px);
+    transition:opacity .15s,transform .15s;backdrop-filter:blur(6px)}
+  @media(hover:hover){
+    .tpl:hover{border-color:var(--accent);transform:translateY(-2px)}
+    .tpl:hover .open{opacity:1;transform:translateY(0)}
+  }
+  .tpl:focus-visible .open{opacity:1;transform:translateY(0)}
+
+  /* clean code — Core Web Vitals (blueprint #8: giant green figures) -------- */
+  .cwv-sec{text-align:center}
+  .cwv-sec h2{font-size:clamp(34px,5vw,60px);line-height:1.04;letter-spacing:-.03em;margin-top:16px}
+  .cwv-sec .lede{margin:20px auto 0;max-width:52ch;color:var(--muted);line-height:1.6}
+  .cwv{margin:clamp(40px,6vw,64px) auto 0;max-width:1000px;display:grid;
+    grid-template-columns:repeat(3,1fr);gap:24px}
+  @media(max-width:720px){.cwv{grid-template-columns:1fr;gap:40px}}
+  .cwv .v{font-family:var(--display);font-weight:500;font-size:clamp(64px,9vw,116px);
+    letter-spacing:-.06em;line-height:1;font-variant-numeric:tabular-nums;
+    color:var(--good); /* fallback */
+    background:linear-gradient(180deg,var(--good-hi),var(--good-lo)); /* sampled verbatim — real identity */
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .cwv .lbl{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:12px;letter-spacing:.02em}
+
+  /* crafted-in details (blueprint #9) --------------------------------------- */
+  .det-head{max-width:720px}
+  .det-head h2{font-size:clamp(32px,4.6vw,56px);line-height:1.04;margin-top:16px;letter-spacing:-.03em}
+  .det-grid{margin-top:48px;display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  @media(max-width:720px){.det-grid{grid-template-columns:1fr}}
+  .card{min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:var(--r1);
+    padding:20px 28px;display:flex;flex-direction:column;gap:16px}
+  .card h3{font-family:var(--display);font-size:18px;font-weight:600;letter-spacing:-.01em}
+  .card p{color:var(--muted);font-size:15px;line-height:1.6;max-width:60ch}
+  .card .ico{width:32px;height:32px;border-radius:var(--r2);background:var(--accent-sunk);
+    border:1px solid var(--accent-line);display:grid;place-items:center;color:var(--accent-bright);flex:none}
+  .searchbar{margin-top:8px;display:flex;align-items:center;gap:12px;background:var(--well);
+    border:1px solid var(--line-2);border-radius:var(--r2);padding:12px 16px;min-width:0}
+  .searchbar .ph{font-family:var(--mono);color:var(--quiet);font-size:14px;flex:1;min-width:0}
+  .searchbar kbd{font-family:var(--mono);font-size:11px;color:var(--muted);background:var(--panel-2);
+    border:1px solid var(--line);border-radius:var(--r3);padding:2px 8px}
+
+  /* pricing --------------------------------------------------------------- */
+  .pricing{background:var(--bg-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .price-head{text-align:center;max-width:680px;margin-inline:auto}
+  .price-head h2{font-size:clamp(32px,4.6vw,60px);line-height:1.04;margin-top:16px;letter-spacing:-.03em}
+  .price-head .eyebrow{justify-content:center}
+  .price-head .eyebrow::before{display:none}
+  .price-grid{margin-top:48px;display:grid;grid-template-columns:repeat(2,1fr);gap:20px;
+    max-width:860px;margin-inline:auto}
+  @media(max-width:720px){.price-grid{grid-template-columns:1fr}}
+  .plan{min-width:0;background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r0);
+    padding:24px 32px;display:flex;flex-direction:column;gap:16px}
+  .plan.feature{border-color:var(--accent-line);box-shadow:0 0 0 1px var(--accent-line)}
+  .plan .name{font-family:var(--display);font-size:20px;font-weight:600}
+  .plan .priceline{display:flex;align-items:baseline;gap:8px}
+  .plan .amt{font-family:var(--display);font-size:48px;font-weight:600;letter-spacing:-.02em;
+    font-variant-numeric:tabular-nums}
+  .plan .fee{font-family:var(--mono);font-size:12px;color:var(--quiet)}
+  .plan .desc{color:var(--muted);font-size:15px}
+  .plan ul{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+  .plan li{display:flex;align-items:center;gap:12px;font-size:15px;color:var(--ink-soft);min-width:0}
+  .plan li svg{color:var(--good);flex:none}
+  .plan .btn{justify-content:center;width:100%}
+  .soon-div{display:flex;align-items:center;gap:12px;margin-top:4px}
+  .soon-div span{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--quiet)}
+  .soon-div .ln{height:1px;flex:1;background:var(--line)}
+  .plan li.pending{color:var(--muted)}
+  .plan li.pending svg{color:var(--quiet)}
+  .custom{margin:32px auto 0;max-width:860px;display:flex;align-items:center;justify-content:space-between;
+    gap:20px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:var(--r1);
+    padding:20px 28px}
+  .custom p{color:var(--muted);font-size:15px;max-width:48ch}
+  .custom p b{color:var(--ink-soft);font-weight:500}
+  .pricing .join{display:block;text-align:center}
+
+  /* faq ------------------------------------------------------------------- */
+  .faq-head{text-align:center}
+  .faq-head h2{font-size:clamp(30px,4.6vw,58px);margin-top:16px;line-height:1.02;letter-spacing:-.03em}
+  .faq-head .eyebrow{justify-content:center}
+  .faq-head .eyebrow::before{display:none}
+  .faq-grid{margin-top:48px;max-width:860px;margin-inline:auto;border-top:1px solid var(--line)}
+  details.q{border-bottom:1px solid var(--line)}
+  details.q summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;
+    gap:16px;padding-block:24px;padding-inline:4px;font-family:var(--display);font-weight:500;
+    font-size:clamp(17px,2vw,20px);color:var(--ink);min-width:0}
+  details.q summary::-webkit-details-marker{display:none}
+  details.q .pm{flex:none;width:26px;height:26px;border:1px solid var(--line-2);border-radius:var(--r2);
+    display:grid;place-items:center;color:var(--accent-bright);transition:transform .2s,border-color .15s}
+  details.q[open] .pm{transform:rotate(45deg);border-color:var(--accent-line)}
+  details.q summary:hover .pm{border-color:var(--accent-line)}
+  details.q .ans{padding:0 4px 24px;color:var(--muted);max-width:64ch;line-height:1.7;font-size:15px}
+
+  /* footer ---------------------------------------------------------------- */
+  footer.site{border-top:1px solid var(--line);background:var(--bg-2)}
+  .foot{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;
+    padding-block:clamp(32px,4vw,44px);min-width:0}
+  .foot .legal{display:flex;gap:8px 24px;flex-wrap:wrap;align-items:center;min-width:0}
+  .foot .legal a{font-family:var(--mono);font-size:13px;color:var(--muted);padding-block:8px}
+  .foot .legal a:hover{color:var(--ink)}
+  .foot-bottom{border-top:1px solid var(--line);padding-block:16px}
+  .foot-bottom .cp{font-family:var(--mono);font-size:12px;color:var(--quiet);font-variant-numeric:tabular-nums}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    html{scroll-behavior:auto}
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site">
+  <div class="wrap nav">
+    <a class="brand" href="#" aria-label="Prime UI home">
+      <span class="glyph" aria-hidden="true">P</span>
+      <span>Prime UI</span>
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#main">Home</a>
+      <a href="#faq">Blog</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#templates">Documentation</a>
+    </nav>
+    <div class="nav-r">
+      <a class="btn btn-primary" href="#pricing"><span>Get Started</span></a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- 1 HERO -->
+  <section class="hero" aria-labelledby="hero-h">
+    <div class="wrap">
+      <div class="hero-top">
+        <div class="hero-mark" aria-hidden="true">P</div>
+        <h1 id="hero-h">Build sites fast.<span class="fade">Fear no code.</span></h1>
+        <p class="hero-sub">Prime UI is the <b>missing foundation for AI-generated websites.</b> Go from sitemaps and wireframes to production-ready Next.js and Tailwind CSS code in minutes. Built for consistent results. No prompt engineering required.</p>
+        <p class="join">Join 1k+ clients today</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#templates"><span>Explore templates</span></a>
+          <a class="btn btn-ghost" href="#pricing"><span>Start for free</span></a>
+        </div>
+        <!-- real hero artifact: the mono Search... prompt — a sitemap request goes in, a site comes out -->
+        <div class="hero-search" role="img" aria-label="Prime UI prompt input showing the placeholder Search… — describe a sitemap to start building">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.5"/><path d="M12 12l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <span class="ph">Search...</span>
+          <kbd>⌘K</kbd>
+        </div>
+      </div>
+
+      <!-- signature artifact: wireframe -> code (the product's native story: sitemap/wireframe in, clean code out) -->
+      <div class="hero-canvas">
+        <div class="window" role="img" aria-label="Prime UI editor: a page wireframe on the left is exported as production-ready Next.js and Tailwind code on the right, with a passing build.">
+          <div class="winbar">
+            <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="url">prime-ui · canvas — localhost:3000</span>
+          </div>
+          <div class="build">
+            <div class="build-pane wire">
+              <div class="pane-head"><span class="ttl"><b>wireframe</b> / home.page</span><span class="ttl">3 sections</span></div>
+              <div class="wireframe" aria-hidden="true">
+                <div class="wf sel">
+                  <span class="label">HERO</span>
+                  <div class="bar lg"></div><div class="bar sm"></div>
+                </div>
+                <div class="wf">
+                  <span class="label">FEATURES</span>
+                  <div class="wf-row"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+                </div>
+                <div class="wf">
+                  <span class="label">PRICING</span>
+                  <div class="wf-row"><div class="bar"></div><div class="bar"></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="build-pane">
+              <div class="pane-head"><span class="ttl"><b>export</b> / home.tsx</span><span class="ttl">Next.js + Tailwind</span></div>
+              <div class="code" aria-hidden="true"><pre><span class="ln">1</span><span class="k">export default function</span> <span class="t">Home</span>() {
+<span class="ln">2</span>  <span class="k">return</span> (
+<span class="ln">3</span>    &lt;<span class="t">main</span> <span class="a">className</span>=<span class="s">"mx-auto max-w-6xl"</span>&gt;
+<span class="ln">4</span>      &lt;<span class="t">Hero</span> <span class="a">title</span>=<span class="s">"Build sites fast."</span> /&gt;
+<span class="ln">5</span>      &lt;<span class="t">Features</span> <span class="a">cols</span>={<span class="s">3</span>} /&gt;
+<span class="ln">6</span>      &lt;<span class="t">Pricing</span> <span class="a">plans</span>={<span class="s">plans</span>} /&gt;
+<span class="ln">7</span>    &lt;/<span class="t">main</span>&gt;
+<span class="ln">8</span>  )
+<span class="ln">9</span>}</pre></div>
+            </div>
+          </div>
+          <div class="build-foot">
+            <span class="stat-ok" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              build passed
+            </span>
+            <span class="meta">0 errors · 0 unused classes · 12.4 kB</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 LOGO WALL (Trusted by Creators & Businesses) -->
+  <section class="proof" aria-label="Trusted by creators and businesses">
+    <div class="wrap">
+      <p class="cap">Trusted by Creators &amp; Businesses</p>
+      <!-- real ships anonymized customer-logo SVGs with placeholder alts; mirror those names rather than invent real brands -->
+      <div class="logos">
+        <span>Alpha&nbsp;Corp</span><span>Beta&nbsp;LLC</span><span>Gamma&nbsp;Inc</span><span>Delta&nbsp;Co</span>
+        <span>Epsilon</span><span>Zeta</span><span>Eta</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 · 01 SITEMAP -->
+  <section class="s01" aria-labelledby="s01">
+    <div class="wrap">
+      <div class="step">
+        <span class="num">01</span>
+        <h2 id="s01">Start with a sitemap<span class="bright">Outline the vision</span></h2>
+      </div>
+      <div class="step-art">
+        <div class="window">
+          <div class="winbar">
+            <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="url">sitemap — 6 pages</span>
+          </div>
+          <div class="sitemap">
+            <div class="sm-root">
+              <svg class="ico" width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              primeui.com
+            </div>
+            <div class="sm-tree">
+              <div class="sm-node">
+                <svg class="ico" width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2.5 7L8 2.5 13.5 7v6h-11V7Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+                <span class="pg"><span class="nm">Home</span><span class="pa">/</span></span>
+                <button class="chg" type="button">Change page</button>
+              </div>
+              <div class="sm-node">
+                <svg class="ico" width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 2.5h10v11H3zM5.5 6h5M5.5 8.5h5M5.5 11h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                <span class="pg"><span class="nm">Blog</span><span class="pa">/blog</span></span>
+                <button class="chg" type="button">Change page</button>
+              </div>
+              <div class="sm-node">
+                <svg class="ico" width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2v12M5 4.5h4.5a2 2 0 010 4H6a2 2 0 000 4h5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                <span class="pg"><span class="nm">Pricing</span><span class="pa">/pricing</span></span>
+                <button class="chg" type="button">Change page</button>
+              </div>
+              <div class="sm-node">
+                <svg class="ico" width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 2.5h6l2.5 2.5v8.5H4zM10 2.5V5h2.5" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+                <span class="pg"><span class="nm">Documentation</span><span class="pa">/docs</span></span>
+                <button class="chg" type="button">Change page</button>
+              </div>
+              <div class="sm-node">
+                <svg class="ico" width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2.5l4.5 2v3.5c0 3-2 4.5-4.5 5.5-2.5-1-4.5-2.5-4.5-5.5V4.5L8 2.5Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+                <span class="pg"><span class="nm">Privacy Policy</span><span class="pa">/privacy-policy</span></span>
+                <button class="chg" type="button">Change page</button>
+              </div>
+              <div class="sm-node">
+                <svg class="ico" width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 2.5h6l2.5 2.5v8.5H4zM6 8h4M6 10.5h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="pg"><span class="nm">Terms &amp; Conditions</span><span class="pa">/terms-and-conditions</span></span>
+                <button class="chg" type="button">Change page</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 · 02 EXPERIMENT -->
+  <section class="s02" aria-labelledby="s02">
+    <div class="wrap">
+      <div class="step">
+        <span class="num">02</span>
+        <h2 id="s02">Experiment quickly</h2>
+        <p class="subtitle">on ideas that build</p>
+        <p class="body">Ask AI to generate multiple full-page layout variations and explore different ways to structure your site. Pages always look great thanks to our section-matching algorithm that ensures visual balance and consistency.</p>
+      </div>
+      <div class="step-art">
+        <div class="window">
+          <div class="winbar">
+            <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="url">layout variations — page: home</span>
+          </div>
+          <div style="padding:16px clamp(16px,2.5vw,24px) 20px">
+            <div class="tabs" data-tabs>
+              <div class="tablist" role="tablist" aria-label="Variation mode">
+                <button class="tab" role="tab" id="x-tab-1" aria-controls="x-pan-1" aria-selected="true">Layout</button>
+                <button class="tab" role="tab" id="x-tab-2" aria-controls="x-pan-2" aria-selected="false" tabindex="-1">Content</button>
+                <button class="tab" role="tab" id="x-tab-3" aria-controls="x-pan-3" aria-selected="false" tabindex="-1">Section</button>
+              </div>
+
+              <div class="tabpanel" role="tabpanel" id="x-pan-1" aria-labelledby="x-tab-1">
+                <div class="variations">
+                  <div class="vthumb active" aria-hidden="true"><div class="vb hero"></div><div class="vrow"><div class="vb"></div><div class="vb"></div></div><div class="vb row"></div><span class="vcap">centered</span></div>
+                  <div class="vthumb" aria-hidden="true"><div class="vb hero"></div><div class="vb row"></div><div class="vrow"><div class="vb"></div><div class="vb"></div><div class="vb"></div></div><span class="vcap">split</span></div>
+                  <div class="vthumb" aria-hidden="true"><div class="vrow"><div class="vb"></div><div class="vb hero" style="flex:1"></div></div><div class="vb row"></div><div class="vb row"></div><span class="vcap">sidebar</span></div>
+                </div>
+              </div>
+              <div class="tabpanel" role="tabpanel" id="x-pan-2" aria-labelledby="x-tab-2" hidden>
+                <div class="variations">
+                  <div class="vthumb" aria-hidden="true"><div class="vb row"></div><div class="vb row" style="width:80%"></div><div class="vb row" style="width:60%"></div><span class="vcap">concise</span></div>
+                  <div class="vthumb active" aria-hidden="true"><div class="vb row"></div><div class="vb row"></div><div class="vb row" style="width:70%"></div><div class="vb row" style="width:85%"></div><span class="vcap">detailed</span></div>
+                  <div class="vthumb" aria-hidden="true"><div class="vb hero"></div><div class="vb row" style="width:75%"></div><span class="vcap">punchy</span></div>
+                </div>
+              </div>
+              <div class="tabpanel" role="tabpanel" id="x-pan-3" aria-labelledby="x-tab-3" hidden>
+                <div class="variations">
+                  <div class="vthumb" aria-hidden="true"><div class="vrow"><div class="vb"></div><div class="vb"></div><div class="vb"></div></div><span class="vcap">features</span></div>
+                  <div class="vthumb" aria-hidden="true"><div class="vb hero" style="height:40px"></div><span class="vcap">stats</span></div>
+                  <div class="vthumb active" aria-hidden="true"><div class="vb row"></div><div class="vrow"><div class="vb"></div><div class="vb"></div></div><span class="vcap">testimonial</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 · 03 EXPORT -->
+  <section class="s03" aria-labelledby="s03">
+    <div class="wrap">
+      <div class="step">
+        <span class="num">03</span>
+        <h2 id="s03">Export to code.<span class="bright">That really works.</span></h2>
+        <p class="body">Built for consistent results. No prompt-engineering.</p>
+        <a class="btn btn-primary step-cta" href="#pricing"><span>Get Started</span></a>
+      </div>
+      <div class="step-art">
+        <div class="window">
+          <div class="winbar">
+            <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="url">zsh — primeui export</span>
+          </div>
+          <div class="term-body" aria-hidden="true">
+<pre><span class="prompt">$</span> primeui export --target next
+<span class="dim">→ resolving 6 pages · 24 sections</span>
+<span class="dim">→ generating app/ routes</span>
+<span class="ok">✓</span> app/page.tsx
+<span class="ok">✓</span> app/blog/page.tsx
+<span class="ok">✓</span> app/pricing/page.tsx
+<span class="ok">✓</span> app/docs/[slug]/page.tsx
+<span class="ok">✓</span> tailwind.config.ts
+<span class="ok">✓</span> components/ <span class="dim">(28 files)</span>
+
+<span class="ok">●</span> exported in <span class="ok">3.2s</span> — <span class="dim">0 errors, 0 unused classes</span></pre>
+          </div>
+          <div class="build-foot">
+            <span class="stat-ok" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              type-checked
+            </span>
+            <span class="meta">Next.js 15 · Tailwind v4 · TypeScript</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 COMPLETE SITE -->
+  <section class="complete" aria-labelledby="cs-h">
+    <div class="wrap">
+      <div class="complete-head">
+        <h2 id="cs-h">Complete site.<span class="fade">Ready to take off.</span></h2>
+        <p>Create more than just a landing page but also <b>blog, pricing or even documentation</b>. Every page comes automatically with all necessary content blocks, data organization, and SEO optimizations, making it a breeze to evolve your site smoothly.</p>
+      </div>
+
+      <div class="tabs" data-tabs style="margin-top:36px">
+        <div class="complete-grid">
+          <div class="pageinfo">
+            <div class="tablist" role="tablist" aria-label="Page type" style="margin-bottom:28px">
+              <button class="tab" role="tab" id="c-tab-1" aria-controls="c-pan-1" aria-selected="true">Landing Pages</button>
+              <button class="tab" role="tab" id="c-tab-2" aria-controls="c-pan-2" aria-selected="false" tabindex="-1">Blog</button>
+              <button class="tab" role="tab" id="c-tab-3" aria-controls="c-pan-3" aria-selected="false" tabindex="-1">Documentation</button>
+              <button class="tab" role="tab" id="c-tab-4" aria-controls="c-pan-4" aria-selected="false" tabindex="-1">Pricing</button>
+              <button class="tab" role="tab" id="c-tab-5" aria-controls="c-pan-5" aria-selected="false" tabindex="-1">Contact us</button>
+            </div>
+
+            <div class="tabpanel" role="tabpanel" id="c-pan-1" aria-labelledby="c-tab-1">
+              <h3>Landing Pages</h3>
+              <p>Build high-converting landing pages on an infinite canvas with hundreds of modern components. From feature sections and testimonials to stats or compliance blocks.</p>
+              <div class="tags">
+                <span class="tag accent">200+ UI components</span>
+                <span class="tag">AI-assisted page creation</span>
+                <span class="tag">Shadcn-compatible</span>
+              </div>
+              <div class="acts">
+                <a class="btn btn-primary" href="#templates"><span>Live Demo</span></a>
+              </div>
+            </div>
+            <div class="tabpanel" role="tabpanel" id="c-pan-2" aria-labelledby="c-tab-2" hidden>
+              <h3>Blog</h3>
+              <p>Ship a fast, well-structured blog with index, tags, and article pages — Markdown in, clean semantic HTML out, with reading-friendly typography by default.</p>
+              <div class="tags">
+                <span class="tag accent">Markdown native</span>
+                <span class="tag">RSS &amp; sitemap</span>
+                <span class="tag">Tag taxonomy</span>
+              </div>
+              <div class="acts">
+                <a class="btn btn-primary" href="#templates"><span>Live Demo</span></a>
+              </div>
+            </div>
+            <div class="tabpanel" role="tabpanel" id="c-pan-3" aria-labelledby="c-tab-3" hidden>
+              <h3>Documentation</h3>
+              <p>Generate a docs site with nested navigation, search, and anchored headings. Content blocks and code samples render consistently across light and dark.</p>
+              <div class="tags">
+                <span class="tag accent">Nested nav</span>
+                <span class="tag">Instant search</span>
+                <span class="tag">Code blocks</span>
+              </div>
+              <div class="acts">
+                <a class="btn btn-primary" href="#templates"><span>Live Demo</span></a>
+              </div>
+            </div>
+            <div class="tabpanel" role="tabpanel" id="c-pan-4" aria-labelledby="c-tab-4" hidden>
+              <h3>Pricing</h3>
+              <p>Lay out clear pricing with plan comparison, feature lists, and a built-in FAQ. Every tier is balanced by the section-matching algorithm so it reads at a glance.</p>
+              <div class="tags">
+                <span class="tag accent">Plan comparison</span>
+                <span class="tag">FAQ block</span>
+                <span class="tag">Stripe-ready</span>
+              </div>
+              <div class="acts">
+                <a class="btn btn-primary" href="#pricing"><span>Live Demo</span></a>
+              </div>
+            </div>
+            <div class="tabpanel" role="tabpanel" id="c-pan-5" aria-labelledby="c-tab-5" hidden>
+              <h3>Contact us</h3>
+              <p>Drop in a contact page with a validated form, clear success and error states, and spam protection — wired and ready to receive messages.</p>
+              <div class="tags">
+                <span class="tag accent">Validated form</span>
+                <span class="tag">Success &amp; error states</span>
+                <span class="tag">Spam protection</span>
+              </div>
+              <div class="acts">
+                <a class="btn btn-primary" href="#pricing"><span>Live Demo</span></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="preview-card" aria-hidden="true">
+            <div class="winbar">
+              <span class="dots"><i></i><i></i><i></i></span>
+              <span class="url">preview — generated page</span>
+            </div>
+            <div class="pv-mock">
+              <div class="pv-hero">
+                <div class="b1"></div><div class="b2"></div><div class="pill"></div>
+              </div>
+              <div class="pv-cols">
+                <div class="pv-col"><div class="sq"></div><div class="l"></div><div class="l sh"></div></div>
+                <div class="pv-col"><div class="sq"></div><div class="l"></div><div class="l sh"></div></div>
+                <div class="pv-col"><div class="sq"></div><div class="l"></div><div class="l sh"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 TEMPLATES SHOWCASE — Crafted by humans. Scaled with AI. (real: on white ground) -->
+  <section id="templates" class="lite" aria-labelledby="feat-h">
+    <div class="wrap">
+      <div class="feat-head">
+        <span class="kicker">Features</span>
+        <h2 id="feat-h">Crafted by humans.<span class="duo">Scaled with AI.</span></h2>
+        <p>You know what you need to build. We know how to build it. Prime UI gives you <b>10+ years of experience building marketing sites</b> wrapped up in an intelligent system. Pick what fits, move fast, and ship a site that looks good from the first draft.</p>
+      </div>
+
+      <div class="tpl-head">
+        <h3>Exceptional website templates for all projects</h3>
+        <div class="tpl-acts">
+          <a class="btn btn-ghost" href="#templates"><span>Explore templates</span></a>
+          <a class="btn btn-primary" href="#pricing"><span>Start for free</span></a>
+        </div>
+      </div>
+      <div class="tpl-grid">
+        <a class="tpl" href="#templates" aria-label="Open template preview 1">
+          <div class="shot"><img src="https://picsum.photos/seed/primeui-t1/640/440" width="640" height="440" loading="lazy" alt=""></div>
+          <span class="open" aria-hidden="true">Preview
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M4 3.5h6.5V10M10.5 3.5L3.5 10.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </a>
+        <a class="tpl" href="#templates" aria-label="Open template preview 2">
+          <div class="shot"><img src="https://picsum.photos/seed/primeui-t2/640/440" width="640" height="440" loading="lazy" alt=""></div>
+          <span class="open" aria-hidden="true">Preview
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M4 3.5h6.5V10M10.5 3.5L3.5 10.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </a>
+        <a class="tpl" href="#templates" aria-label="Open template preview 3">
+          <div class="shot"><img src="https://picsum.photos/seed/primeui-t3/640/440" width="640" height="440" loading="lazy" alt=""></div>
+          <span class="open" aria-hidden="true">Preview
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M4 3.5h6.5V10M10.5 3.5L3.5 10.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </a>
+        <a class="tpl" href="#templates" aria-label="Open template preview 4">
+          <div class="shot"><img src="https://picsum.photos/seed/primeui-t4/640/440" width="640" height="440" loading="lazy" alt=""></div>
+          <span class="open" aria-hidden="true">Preview
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M4 3.5h6.5V10M10.5 3.5L3.5 10.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </a>
+        <a class="tpl" href="#templates" aria-label="Open template preview 5">
+          <div class="shot"><img src="https://picsum.photos/seed/primeui-t5/640/440" width="640" height="440" loading="lazy" alt=""></div>
+          <span class="open" aria-hidden="true">Preview
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M4 3.5h6.5V10M10.5 3.5L3.5 10.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </a>
+        <a class="tpl" href="#templates" aria-label="Open template preview 6">
+          <div class="shot"><img src="https://picsum.photos/seed/primeui-t6/640/440" width="640" height="440" loading="lazy" alt=""></div>
+          <span class="open" aria-hidden="true">Preview
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M4 3.5h6.5V10M10.5 3.5L3.5 10.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 CLEAN CODE — Core Web Vitals (giant green figures, sampled gradient) -->
+  <section class="cwv-sec" aria-labelledby="cwv-h">
+    <div class="wrap">
+      <h2 id="cwv-h">Clean code.</h2>
+      <p class="lede">Core Web Vitals tested for optimal UX. Smooth loading, crisp interactions, fewer layout shifts.</p>
+      <div class="cwv">
+        <div class="m"><div class="v">0.2s</div><div class="lbl">First Contentful Paint (FCP)</div></div>
+        <div class="m"><div class="v">0.4s</div><div class="lbl">Largest Contentful Paint (LCP)</div></div>
+        <div class="m"><div class="v">0ms</div><div class="lbl">Total Blocking Time (TBT)</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 CRAFTED-IN DETAILS -->
+  <section aria-labelledby="det-h">
+    <div class="wrap">
+      <div class="det-head">
+        <h2 id="det-h">Crafted-in details</h2>
+      </div>
+      <div class="det-grid">
+        <article class="card">
+          <div class="ico" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 3a6 6 0 100 12 4 4 0 010-12Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+          </div>
+          <h3>Light and dark modes</h3>
+          <p>Built to export one or both and keep the output lean without unused code.</p>
+        </article>
+
+        <article class="card">
+          <div class="ico" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M6.5 5L3 9l3.5 4M11.5 5L15 9l-3.5 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h3>Polished components</h3>
+          <p>Quickly add components that feel smooth and native — from tabs to search bars to full pages. Clean components, subtle animations, and micro interactions built in to feel good. Less assembly, more shipping.</p>
+          <div class="searchbar">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.4" opacity=".7"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity=".7"/></svg>
+            <span class="ph">Search...</span>
+            <kbd>⌘K</kbd>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="ico" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 4.5h12v9H3zM5 11V7l2 2 2-2v4M11.5 7v4M11.5 11l1.5-1.5M11.5 11l-1.5-1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h3>Markdown support</h3>
+          <p>Markdown support for simple and flexible content editing.</p>
+        </article>
+
+        <article class="card">
+          <div class="ico" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6.2" stroke="currentColor" stroke-width="1.3"/><path d="M2.8 9h12.4M9 2.8c1.8 1.7 2.8 3.9 2.8 6.2S10.8 13.5 9 15.2C7.2 13.5 6.2 11.3 6.2 9S7.2 4.5 9 2.8Z" stroke="currentColor" stroke-width="1.3"/></svg>
+          </div>
+          <h3>SEO, handled</h3>
+          <p>Never think about SEO again with built-in clean tags, correct links, and properly sized images.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 PRICING -->
+  <section class="pricing" id="pricing" aria-labelledby="price-h">
+    <div class="wrap">
+      <div class="price-head">
+        <span class="eyebrow">Pricing</span>
+        <h2 id="price-h">Need a site?<span class="fade">Start with Prime UI.</span></h2>
+      </div>
+      <div class="price-grid">
+        <div class="plan feature">
+          <span class="name">Personal</span>
+          <div class="priceline"><span class="amt">$99</span><span class="fee">One-time fee</span></div>
+          <p class="desc">For solo builders shipping sites fast.</p>
+          <a class="btn btn-primary" href="#"><span>Get Started</span></a>
+          <ul>
+            <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Single user license</li>
+            <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Unlimited projects</li>
+            <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>200+ UI components</li>
+            <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Standard email support</li>
+            <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Generous AI credits</li>
+          </ul>
+          <div class="soon-div"><span>Coming Soon</span><span class="ln"></span></div>
+          <ul>
+            <li class="pending"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="5.6" stroke="currentColor" stroke-width="1.3"/><path d="M8 5.2V8l1.8 1.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>MCP</li>
+            <li class="pending"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="5.6" stroke="currentColor" stroke-width="1.3"/><path d="M8 5.2V8l1.8 1.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Skills.md</li>
+            <li class="pending"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="5.6" stroke="currentColor" stroke-width="1.3"/><path d="M8 5.2V8l1.8 1.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>AI Designer</li>
+          </ul>
+        </div>
+
+        <div class="plan">
+          <span class="name">Business</span>
+          <div class="priceline"><span class="amt">$299</span><span class="fee">One-time fee</span></div>
+          <p class="desc">For teams scaling projects together.</p>
+          <a class="btn btn-ghost" href="#"><span>Get Started</span></a>
+          <ul>
+            <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Unlimited user licenses</li>
+            <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Unlimited projects</li>
+            <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>200+ UI components</li>
+            <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Private Slack channel</li>
+            <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Generous AI credits</li>
+          </ul>
+          <div class="soon-div"><span>Coming Soon</span><span class="ln"></span></div>
+          <ul>
+            <li class="pending"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="5.6" stroke="currentColor" stroke-width="1.3"/><path d="M8 5.2V8l1.8 1.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>MCP</li>
+            <li class="pending"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="5.6" stroke="currentColor" stroke-width="1.3"/><path d="M8 5.2V8l1.8 1.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Skills.md</li>
+            <li class="pending"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="5.6" stroke="currentColor" stroke-width="1.3"/><path d="M8 5.2V8l1.8 1.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>AI Designer</li>
+          </ul>
+        </div>
+      </div>
+      <div class="custom">
+        <p>Need something custom? We offer <b>tailored setups for teams</b> and special use cases.</p>
+        <a class="btn btn-soft" href="#"><span>Contact Us</span></a>
+      </div>
+      <p class="join">Join 1k+ clients today</p>
+    </div>
+  </section>
+
+  <!-- 11 FAQ (real: 5 questions, verbatim) -->
+  <section id="faq" aria-labelledby="faq-h">
+    <div class="wrap">
+      <div class="faq-head">
+        <span class="eyebrow">FAQ</span>
+        <h2 id="faq-h">Your questions, answered.</h2>
+      </div>
+      <div class="faq-grid">
+        <details class="q">
+          <summary>What kind of sites can I build with Prime UI? <span class="pm" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></summary>
+          <p class="ans">Marketing and content sites: landing pages, blogs, documentation, pricing, and changelogs — anything that ships as static or server-rendered Next.js with Tailwind CSS.</p>
+        </details>
+        <details class="q">
+          <summary>Does Prime UI generate the full design for my site? <span class="pm" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></summary>
+          <p class="ans">It generates a complete, balanced starting point — structure, sections, and styling. You stay in control and refine from a first draft that already looks good.</p>
+        </details>
+        <details class="q">
+          <summary>How does licensing work? <span class="pm" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></summary>
+          <p class="ans">A one-time fee, no subscription. Personal covers a single user; Business covers your whole team. Build unlimited projects on either license.</p>
+        </details>
+        <details class="q">
+          <summary>Do you work with agencies? <span class="pm" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></summary>
+          <p class="ans">Yes — Business is built for agencies running many client projects. Need a custom setup or volume terms? Contact us and we'll tailor it.</p>
+        </details>
+        <details class="q">
+          <summary>What support do you offer? <span class="pm" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></summary>
+          <p class="ans">Personal includes standard email support. Business adds a private Slack channel with direct access to the team.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- 12 FOOTER -->
+<footer class="site">
+  <div class="wrap">
+    <div class="foot">
+      <a class="brand" href="#" aria-label="Prime UI home">
+        <span class="glyph" aria-hidden="true">P</span><span>Prime UI</span>
+      </a>
+      <nav class="legal" aria-label="Footer">
+        <a href="#main">Home</a>
+        <a href="#faq">Blog</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#templates">Documentation</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms &amp; Conditions</a>
+      </nav>
+    </div>
+    <div class="foot-bottom">
+      <span class="cp">© 2026 Prime UI</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Accessible tabs (progressive enhancement). Without JS, all panels show.
+  document.querySelectorAll('[data-tabs]').forEach(function(group){
+    var tabs = Array.prototype.slice.call(group.querySelectorAll('[role="tab"]'));
+    function select(tab){
+      tabs.forEach(function(t){
+        var selected = t === tab;
+        t.setAttribute('aria-selected', selected ? 'true' : 'false');
+        t.tabIndex = selected ? 0 : -1;
+        var panel = document.getElementById(t.getAttribute('aria-controls'));
+        if(panel) panel.hidden = !selected;
+      });
+    }
+    var current = tabs.filter(function(t){return t.getAttribute('aria-selected')==='true';})[0] || tabs[0];
+    select(current);
+    tabs.forEach(function(tab, i){
+      tab.addEventListener('click', function(){ select(tab); });
+      tab.addEventListener('keydown', function(e){
+        var idx = null;
+        if(e.key==='ArrowRight'||e.key==='ArrowDown') idx = (i+1)%tabs.length;
+        else if(e.key==='ArrowLeft'||e.key==='ArrowUp') idx = (i-1+tabs.length)%tabs.length;
+        else if(e.key==='Home') idx = 0;
+        else if(e.key==='End') idx = tabs.length-1;
+        if(idx!==null){ e.preventDefault(); select(tabs[idx]); tabs[idx].focus(); }
+      });
+    });
+  });
+</script>
+</body>
+</html>

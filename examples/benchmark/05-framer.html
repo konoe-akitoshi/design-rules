@@ -1,0 +1,999 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Framer — The AI website builder for standout sites</title>
+<meta name="description" content="Framer is the AI website builder for standout sites. Design, run your CMS, and ship code with agents that work alongside you, not instead of you.">
+<!-- benchmark #5: framer.com のクローン。題材 = AI ウェブサイトビルダー（デザインツール）。
+     native な様式 = ツールそのもの: ツールバー / レイヤーレール / キャンバス / エージェントチャット / ターミナル / 索引スペックシート。
+     ヒーローは「型」でなく主張 = 製品の実画面（signature product artifact）を最初に置く。
+     bespoke palette = 真の黒地（実物どおり。soft-black に寄せない）+ Framer の実ブランド青 #0099FF を1アクセント (+ semantic green)。
+     書体: Space Grotesk(display grotesque) ＋ Inter(本文) ＋ JetBrains Mono(端末/コード)。Inter Tight は使わない（本文と崩れる）。
+     全長: nav / hero(editor mock) / shipped-with(ticker) / agents(3 mock + connect) /
+           platform(index spec sheet + analytics) / community / customers / final CTA / footer。
+     テンプレ骨格を使わず、題材の道具様式から構造を導く。 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500..700&family=Inter:opsz,wght@14..32,400..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* bespoke palette — true near-black ground, Framer brand blue #0099FF as the one UI accent (+ semantic green) */
+    --bg:#000;             /* page ground — Framer の地は真の黒。soft-black に寄せない（replica の identity fidelity が house の soft-black 規則に優先 — 意図的 WARN） */
+    --bg-2:#0C0C0D;        /* alternate section band（黒地上のごく僅かな浮き） */
+    --surface:#161617;     /* panels / cards (~#141414) */
+    --raised:#1F1F21;      /* toolbar / card-on-card (~#212121) */
+    --sunk:#0C0C0D;        /* canvas inset / track */
+    --line:rgba(255,255,255,.09);
+    --line-2:rgba(255,255,255,.14);
+    --ink:#F4F4F5;         /* headings / body (純白を避ける) */
+    --muted:#A1A1A6;       /* secondary text (≈7.6:1 on bg) */
+    --quiet:#8B8B92;       /* labels / small mono — ≥4.5:1 on 黒地 & all surfaces incl ≤14px */
+    --accent:#0099FF;      /* THE Framer blue — links / focus / signals (≈6.6:1 on bg) */
+    --accent-bright:#4DB5FF;/* accent text on lighter surfaces / hover */
+    --on-accent:#04121E;   /* near-black text on #0099FF fills (≈6.5:1 — 中明度青は near-black 文字) */
+    --accent-sunk:rgba(0,153,255,.14);
+    --accent-line:rgba(0,153,255,.34);
+    --ok:#3FCF6A; --ok-sunk:rgba(63,207,106,.13); --ok-line:rgba(63,207,106,.30);
+    /* spacing — 4pt grid */
+    --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:20px;--s6:24px;--s8:32px;--s10:40px;--s12:48px;--s16:64px;--s20:80px;--s24:96px;
+    /* radius — nesting R_inner = R_outer - padding */
+    --r-xl:18px;--r-lg:12px;--r-md:8px;--r-sm:5px;
+    --disp:"Space Grotesk","Inter",system-ui,sans-serif;
+    --sans:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+    --mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+    --maxw:1200px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;
+       font-optical-sizing:auto;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  h1,h2,h3,h4,h5,p,figure{margin:0}
+  h1,h2,h3,h4{text-wrap:balance}
+  p{text-wrap:pretty}
+  img{display:block;max-width:100%}
+  ul{margin:0;padding:0;list-style:none}
+  ::selection{background:rgba(0,153,255,.30);color:var(--ink)}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+
+  .wrap{width:100%;max-width:var(--maxw);margin-inline:auto;padding-inline:var(--s6)}
+  .sec{padding-block:var(--s24)}
+  @media(max-width:720px){.sec{padding-block:var(--s16)}}
+
+  /* ---------- type ---------- */
+  .kicker{font:600 12px/1.4 var(--sans);letter-spacing:.10em;text-transform:uppercase;color:var(--quiet)}
+  h1.disp{font-family:var(--disp);font-weight:600;font-size:clamp(40px,6.2vw,80px);line-height:1.02;letter-spacing:-.025em}
+  h2.disp{font-family:var(--disp);font-weight:600;font-size:clamp(29px,4.2vw,52px);line-height:1.06;letter-spacing:-.02em}
+  h3{font-family:var(--disp);font-weight:600;font-size:22px;line-height:1.22;letter-spacing:-.01em}
+  .lead{font-size:clamp(17px,1.6vw,20px);line-height:1.5;color:var(--muted);max-width:36em}
+
+  /* ---------- buttons ---------- */
+  .btn{display:inline-flex;align-items:center;gap:var(--s2);min-height:46px;padding:12px 20px;border-radius:var(--r-md);
+       font:600 15px/1 var(--sans);letter-spacing:-.01em;cursor:pointer;border:1px solid transparent;white-space:nowrap;
+       transition:background .15s ease,border-color .15s ease,transform .05s ease}
+  .btn>span.lbl{transform:translateY(-1px)} /* cap-height 補正 */
+  .btn:active{transform:translateY(1px)}
+  .btn-primary{background:var(--ink);color:#0A0A0A}
+  .btn-primary:hover{background:#fff} /* 実物どおり純白CTA — hover は基準(--ink)より1段明るく（identity 由来の意図的 WARN） */
+  .btn-accent{background:var(--accent);color:var(--on-accent)}
+  .btn-accent:hover{background:var(--accent-bright)}
+  .btn-ghost{background:transparent;color:var(--ink);border-color:var(--line-2)}
+  .btn-ghost:hover{background:var(--raised)}
+  .btn svg{width:16px;height:16px;flex:0 0 auto}
+  .btn-lg{min-height:52px;padding:16px 24px;font-size:16px;border-radius:var(--r-lg)}
+
+  /* ---------- header ---------- */
+  header.site{position:sticky;top:0;z-index:60;background:rgba(0,0,0,.74);backdrop-filter:blur(14px);
+              border-bottom:1px solid var(--line)}
+  .nav{display:flex;align-items:center;gap:var(--s6);height:64px}
+  .brand{display:flex;align-items:center;gap:8px;font-family:var(--disp);font-weight:600;font-size:19px;letter-spacing:-.02em;min-width:0;color:var(--ink)}
+  .ver{display:inline-flex;align-items:center;min-height:24px;padding:3px 8px;border:1px solid var(--accent-line);border-radius:var(--r-sm);
+       background:var(--accent-sunk);color:var(--accent-bright);font:600 12px/1 var(--sans);letter-spacing:.01em;white-space:nowrap}
+  .ver .lbl{transform:translateY(-1px)}
+  .brand svg{width:17px;height:25px;color:var(--accent)}
+  .nav-links{display:flex;align-items:center;gap:var(--s1);margin-left:var(--s4)}
+  .nav-links a{display:inline-flex;align-items:center;height:40px;padding-inline:12px;border-radius:var(--r-md);
+               color:var(--muted);font-size:15px;font-weight:500}
+  .nav-links a:hover{color:var(--ink);background:var(--raised)}
+  .nav-right{margin-left:auto;display:flex;align-items:center;gap:var(--s2)}
+  .nav-right .login{display:inline-flex;align-items:center;height:40px;padding-inline:12px;color:var(--muted);font-weight:500;font-size:15px;border-radius:var(--r-md)}
+  .nav-right .login:hover{color:var(--ink)}
+
+  /* ---------- mobile disclosure (working off-canvas, not just a hidden nav) ---------- */
+  .nav-toggle{display:none;align-items:center;justify-content:center;width:44px;height:44px;flex:0 0 auto;
+              background:transparent;border:1px solid var(--line-2);border-radius:var(--r-md);color:var(--ink);cursor:pointer}
+  .nav-toggle svg{width:20px;height:20px}
+  .nav-toggle .ic-x{display:none}
+  .nav-toggle[aria-expanded="true"] .ic-bars{display:none}
+  .nav-toggle[aria-expanded="true"] .ic-x{display:block}
+  .mobile-nav{position:fixed;inset:65px 0 auto 0;z-index:55;display:flex;flex-direction:column;gap:2px;
+              padding:var(--s4) var(--s6) calc(var(--s6) + env(safe-area-inset-bottom));
+              background:rgba(0,0,0,.97);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);
+              opacity:0;visibility:hidden;transform:translateY(-8px);
+              transition:opacity .18s ease,transform .18s ease,visibility 0s linear .18s}
+  .mobile-nav[data-open="true"]{opacity:1;visibility:visible;transform:none;transition:opacity .18s ease,transform .18s ease}
+  .mobile-nav a{display:flex;align-items:center;min-height:48px;padding-inline:var(--s3);border-radius:var(--r-md);
+                color:var(--muted);font-size:17px;font-weight:500}
+  .mobile-nav a:hover,.mobile-nav a:focus-visible{color:var(--ink);background:var(--raised)}
+  .mobile-nav .mn-sep{height:1px;background:var(--line);margin:var(--s3) 0}
+  .mobile-nav .btn{justify-content:center;margin-top:var(--s2)}
+  @media(min-width:881px){.mobile-nav{display:none}}
+  @media(max-width:880px){
+    .nav-links{display:none}
+    .nav-right .login,.nav-right>.btn-primary{display:none}
+    .nav-toggle{display:inline-flex}
+  }
+
+  /* ---------- hero ---------- */
+  .hero{padding-top:var(--s20);padding-bottom:var(--s12)}
+  .hero-head{max-width:760px}
+  .hero h1.disp{margin-bottom:var(--s5)}
+  .hero .lead{margin-bottom:var(--s8);max-width:620px}
+  .hero-cta{display:flex;flex-wrap:wrap;gap:var(--s3);align-items:center}
+  .hero-note{display:flex;align-items:center;gap:var(--s2);margin-top:var(--s5);color:var(--quiet);font-size:13.5px}
+  .hero-note svg{width:15px;height:15px;color:var(--ok)}
+
+  /* ---------- editor mock (signature artifact) ---------- */
+  .editor{margin-top:var(--s12);border:1px solid var(--line-2);border-radius:var(--r-xl);background:var(--surface);
+          overflow:hidden;box-shadow:0 1px 0 rgba(255,255,255,.05) inset}
+  .ed-bar{display:flex;align-items:center;gap:var(--s3);height:48px;padding-inline:var(--s4);border-bottom:1px solid var(--line);background:var(--raised);min-width:0}
+  .dots{display:flex;gap:8px}
+  .dots i{width:11px;height:11px;border-radius:50%;background:var(--line-2)}
+  .ed-tools{display:flex;gap:2px;margin-left:var(--s2)}
+  .ed-tools button{width:34px;height:34px;display:grid;place-items:center;border:none;background:transparent;color:var(--quiet);border-radius:var(--r-sm);cursor:pointer}
+  .ed-tools button:hover{background:var(--surface);color:var(--ink)}
+  .ed-tools button[aria-pressed="true"]{background:var(--accent-sunk);color:var(--accent-bright)}
+  .ed-tools svg{width:17px;height:17px}
+  .ed-file{margin-left:var(--s2);display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px;min-width:0;overflow:hidden}
+  .ed-file b{color:var(--ink);font-weight:600}
+  .ed-file .br{color:var(--quiet);white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+  .ed-bar .ed-pub{margin-left:auto}
+  .ed-pub .pub{display:inline-flex;align-items:center;gap:8px;min-height:34px;padding:8px 16px;font:600 13.5px/1 var(--sans);
+               border-radius:var(--r-sm);background:var(--accent);color:var(--on-accent)}
+  .ed-pub .pub svg{width:13px;height:13px}
+
+  .ed-body{display:grid;grid-template-columns:212px 1fr 320px;min-height:480px}
+  @media(max-width:980px){.ed-body{grid-template-columns:1fr;min-height:0}}
+
+  /* layers rail */
+  .rail{border-right:1px solid var(--line);padding:var(--s4) var(--s3);min-width:0;background:var(--surface)}
+  @media(max-width:980px){.rail{display:none}}
+  .rail .rlabel{font:600 11px/1 var(--sans);letter-spacing:.10em;text-transform:uppercase;color:var(--quiet);padding-inline:var(--s2);margin-bottom:var(--s3)}
+  .layer{display:flex;align-items:center;gap:8px;height:30px;padding-inline:var(--s2);border-radius:var(--r-sm);color:var(--muted);font-size:13px;cursor:default}
+  .layer:hover{background:var(--raised);color:var(--ink)}
+  .layer.sel{background:var(--accent-sunk);color:var(--accent-bright);box-shadow:inset 0 0 0 1px var(--accent-line)}
+  .layer .ind{width:12px;flex:0 0 auto;text-align:center;color:var(--quiet)}
+  .layer svg{width:14px;height:14px;flex:0 0 auto;opacity:.85}
+  .layer span.t{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+  /* canvas — renders a tiny website preview */
+  .canvas{background:
+        radial-gradient(circle at 1px 1px, rgba(255,255,255,.05) 1px, transparent 0) 0 0/22px 22px,
+        var(--sunk);
+        padding:var(--s6);position:relative;min-width:0;overflow:hidden}
+  .canvas-tag{position:absolute;top:10px;left:14px;font:500 11px/1 var(--mono);color:var(--quiet)}
+  .frame{margin:16px auto 0;max-width:560px;background:#0F0F12;border:1px solid var(--line-2);border-radius:var(--r-lg);
+         overflow:hidden;outline:2px solid var(--accent);outline-offset:3px}
+  .frame-nav{display:flex;align-items:center;gap:var(--s3);height:40px;padding-inline:var(--s4);border-bottom:1px solid var(--line)}
+  .frame-nav .fb{font-family:var(--disp);font-weight:600;font-size:13px;letter-spacing:.01em}
+  .frame-nav .fl{margin-left:auto;display:flex;gap:16px;color:var(--quiet);font-size:11.5px}
+  @media(max-width:460px){.frame-nav .fl{display:none}}
+  .frame-hero{padding:var(--s6) var(--s5) var(--s5)}
+  .frame-hero h2{font-family:var(--disp);font-weight:600;font-size:clamp(20px,4.6vw,29px);line-height:1.04;letter-spacing:-.02em;margin-bottom:8px}
+  .frame-hero p{color:var(--muted);font-size:12.5px;max-width:30ch;margin-bottom:var(--s4)}
+  .ticker-row{display:flex;gap:8px;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
+              mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+  /* 常時アニメだが装飾ではない: エージェントが今まさに追加した「3D image ticker」そのものを実演するコンテンツ
+     （logo-row の marquee も実物 Framer の identity）。reduced-motion では *{animation:none} で全停止する */
+  .ticker-track{display:flex;gap:8px;animation:slide 26s linear infinite;flex:0 0 auto}
+  .ticker-track img{width:108px;height:128px;object-fit:cover;border-radius:var(--r-md);border:1px solid var(--line);flex:0 0 auto;
+       transform:perspective(700px) rotateY(-12deg);filter:saturate(.92) contrast(1.02)}
+  @keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* agent chat panel */
+  .chat{border-left:1px solid var(--line);display:flex;flex-direction:column;min-width:0;background:var(--surface)}
+  @media(max-width:980px){.chat{border-left:none;border-top:1px solid var(--line)}}
+  .chat-head{display:flex;align-items:center;gap:var(--s2);height:44px;padding-inline:var(--s4);border-bottom:1px solid var(--line);color:var(--muted);font-size:13px;font-weight:500}
+  .chat-head .spark{width:16px;height:16px;color:var(--accent-bright)}
+  .chat-head .model{margin-left:auto;font:500 11px/1 var(--mono);color:var(--quiet)}
+  .chat-log{padding:var(--s4);display:flex;flex-direction:column;gap:var(--s3);flex:1}
+  .msg{font-size:13px;line-height:1.5}
+  .msg.user{align-self:flex-end;max-width:88%;background:var(--accent-sunk);color:var(--ink);border:1px solid var(--accent-line);
+            padding:8px 12px;border-radius:var(--r-md) var(--r-md) var(--r-sm) var(--r-md)}
+  .msg.sys{color:var(--quiet);font:500 12px/1.45 var(--mono);display:flex;align-items:center;gap:8px}
+  .msg.sys svg{width:13px;height:13px;flex:0 0 auto}
+  .msg.bot{color:var(--muted);max-width:94%}
+  .msg.done{display:flex;align-items:flex-start;gap:8px;color:var(--ink)}
+  .msg.done .chk{flex:0 0 auto;width:18px;height:18px;border-radius:50%;background:var(--ok-sunk);color:var(--ok);display:grid;place-items:center;margin-top:1px}
+  .msg.done .chk svg{width:11px;height:11px}
+  .chat-q{margin:0 var(--s4);padding:8px 12px;border:1px solid var(--line);border-radius:var(--r-md);color:var(--muted);font-size:12.5px;background:var(--sunk)}
+  /* 見た目だけの composer モック（実 input 要素ではない — フォーカス/ズーム対象外） */
+  .chat-compose{margin:var(--s3) var(--s4) var(--s4);display:flex;align-items:center;gap:var(--s2);
+              border:1px solid var(--line-2);border-radius:var(--r-md);padding:8px 8px 8px 12px;background:var(--sunk)}
+  .chat-compose span{color:var(--quiet);font-size:13px;flex:1;min-width:0}
+  .chat-send{width:32px;height:32px;flex:0 0 auto;display:grid;place-items:center;border:none;border-radius:var(--r-sm);background:var(--accent);color:var(--on-accent);cursor:pointer}
+  .chat-send:hover{background:var(--accent-bright)}
+  .chat-send svg{width:15px;height:15px}
+
+  /* ---------- shipped-with showcase + ticker ---------- */
+  .shipped{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--bg-2);padding-block:var(--s16)}
+  .shipped .label{text-align:center;margin-bottom:var(--s8)}
+  .ship-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s4);margin-bottom:var(--s8)}
+  @media(max-width:900px){.ship-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:520px){.ship-grid{grid-template-columns:1fr}}
+  .ship-card{display:block;border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;background:var(--surface);min-width:0}
+  .ship-card .shot{aspect-ratio:16/10;overflow:hidden;background:var(--sunk)}
+  .ship-card .shot img{width:100%;height:100%;object-fit:cover;filter:saturate(.95)}
+  .ship-card .cap{display:flex;align-items:baseline;gap:var(--s2);padding:var(--s3) var(--s4);min-width:0}
+  .ship-card .cap .nm{font-family:var(--disp);font-weight:600;font-size:14px;letter-spacing:-.01em}
+  .ship-card .cap .url{margin-left:auto;color:var(--quiet);font:500 11px/1.4 var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  @media(hover:hover){.ship-card:hover{border-color:var(--line-2)}}
+  .ship-more{display:flex;justify-content:center;margin-bottom:var(--s12)}
+  .logo-row{overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);
+            mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
+  .logo-track{display:flex;gap:var(--s12);align-items:center;width:max-content;animation:slide 40s linear infinite}
+  .logo-track span{font-family:var(--disp);font-weight:600;font-size:22px;letter-spacing:-.02em;color:var(--quiet);white-space:nowrap;
+                   transition:color .2s ease}
+  .logo-track span:hover{color:var(--muted)}
+
+  /* ---------- section header ---------- */
+  .sec-head{max-width:26ch;margin-bottom:var(--s12)}
+  .sec-head .kicker{display:block;margin-bottom:var(--s4)}
+  .sec-head .lead{margin-top:var(--s5)}
+
+  /* ---------- agent feature rows ---------- */
+  .feat{display:grid;grid-template-columns:1fr 1fr;gap:var(--s8);align-items:stretch;margin-bottom:var(--s8)}
+  .feat.rev .feat-art{order:-1}
+  @media(max-width:860px){.feat{grid-template-columns:1fr;gap:var(--s6)}.feat.rev .feat-art{order:0}}
+  .feat-copy{align-self:center;min-width:0;padding-block:var(--s4)}
+  .feat-copy h3{margin-bottom:var(--s3)}
+  .feat-copy p{color:var(--muted);max-width:40ch}
+  .feat-copy .tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:var(--s5)}
+  .tag{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border:1px solid var(--line);border-radius:999px;
+       font-size:12.5px;color:var(--muted);background:var(--surface)}
+  .tag svg{width:13px;height:13px;color:var(--accent-bright)}
+  .feat-art{min-width:0;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface);overflow:hidden}
+
+  .art-head{display:flex;align-items:center;gap:var(--s2);height:40px;padding-inline:var(--s4);border-bottom:1px solid var(--line);color:var(--quiet);font:500 12px/1 var(--mono)}
+  .art-head .spark{width:14px;height:14px;color:var(--accent-bright)}
+  .art-pad{padding:var(--s5)}
+
+  /* cms art */
+  .cms-rows{display:flex;flex-direction:column;gap:8px}
+  .cms-row{display:grid;grid-template-columns:18px 1fr auto;gap:8px;align-items:center;padding:8px 12px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--sunk);min-width:0}
+  .cms-row .ic{color:var(--quiet);display:grid;place-items:center}
+  .cms-row .ic svg{width:14px;height:14px}
+  .cms-row .ttl{font-size:13px;color:var(--ink);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pill-ok{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:500;
+           color:var(--ok);background:var(--ok-sunk);border:1px solid var(--ok-line);white-space:nowrap}
+  .pill-ok svg{width:11px;height:11px}
+  .cms-foot{display:flex;align-items:center;gap:8px;margin-top:var(--s4);color:var(--ok);font:500 12px/1.4 var(--mono)}
+  .cms-foot svg{width:14px;height:14px;flex:0 0 auto}
+
+  /* terminal art */
+  .term{background:#070708;border:1px solid var(--line);border-radius:var(--r-md);font:400 12.5px/1.65 var(--mono);
+        color:var(--muted);padding:var(--s4);overflow-x:auto}
+  .term .pr{color:var(--accent-bright)}
+  .term .ok{color:var(--ok)}
+  .term .dim{color:var(--quiet)}
+  .term b{color:var(--ink);font-weight:500}
+  .copy-row{display:flex;align-items:center;gap:var(--s3);margin-top:var(--s4);flex-wrap:wrap}
+  .copy-row .src{font:500 12px/1 var(--mono);color:var(--quiet)}
+
+  /* connect strip */
+  .connect{margin-top:var(--s8);border:1px solid var(--line);border-radius:var(--r-lg);background:var(--bg-2);padding:var(--s10) var(--s8)}
+  .connect h3{margin-bottom:var(--s3);max-width:20ch}
+  .connect p{color:var(--muted);max-width:54ch;margin-bottom:var(--s8)}
+  .chips{display:flex;flex-wrap:wrap;gap:var(--s3)}
+  .chip{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid var(--line);border-radius:999px;
+        background:var(--surface);color:var(--ink);font-size:14px;font-weight:500}
+  .chip .d{width:8px;height:8px;border-radius:50%;background:var(--accent);flex:0 0 auto}
+
+  /* ---------- platform index (spec sheet) ---------- */
+  .index{border-top:1px solid var(--line)}
+  .irow{display:grid;grid-template-columns:64px 220px 1fr auto;gap:var(--s6);align-items:start;
+        padding-block:var(--s6);border-bottom:1px solid var(--line);min-width:0}
+  .irow .num{font:500 13px/1.4 var(--mono);color:var(--quiet);padding-top:3px}
+  .irow .nm{font-family:var(--disp);font-weight:600;font-size:19px;letter-spacing:-.01em;min-width:0}
+  .irow .ds{color:var(--muted);min-width:0;max-width:48ch;font-size:15px}
+  .irow .mt{justify-self:end;text-align:right;min-width:0}
+  .irow .mt .v{font-family:var(--disp);font-weight:600;font-size:22px;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+  .irow .mt .k{display:block;font:500 11px/1.3 var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--quiet);margin-top:2px}
+  .irow:hover{background:var(--bg-2)}
+  @media(max-width:860px){
+    .irow{grid-template-columns:44px 1fr;gap:var(--s2) var(--s4);padding-block:var(--s5)}
+    .irow .num{grid-row:1/3}
+    .irow .nm{grid-column:2}
+    .irow .ds{grid-column:2}
+    .irow .mt{grid-column:2;justify-self:start;text-align:left;margin-top:8px}
+    .irow .mt .v{font-size:18px}
+  }
+
+  /* analytics widget */
+  .analytics{margin-top:var(--s12);display:grid;grid-template-columns:1.2fr 1fr;gap:0;align-items:stretch;
+             border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface);overflow:hidden}
+  @media(max-width:860px){.analytics{grid-template-columns:1fr}}
+  .ana-copy{padding:var(--s10);align-self:center;min-width:0}
+  .ana-copy h3{margin-bottom:var(--s3);max-width:18ch}
+  .ana-copy p{color:var(--muted);max-width:40ch}
+  .ana-panel{border-left:1px solid var(--line);background:var(--sunk);padding:var(--s8);min-width:0}
+  @media(max-width:860px){.ana-panel{border-left:none;border-top:1px solid var(--line)}}
+  .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden}
+  .stat{background:var(--surface);padding:var(--s5) var(--s6);min-width:0}
+  .stat .v{font-family:var(--disp);font-weight:600;font-size:clamp(24px,3.6vw,33px);letter-spacing:-.025em;line-height:1;font-variant-numeric:tabular-nums}
+  .stat .k{display:block;margin-top:8px;color:var(--muted);font-size:13px}
+  .stat .v.up{color:var(--ok)}
+  .spark-line{margin-top:var(--s5);display:flex;align-items:flex-end;gap:4px;height:46px}
+  .spark-line i{flex:1;background:var(--accent-sunk);border-radius:2px;min-width:0}
+  .spark-line i.hi{background:var(--accent)}
+
+  /* ---------- community ---------- */
+  .community{background:var(--bg-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .comm-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s4)}
+  @media(max-width:900px){.comm-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:520px){.comm-grid{grid-template-columns:1fr}}
+  .comm-card{border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;background:var(--surface);min-width:0}
+  .comm-card .thumb{aspect-ratio:4/3;overflow:hidden;background:var(--sunk)}
+  .comm-card .thumb img{width:100%;height:100%;object-fit:cover}
+  .comm-card .meta{padding:var(--s4) var(--s5) var(--s5)}
+  .comm-card .meta .cat{display:flex;align-items:center;justify-content:space-between;font:600 11px/1 var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--accent-bright)}
+  .comm-card .meta .cat .likes{color:var(--quiet);letter-spacing:.02em;font-variant-numeric:tabular-nums}
+  .comm-card .meta h3{font-family:var(--disp);font-weight:600;font-size:15.5px;line-height:1.3;margin-top:12px;letter-spacing:-.01em}
+  .comm-card .meta .by{display:block;margin-top:8px;color:var(--quiet);font:500 12px/1 var(--mono)}
+  .comm-actions{display:flex;flex-wrap:wrap;gap:var(--s3);margin-top:var(--s12)}
+
+  /* ---------- customers ---------- */
+  .cust-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s5)}
+  @media(max-width:880px){.cust-grid{grid-template-columns:1fr 1fr}}
+  @media(max-width:560px){.cust-grid{grid-template-columns:1fr}}
+  .story{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;background:var(--surface);min-width:0}
+  .story .cover{aspect-ratio:16/10;overflow:hidden;background:var(--sunk)}
+  .story .cover img{width:100%;height:100%;object-fit:cover;filter:saturate(.95)}
+  .story .body{padding:var(--s6);display:flex;flex-direction:column;gap:var(--s4);flex:1}
+  .story .logo{font-family:var(--disp);font-weight:600;font-size:17px;letter-spacing:-.01em}
+  .story .quote{color:var(--ink);font-size:16px;line-height:1.45;flex:1}
+  .story .who{display:flex;flex-direction:column;gap:2px}
+  .story .who .nm{font-family:var(--disp);font-weight:600;font-size:16px;letter-spacing:-.01em;color:var(--ink)}
+  .story .who .role{color:var(--quiet);font:500 12.5px/1.35 var(--sans)}
+  .story .read{display:inline-flex;align-items:center;gap:8px;color:var(--accent-bright);font-weight:600;font-size:14px}
+  .story .read svg{width:15px;height:15px}
+
+  /* ---------- final CTA ---------- */
+  .final{text-align:center;padding-block:var(--s24)}
+  .final h2.disp{margin-inline:auto;max-width:16ch}
+  .final .lead{margin:var(--s5) auto var(--s8)}
+  .final-cta{display:flex;flex-wrap:wrap;gap:var(--s3);justify-content:center}
+
+  /* ---------- footer ---------- */
+  footer.site{border-top:1px solid var(--line);background:var(--bg-2);padding-block:var(--s16) var(--s10)}
+  .foot-top{display:grid;grid-template-columns:1.4fr repeat(6,1fr);gap:var(--s8) var(--s6)}
+  @media(max-width:1080px){.foot-top{grid-template-columns:repeat(4,1fr)}.foot-brand{grid-column:1/-1}}
+  @media(max-width:900px){.foot-top{grid-template-columns:1fr 1fr 1fr}}
+  @media(max-width:540px){.foot-top{grid-template-columns:1fr 1fr}}
+  .foot-brand{min-width:0}
+  .foot-brand .brand{margin-bottom:var(--s4)}
+  .foot-brand p{color:var(--muted);font-size:14px;max-width:28ch}
+  .fcol h3{font:600 12px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--quiet);margin-bottom:var(--s4)}
+  .fcol li{margin-bottom:2px}
+  .fcol a{display:inline-flex;align-items:center;min-height:30px;color:var(--muted);font-size:14px}
+  .fcol a:hover{color:var(--ink)}
+  .foot-bot{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s4);margin-top:var(--s12);padding-top:var(--s6);border-top:1px solid var(--line);color:var(--quiet);font-size:13px}
+  .foot-bot .social{margin-left:auto;display:flex;gap:var(--s2)}
+  .foot-bot .social a{width:38px;height:38px;display:grid;place-items:center;border:1px solid var(--line);border-radius:var(--r-md);color:var(--muted)}
+  .foot-bot .social a:hover{color:var(--ink);border-color:var(--line-2)}
+  .foot-bot .social svg{width:16px;height:16px}
+
+  /* ---------- mobile sticky CTA ---------- */
+  .mcta{position:fixed;inset:auto 0 0 0;z-index:70;display:none;gap:var(--s3);padding:12px var(--s4);
+        padding-bottom:calc(12px + env(safe-area-inset-bottom));background:rgba(0,0,0,.93);backdrop-filter:blur(12px);
+        border-top:1px solid var(--line)}
+  .mcta .btn{flex:1;justify-content:center}
+  @media(max-width:880px){.mcta{display:flex}body{padding-bottom:84px}}
+
+  /* hover 起点の動きはポインタ環境のみ（09 実装規則 — タッチで hover が引っかかるのを防ぐ） */
+  @media(hover:hover){
+    .comm-card .thumb img{transition:transform .2s ease}
+    .comm-card:hover .thumb img{transform:scale(1.04)}
+    .story .read svg{transition:transform .15s ease}
+    .story:hover .read svg{transform:translateX(3px)}
+  }
+
+  /* 演出はページロード1回に集中（09 ブランドA）— hero の staggered reveal のみ。transform/opacity 限定 */
+  @media(prefers-reduced-motion:no-preference){
+    .hero-head h1,.hero>.lead,.hero-cta,.hero-note,.editor{animation:rise .5s cubic-bezier(0,0,.2,1) both}
+    .hero>.lead{animation-delay:.06s}
+    .hero-cta{animation-delay:.12s}
+    .hero-note{animation-delay:.16s}
+    .editor{animation-delay:.22s}
+  }
+  @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+  @media(prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header class="site">
+  <div class="wrap nav">
+    <a class="brand" href="#top" aria-label="Framer home">
+      <svg viewBox="0 0 16 24" aria-hidden="true" fill="currentColor"><path d="M2 1h12v7H9zM2 8h7l5 5H9v8l-7-7z"/></svg>
+      Framer
+    </a>
+    <span class="ver"><span class="lbl">Framer 3.0</span></span>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#agents">Product</a>
+      <a href="#platform">Platform</a>
+      <a href="#community">Community</a>
+      <a href="#customers">Customers</a>
+      <a href="#developers">Developers</a>
+    </nav>
+    <div class="nav-right">
+      <a class="login" href="#login">Log in</a>
+      <a class="btn btn-primary" href="#start"><span class="lbl">Start for free</span></a>
+      <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu">
+        <svg class="ic-bars" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        <svg class="ic-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- mobile disclosure menu (keeps primary nav reachable when nav-links hide) -->
+<nav id="mobile-nav" class="mobile-nav" aria-label="Mobile">
+  <a href="#agents">Product</a>
+  <a href="#platform">Platform</a>
+  <a href="#community">Community</a>
+  <a href="#customers">Customers</a>
+  <a href="#developers">Developers</a>
+  <div class="mn-sep" aria-hidden="true"></div>
+  <a href="#login">Log in</a>
+  <a class="btn btn-primary" href="#start"><span class="lbl">Start for free</span></a>
+</nav>
+
+<main id="top">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero wrap">
+    <div class="hero-head">
+      <h1 class="disp">Framer is the AI website builder for standout sites</h1>
+    </div>
+    <p class="lead">Design, run your CMS, and ship code with agents that work alongside you, not instead of you. Publish on one platform — hosting, SEO, and analytics built in. You stay in control of every pixel.</p>
+    <div class="hero-cta">
+      <a class="btn btn-primary btn-lg" href="#start"><span class="lbl">Start for free</span></a>
+      <a class="btn btn-ghost btn-lg" href="#customers"><span class="lbl">Get a demo</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+    <p class="hero-note">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+      No credit card required · Free plan with a framer.website domain
+    </p>
+
+    <!-- signature product artifact: the Framer editor -->
+    <figure class="editor" role="img" aria-label="The Framer editor: a layers panel on the left, a canvas in the center showing a 'Haus Studio' website with a 3D image ticker, and an AI agent chat on the right where the agent has added a hero ticker and offered to add responsive breakpoints.">
+      <div class="ed-bar">
+        <div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="ed-tools" aria-hidden="true">
+          <button title="Select" aria-pressed="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 3l14 7-6 2-2 6z"/></svg></button>
+          <button title="Frame"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="2"/></svg></button>
+          <button title="Text"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 6h14M12 6v13"/></svg></button>
+          <button title="Insert"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg></button>
+        </div>
+        <div class="ed-file" aria-hidden="true"><b>Haus Studio</b><span class="br">/ Home · Desktop</span></div>
+        <div class="ed-pub"><span class="pub" role="text"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Publish</span></div>
+      </div>
+
+      <div class="ed-body">
+        <!-- layers -->
+        <div class="rail" aria-hidden="true">
+          <div class="rlabel">Layers</div>
+          <div class="layer"><span class="ind"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="2"/></svg><span class="t">Page · Home</span></div>
+          <div class="layer"><span class="ind"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span class="t">Navigation</span></div>
+          <div class="layer sel"><span class="ind"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12h18M3 7h18M3 17h18"/></svg><span class="t">Hero · Ticker</span></div>
+          <div class="layer"><span class="ind">·</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 6h14M5 12h10"/></svg><span class="t">Heading</span></div>
+          <div class="layer"><span class="ind">·</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="5" width="16" height="14" rx="2"/></svg><span class="t">Image Row</span></div>
+          <div class="layer"><span class="ind"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span class="t">Work Grid</span></div>
+          <div class="layer"><span class="ind"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="2"/></svg><span class="t">Footer</span></div>
+        </div>
+
+        <!-- canvas -->
+        <div class="canvas">
+          <span class="canvas-tag" aria-hidden="true">Desktop · 1440 · 100%</span>
+          <div class="frame">
+            <div class="frame-nav">
+              <span class="fb">Haus</span>
+              <span class="fl"><span>Work</span><span>Studio</span><span>Contact</span></span>
+            </div>
+            <div class="frame-hero">
+              <h2>A studio for brands that refuse to blend in.</h2>
+              <p>Identity, web, and motion for ambitious teams.</p>
+              <div class="ticker-row">
+                <div class="ticker-track">
+                  <img src="https://picsum.photos/seed/haus1/216/256" width="108" height="128" alt="">
+                  <img src="https://picsum.photos/seed/haus2/216/256" width="108" height="128" alt="">
+                  <img src="https://picsum.photos/seed/haus3/216/256" width="108" height="128" alt="">
+                  <img src="https://picsum.photos/seed/haus4/216/256" width="108" height="128" alt="">
+                  <img src="https://picsum.photos/seed/haus1/216/256" width="108" height="128" alt="" aria-hidden="true">
+                  <img src="https://picsum.photos/seed/haus2/216/256" width="108" height="128" alt="" aria-hidden="true">
+                  <img src="https://picsum.photos/seed/haus3/216/256" width="108" height="128" alt="" aria-hidden="true">
+                  <img src="https://picsum.photos/seed/haus4/216/256" width="108" height="128" alt="" aria-hidden="true">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- agent chat -->
+        <div class="chat">
+          <div class="chat-head"><svg class="spark" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/></svg>Agent<span class="model">Sonnet 4.6</span></div>
+          <div class="chat-log">
+            <div class="msg user">Add a 3D image ticker to the hero section and write a short introduction about Haus studio.</div>
+            <div class="msg sys"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>Analyzed hero section</div>
+            <div class="msg bot">I'll replace the selected text area with a Haus intro and add an image ticker using your attached images.</div>
+            <div class="msg sys"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M4 14l4-3 3 2 5-4 4 3"/></svg>Adding images…</div>
+            <div class="msg done"><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg></span><span>Done. Replaced the text block with Haus copy and added a horizontal image ticker from the provided images.</span></div>
+          </div>
+          <div class="chat-q">Want me to add tablet and phone breakpoints to make it responsive?</div>
+          <div class="chat-compose">
+            <span>Reply to the agent…</span>
+            <button class="chat-send" aria-label="Send message to agent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </figure>
+  </section>
+
+  <!-- ============ SHIPPED WITH FRAMER ============ -->
+  <section class="shipped" aria-label="Sites and brands shipped with Framer">
+    <p class="label kicker">Shipped with Framer</p>
+    <div class="wrap">
+      <div class="ship-grid">
+        <a class="ship-card" href="#site-perplexity">
+          <span class="shot"><img src="https://picsum.photos/seed/ship-perplexity/800/500" width="800" height="500" loading="lazy" alt="Perplexity marketing site, shipped with Framer"></span>
+          <span class="cap"><span class="nm">Perplexity</span><span class="url">perplexity.ai</span></span>
+        </a>
+        <a class="ship-card" href="#site-superlist">
+          <span class="shot"><img src="https://picsum.photos/seed/ship-superlist/800/500" width="800" height="500" loading="lazy" alt="Superlist product site, shipped with Framer"></span>
+          <span class="cap"><span class="nm">Superlist</span><span class="url">superlist.com</span></span>
+        </a>
+        <a class="ship-card" href="#site-miro">
+          <span class="shot"><img src="https://picsum.photos/seed/ship-miro/800/500" width="800" height="500" loading="lazy" alt="Miro campaign site, shipped with Framer"></span>
+          <span class="cap"><span class="nm">Miro</span><span class="url">miro.com</span></span>
+        </a>
+        <a class="ship-card" href="#site-raycast">
+          <span class="shot"><img src="https://picsum.photos/seed/ship-raycast/800/500" width="800" height="500" loading="lazy" alt="Raycast launch site, shipped with Framer"></span>
+          <span class="cap"><span class="nm">Raycast</span><span class="url">raycast.com</span></span>
+        </a>
+      </div>
+      <div class="ship-more">
+        <a class="btn btn-ghost" href="#customers"><span class="lbl">See Framer sites</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </div>
+    <p class="label kicker">Trusted by</p>
+    <div class="logo-row">
+      <div class="logo-track" aria-hidden="true">
+        <span>Perplexity</span><span>Miro</span><span>Raycast</span><span>Maven</span><span>Superlist</span><span>Retool</span><span>Loops</span><span>Reflect</span>
+        <span>Perplexity</span><span>Miro</span><span>Raycast</span><span>Maven</span><span>Superlist</span><span>Retool</span><span>Loops</span><span>Reflect</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ AGENTS ============ -->
+  <section class="sec wrap" id="agents">
+    <div class="sec-head">
+      <h2 class="disp">Agents that work alongside you, not instead of you</h2>
+      <p class="lead">Hand off the busywork and keep the judgment. Agents design, manage content, and write code on your canvas — you review and approve every change.</p>
+    </div>
+
+    <!-- design with an agent -->
+    <article class="feat">
+      <div class="feat-copy">
+        <h3>Design with an agent</h3>
+        <p>Ask for a section, a layout variation, or a full redesign. The agent edits your real frames on the canvas, respecting your styles and components — never a black box.</p>
+        <div class="tags">
+          <span class="tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>Edits real frames</span>
+          <span class="tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>Keeps your styles</span>
+          <span class="tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>Reviewable diffs</span>
+        </div>
+      </div>
+      <div class="feat-art">
+        <div class="art-head"><svg class="spark" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/></svg>Agent · Design plan</div>
+        <div class="art-pad">
+          <div class="chat-log" style="padding:0;gap:12px">
+            <div class="msg user" style="align-self:flex-end">Create a few layout variations of my site. Keep the content but try some different compositions.</div>
+            <div class="msg sys"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h7"/></svg>Created a design plan · 3 steps</div>
+            <div class="msg sys"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="7" height="14" rx="1"/><rect x="14" y="5" width="7" height="14" rx="1"/></svg>Placing layout variations side by side</div>
+            <div class="msg done"><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg></span><span>Exploration — "Big Intro", "Side Nav", and a professional grid are ready to compare on the canvas.</span></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- run your CMS with an agent -->
+    <article class="feat rev">
+      <div class="feat-copy">
+        <h3>Run your CMS with an agent</h3>
+        <p>Import content, structure collections, and bulk-edit entries with a sentence. The agent maps messy data into clean, typed CMS fields you can publish in one click.</p>
+        <div class="tags">
+          <span class="tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>Bulk import</span>
+          <span class="tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>Typed fields</span>
+          <span class="tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>One-click publish</span>
+        </div>
+      </div>
+      <div class="feat-art">
+        <div class="art-head"><svg class="spark" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/></svg>Agent · CMS import</div>
+        <div class="art-pad">
+          <div class="cms-rows">
+            <div class="cms-row"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 6h14M5 12h14M5 18h9"/></svg></span><span class="ttl">Designing calmer interfaces inspired by nature</span><span class="pill-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>Live</span></div>
+            <div class="cms-row"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 6h14M5 12h14M5 18h9"/></svg></span><span class="ttl">Organic shapes and natural motion in modern UI</span><span class="pill-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>Live</span></div>
+            <div class="cms-row"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 6h14M5 12h14M5 18h9"/></svg></span><span class="ttl">Learning from nature to design better products</span><span class="pill-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>Live</span></div>
+            <div class="cms-row"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 6h14M5 12h14M5 18h9"/></svg></span><span class="ttl">From forests to pixels: textures rooted in nature</span><span class="pill-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>Live</span></div>
+          </div>
+          <p class="cms-foot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>Import complete · 47 blog entries published to Framer CMS</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- code with an agent -->
+    <article class="feat">
+      <div class="feat-copy">
+        <h3>Code with an agent</h3>
+        <p>Agents turn your wildest ideas into code and put them on your site. From simple custom effects to complex interactions, written as real, editable components.</p>
+        <div class="tags">
+          <span class="tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>Real components</span>
+          <span class="tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>Custom effects</span>
+        </div>
+      </div>
+      <div class="feat-art">
+        <div class="art-head"><svg class="spark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18l-5-6 5-6M15 6l5 6-5 6"/></svg>Terminal · Claude Code</div>
+        <div class="art-pad">
+          <div class="term" role="img" aria-label="A terminal running Claude Code connected to the Framer project, importing 47 blog entries which publish successfully to the Framer CMS.">
+<span class="dim">╭─── Claude Code ──────────────────────────────╮</span><br>
+<span class="dim">│</span> Sonnet 4.6 · Claude Team · <b>Framer</b><br>
+<span class="dim">╰──────────────────────────────────────────────╯</span><br><br>
+<span class="pr">›</span> framer import ./blog/*.mdx --collection posts<br>
+<span class="dim">  parsing 47 entries…</span><br>
+<span class="dim">  mapping frontmatter → CMS fields…</span><br>
+<span class="ok">  ✓ Import complete · 47 blog entries published to Framer CMS.</span>
+          </div>
+          <div class="copy-row">
+            <a class="btn btn-ghost" href="#install" style="min-height:40px;padding:8px 16px;font-size:13.5px">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+              <span class="lbl">Copy install prompt</span></a>
+            <span class="src">works with Codex, Cursor &amp; Claude Code</span>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- connect to any AI -->
+    <div class="connect" id="developers">
+      <h3>Connect to any AI</h3>
+      <p>Take action on your site from anywhere. Update copy from Slack, trigger CMS changes from the terminal, and ship from a GitHub PR — drive it all from your terminal, Codex, Claude Code, Cursor, or any external agent.</p>
+      <div class="chips">
+        <span class="chip"><span class="d" aria-hidden="true"></span>Claude Code</span>
+        <span class="chip"><span class="d" aria-hidden="true"></span>OpenAI Codex</span>
+        <span class="chip"><span class="d" aria-hidden="true"></span>Gemini</span>
+        <span class="chip"><span class="d" aria-hidden="true"></span>Perplexity</span>
+        <span class="chip"><span class="d" aria-hidden="true"></span>Cursor</span>
+        <span class="chip"><span class="d" aria-hidden="true"></span>Terminal</span>
+        <span class="chip"><span class="d" aria-hidden="true"></span>Slack</span>
+        <span class="chip"><span class="d" aria-hidden="true"></span>GitHub PR</span>
+        <span class="chip"><span class="d" aria-hidden="true"></span>MCP</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PLATFORM (index spec sheet) ============ -->
+  <section class="sec wrap" id="platform">
+    <div class="sec-head">
+      <h2 class="disp">Not just vibes, a full platform</h2>
+      <p class="lead">Manage more. Publish faster. Everything a real site needs is built in — no plugins to wire up, no hosting to configure.</p>
+    </div>
+
+    <div class="index">
+      <div class="irow">
+        <span class="num">01</span>
+        <span class="nm">Performance</span>
+        <span class="ds">Sites ship as static, edge-cached pages that pass Core Web Vitals out of the box. Sub-second loads with no build step to babysit.</span>
+        <span class="mt"><span class="v">0.8 s</span><span class="k">Avg. LCP</span></span>
+      </div>
+      <div class="irow">
+        <span class="num">02</span>
+        <span class="nm">CMS</span>
+        <span class="ds">Model content as typed collections, edit inline, and reuse it across pages. Localized fields and draft states included.</span>
+        <span class="mt"><span class="v">Typed</span><span class="k">Collections</span></span>
+      </div>
+      <div class="irow">
+        <span class="num">03</span>
+        <span class="nm">SEO</span>
+        <span class="ds">Per-page meta, Open Graph images, sitemaps, and clean semantic markup are generated automatically as you build.</span>
+        <span class="mt"><span class="v">Auto</span><span class="k">Meta &amp; sitemap</span></span>
+      </div>
+      <div class="irow">
+        <span class="num">04</span>
+        <span class="nm">Collaboration</span>
+        <span class="ds">Multiplayer editing, comments, and shared components keep design and content teams on the same canvas in real time.</span>
+        <span class="mt"><span class="v">Realtime</span><span class="k">Multiplayer</span></span>
+      </div>
+      <div class="irow">
+        <span class="num">05</span>
+        <span class="nm">Localization</span>
+        <span class="ds">Translate pages and CMS entries per locale, with automatic hreflang and locale-aware routing for every visitor.</span>
+        <span class="mt"><span class="v">40+</span><span class="k">Locales</span></span>
+      </div>
+      <div class="irow">
+        <span class="num">06</span>
+        <span class="nm">Hosting</span>
+        <span class="ds">Global CDN, free SSL, and custom domains on every plan. Publish to production with a single click — no deploys.</span>
+        <span class="mt"><span class="v">Global</span><span class="k">Edge CDN</span></span>
+      </div>
+      <div class="irow">
+        <span class="num">07</span>
+        <span class="nm">Security</span>
+        <span class="ds">Enterprise-grade infrastructure with SSO, role-based access, and automatic backups so your site stays yours.</span>
+        <span class="mt"><span class="v">SOC 2</span><span class="k">Compliant</span></span>
+      </div>
+      <div class="irow">
+        <span class="num">08</span>
+        <span class="nm">Analytics</span>
+        <span class="ds">Privacy-friendly traffic insights — visitors, pageviews, and conversion per page, with no cookie banner required.</span>
+        <span class="mt"><span class="v">Built-in</span><span class="k">No cookies</span></span>
+      </div>
+      <div class="irow">
+        <span class="num">09</span>
+        <span class="nm">A/B Testing</span>
+        <span class="ds">Split traffic across variants and promote the winner — no extra tools, no code, results measured on the platform.</span>
+        <span class="mt"><span class="v">Built-in</span><span class="k">Experiments</span></span>
+      </div>
+    </div>
+
+    <!-- analytics widget -->
+    <div class="analytics">
+      <div class="ana-copy">
+        <span class="kicker" style="display:block;margin-bottom:12px">Analytics</span>
+        <h3>Understand your traffic without leaving the canvas</h3>
+        <p>See visitors, pageviews, and conversions per page in real time — privacy-friendly, with no third-party tags to install.</p>
+      </div>
+      <div class="ana-panel">
+        <div class="stat-grid">
+          <div class="stat"><span class="v">128K</span><span class="k">Unique visitors · 30 days</span></div>
+          <div class="stat"><span class="v">214K</span><span class="k">Total pageviews</span></div>
+          <div class="stat"><span class="v up">4.2%</span><span class="k">Conversion to sign-up</span></div>
+          <div class="stat"><span class="v">1.4%</span><span class="k">Bounce rate</span></div>
+        </div>
+        <div class="spark-line" aria-hidden="true">
+          <i style="height:30%"></i><i style="height:48%"></i><i style="height:40%"></i><i style="height:62%"></i>
+          <i style="height:55%"></i><i style="height:74%"></i><i style="height:66%"></i><i class="hi" style="height:92%"></i>
+          <i style="height:70%"></i><i style="height:84%"></i><i style="height:78%"></i><i class="hi" style="height:100%"></i>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ COMMUNITY ============ -->
+  <section class="community">
+    <div class="sec wrap">
+      <div class="sec-head">
+        <h2 class="disp">Built on a community that isn't going anywhere</h2>
+        <p class="lead">Thousands of templates, plugins, and made-in-Framer sites — remix any of them as a starting point, then make it yours.</p>
+      </div>
+      <div class="comm-grid">
+        <article class="comm-card">
+          <div class="thumb"><img src="https://picsum.photos/seed/tmpl-studio/640/480" width="640" height="480" loading="lazy" alt="Preview of an editorial portfolio template — a dark, type-led layout."></div>
+          <div class="meta"><span class="cat">Template<span class="likes">1.3K likes</span></span><h3>Studio — editorial portfolio</h3><span class="by">@asia_gawron</span></div>
+        </article>
+        <article class="comm-card">
+          <div class="thumb"><img src="https://picsum.photos/seed/plugin-motion/640/480" width="640" height="480" loading="lazy" alt="Preview of a scroll-motion plugin running on a canvas."></div>
+          <div class="meta"><span class="cat">Plugin<span class="likes">862 likes</span></span><h3>Motion — scroll &amp; parallax</h3><span class="by">@theryanhayward</span></div>
+        </article>
+        <article class="comm-card">
+          <div class="thumb"><img src="https://picsum.photos/seed/comp-ticker/640/480" width="640" height="480" loading="lazy" alt="Preview of a 3D image ticker component."></div>
+          <div class="meta"><span class="cat">Component<span class="likes">76 likes</span></span><h3>3D Image Ticker</h3><span class="by">@27b.ureau</span></div>
+        </article>
+        <article class="comm-card">
+          <div class="thumb"><img src="https://picsum.photos/seed/made-field/640/480" width="640" height="480" loading="lazy" alt="Preview of a made-in-Framer commerce storefront."></div>
+          <div class="meta"><span class="cat">Made in Framer<span class="likes">211 likes</span></span><h3>Field — commerce storefront</h3><span class="by">@victoria_framer</span></div>
+        </article>
+      </div>
+      <div class="comm-actions">
+        <a class="btn btn-ghost" href="#community"><span class="lbl">Browse the community</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="btn btn-ghost" href="#marketplace"><span class="lbl">Explore the Marketplace</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CUSTOMERS ============ -->
+  <section class="sec wrap" id="customers">
+    <div class="sec-head">
+      <h2 class="disp">Trusted by teams shipping big sites</h2>
+      <p class="lead">From AI labs to global studios, teams move from idea to published site in days — and keep iterating without a developer in the loop.</p>
+    </div>
+    <div class="cust-grid">
+      <article class="story">
+        <div class="cover"><img src="https://picsum.photos/seed/story-asia/800/500" width="800" height="500" loading="lazy" alt="Editorial studio site built in Framer."></div>
+        <div class="body">
+          <p class="quote">"We rebuilt the studio site in a weekend and now ship client work on the same stack. Agents take the layout grunt work so we stay on craft."</p>
+          <div class="who"><span class="nm">Asia Gawron</span><span class="role">Founder · Gawron Studio</span></div>
+          <a class="read" href="#story-asia-gawron"><span>Read story</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </article>
+      <article class="story">
+        <div class="cover"><img src="https://picsum.photos/seed/story-ryan/800/500" width="800" height="500" loading="lazy" alt="Documentation site built in Framer."></div>
+        <div class="body">
+          <p class="quote">"I shipped a 40-page docs site solo. The CMS import mapped our old Markdown in one pass — no developer, no deploy step."</p>
+          <div class="who"><span class="nm">Ryan Hayward</span><span class="role">Product Designer</span></div>
+          <a class="read" href="#story-ryan-hayward"><span>Read story</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </article>
+      <article class="story">
+        <div class="cover"><img src="https://picsum.photos/seed/story-adriano/800/500" width="800" height="500" loading="lazy" alt="Marketing site built in Framer."></div>
+        <div class="body">
+          <p class="quote">"Our marketing pages went from weeks to days. A/B testing a hero variant is two clicks, and we promote the winner ourselves."</p>
+          <div class="who"><span class="nm">Adriano Reis</span><span class="role">Design Lead · Reis &amp; Co.</span></div>
+          <a class="read" href="#story-adriano-reis"><span>Read story</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </article>
+      <article class="story">
+        <div class="cover"><img src="https://picsum.photos/seed/story-renny/800/500" width="800" height="500" loading="lazy" alt="Product launch site built in Framer."></div>
+        <div class="body">
+          <p class="quote">"Performance sold us. Static edge hosting passed Core Web Vitals on day one — a 0.8s LCP and nothing for us to run."</p>
+          <div class="who"><span class="nm">Renny Mathew</span><span class="role">Founder · Northbound</span></div>
+          <a class="read" href="#story-renny-mathew"><span>Read story</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </article>
+      <article class="story">
+        <div class="cover"><img src="https://picsum.photos/seed/story-lee/800/500" width="800" height="500" loading="lazy" alt="Localized multi-region site built in Framer."></div>
+        <div class="body">
+          <p class="quote">"Localization across 12 locales used to mean a spreadsheet. Now the agent translates CMS entries and wires hreflang for us."</p>
+          <div class="who"><span class="nm">Lee Black</span><span class="role">Creative Director</span></div>
+          <a class="read" href="#story-lee-black"><span>Read story</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </article>
+      <article class="story">
+        <div class="cover"><img src="https://picsum.photos/seed/story-ben/800/500" width="800" height="500" loading="lazy" alt="Independent designer portfolio built in Framer."></div>
+        <div class="body">
+          <p class="quote">"From idea to published in an afternoon. I update copy from Slack and the change is live before the call ends."</p>
+          <div class="who"><span class="nm">Ben Fryc</span><span class="role">Independent Designer</span></div>
+          <a class="read" href="#story-ben-fryc"><span>Read story</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============ FINAL CTA ============ -->
+  <section class="final wrap" id="start">
+    <h2 class="disp">Get started with Framer</h2>
+    <p class="lead">Start free, invite your team, and let agents do the heavy lifting. Publish your first standout site today.</p>
+    <div class="final-cta">
+      <a class="btn btn-primary btn-lg" href="#signup"><span class="lbl">Get started for free</span></a>
+      <a class="btn btn-ghost btn-lg" href="#agents"><span class="lbl">Start with agents</span></a>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="site">
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="foot-brand">
+        <a class="brand" href="#top" aria-label="Framer home">
+          <svg viewBox="0 0 16 24" aria-hidden="true" fill="currentColor"><path d="M2 1h12v7H9zM2 8h7l5 5H9v8l-7-7z"/></svg>
+          Framer
+        </a>
+        <p>The AI website builder for standout sites. Design, manage, and ship on one platform.</p>
+      </div>
+      <nav class="fcol" aria-label="Product">
+        <h3>Product</h3>
+        <ul>
+          <li><a href="#">Features</a></li>
+          <li><a href="#">Pricing</a></li>
+          <li><a href="#">Templates</a></li>
+          <li><a href="#">Marketplace</a></li>
+          <li><a href="#">Updates</a></li>
+          <li><a href="#">Roadmap</a></li>
+        </ul>
+      </nav>
+      <nav class="fcol" aria-label="Solutions">
+        <h3>Solutions</h3>
+        <ul>
+          <li><a href="#">Agencies</a></li>
+          <li><a href="#">Startups</a></li>
+          <li><a href="#">Business</a></li>
+          <li><a href="#">Students</a></li>
+        </ul>
+      </nav>
+      <nav class="fcol" aria-label="Resources">
+        <h3>Resources</h3>
+        <ul>
+          <li><a href="#">Articles</a></li>
+          <li><a href="#">Tutorials</a></li>
+          <li><a href="#">Changelog</a></li>
+          <li><a href="#">State of Sites</a></li>
+          <li><a href="#">Brand</a></li>
+        </ul>
+      </nav>
+      <nav class="fcol" aria-label="Developers">
+        <h3>Developers</h3>
+        <ul>
+          <li><a href="#">Server API</a></li>
+          <li><a href="#">Plugins</a></li>
+          <li><a href="#">Reference</a></li>
+          <li><a href="#">Quick Start</a></li>
+        </ul>
+      </nav>
+      <nav class="fcol" aria-label="Compare">
+        <h3>Compare</h3>
+        <ul>
+          <li><a href="#">Webflow</a></li>
+          <li><a href="#">WordPress</a></li>
+          <li><a href="#">Squarespace</a></li>
+          <li><a href="#">Wix</a></li>
+          <li><a href="#">Unbounce</a></li>
+          <li><a href="#">Readymag</a></li>
+          <li><a href="#">Contentful</a></li>
+        </ul>
+      </nav>
+      <nav class="fcol" aria-label="Company">
+        <h3>Company</h3>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">Privacy</a></li>
+          <li><a href="#">Terms</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="foot-bot">
+      <span>© 2026 Framer B.V. — Built in Framer.</span>
+      <div class="social">
+        <a href="#" aria-label="Framer on X"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 3h3l-7 8 8 10h-6l-5-6-5 6H3l7-9L3 3h6l4 5z"/></svg></a>
+        <a href="#" aria-label="Framer on LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.5 3.5A2 2 0 1 1 4.5 7.5 2 2 0 0 1 4.5 3.5zM3 9h3v12H3zM9 9h2.9v1.6h.04c.4-.76 1.4-1.56 2.86-1.56 3.06 0 3.62 2 3.62 4.6V21h-3v-4.4c0-1.05-.02-2.4-1.46-2.4-1.46 0-1.68 1.14-1.68 2.32V21H9z"/></svg></a>
+        <a href="#" aria-label="Framer on YouTube"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12c0-3-.3-4-1-4.6-.8-.7-6-1-9-1s-8.2.3-9 1c-.7.6-1 1.6-1 4.6s.3 4 1 4.6c.8.7 6 1 9 1s8.2-.3 9-1c.7-.6 1-1.6 1-4.6zM10 15V9l5 3z"/></svg></a>
+        <a href="#" aria-label="Framer on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- mobile sticky CTA (thumb zone) -->
+<div class="mcta">
+  <a class="btn btn-ghost" href="#customers"><span class="lbl">Get a demo</span></a>
+  <a class="btn btn-primary" href="#start"><span class="lbl">Start for free</span></a>
+</div>
+
+<script>
+(function(){
+  var t=document.getElementById('nav-toggle'),m=document.getElementById('mobile-nav');
+  if(!t||!m)return;
+  function set(open){
+    t.setAttribute('aria-expanded',open?'true':'false');
+    t.setAttribute('aria-label',open?'Close menu':'Open menu');
+    if(open){m.setAttribute('data-open','true');}else{m.removeAttribute('data-open');}
+  }
+  t.addEventListener('click',function(){set(t.getAttribute('aria-expanded')!=='true');});
+  m.addEventListener('click',function(e){if(e.target.closest('a'))set(false);});
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&t.getAttribute('aria-expanded')==='true'){set(false);t.focus();}
+  });
+  var mq=window.matchMedia('(min-width:881px)');
+  if(mq.addEventListener)mq.addEventListener('change',function(){if(mq.matches)set(false);});
+})();
+</script>
+
+</body>
+</html>
